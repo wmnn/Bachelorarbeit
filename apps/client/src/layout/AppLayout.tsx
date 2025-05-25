@@ -2,7 +2,7 @@ import Button, { type ButtonProps } from "@/components/Button"
 import { userContext } from "@/context/UserContext"
 import { Link, Outlet, useNavigate } from "@tanstack/react-router"
 import { Berechtigung } from "@thesis/auth"
-import { useContext, type FC } from "react"
+import { useContext, useState, type FC } from "react"
 
 const LayoutButton: FC<ButtonProps> = (props) => {
     return <Button className="hover:bg-black text-white text-xl rounded-xl px-4 py-2 cursor-pointer transition-all w-full flex justify-start hover:text-gray-200" {...props} />
@@ -10,6 +10,7 @@ const LayoutButton: FC<ButtonProps> = (props) => {
 
 export const AppLayout = () => {
 
+    const [isNavShown, setIsNavShown] = useState(false);
     const navigate = useNavigate();
     const { user } = useContext(userContext)
     if (!user) {
@@ -21,7 +22,13 @@ export const AppLayout = () => {
     }
     
     return <div className="xl:flex min-h-[100vh]">
-        <header className="w-[20%] bg-abcd shadow-2xl flex flex-col justify-between py-12 px-8 bg-main">
+        
+        <button className="absolute top-12 right-12 xl:hidden" onClick={() => setIsNavShown(prev => !prev)}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+        </button>
+        <header className={`${isNavShown ? 'block' : 'hidden xl:flex'} xl:w-[20%] bg-abcd shadow-2xl flex flex-col justify-between xl:pb-12 pt-24 xl:pt-16 pb-16 px-8 md:px-24 xl:px-8 bg-main xl:fixed top-0 left-0 h-[100vh] transition-all`}>
             <nav className="flex flex-col gap-4">
                 <LayoutButton>
                     <Link to="/dashboard">Diagnostikverfahren</Link>
@@ -63,9 +70,10 @@ export const AppLayout = () => {
             
         </header>
         
+        
         <div className="w-[2px]"/>
 
-        <div className="flex justify-center flex-col items-center w-full">
+        <div className={`${isNavShown ? 'hidden xl:flex' : 'flex'} justify-center flex-col items-center w-full xl:ml-[20%]`}>
             <Outlet />
         </div>
     </div>
