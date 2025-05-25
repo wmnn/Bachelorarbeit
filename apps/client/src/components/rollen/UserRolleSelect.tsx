@@ -6,10 +6,10 @@ interface UserDialogProps {
     user: User
 }
 export function UserRolleSelect({ user, rollen }: UserDialogProps) {
-    return <div>
+    return <div className="grow">
         {/*{typeof user.rolle === "string" ? user.rolle : ''} */}
         <Select value={typeof user.rolle === "string" ? user.rolle : user?.rolle?.rolle ?? ''}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="xl:w-[180px] w-min">
                 <SelectValue placeholder="Theme"/>
             </SelectTrigger>
             <SelectContent>
