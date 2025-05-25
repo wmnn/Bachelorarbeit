@@ -9,6 +9,15 @@ import './styles.css'
 import reportWebVitals from './reportWebVitals.ts'
 import UserContextProvider from './context/UserContext.tsx'
 
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from '@tanstack/react-query'
+
+const queryClient = new QueryClient()
+
+
 // Create a new router instance
 const router = createRouter({
   routeTree,
@@ -32,9 +41,11 @@ if (rootElement && !rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
   root.render(
     <StrictMode>
-      <UserContextProvider>
-        <RouterProvider router={router} />
-      </UserContextProvider>
+      <QueryClientProvider client={queryClient}>
+         <UserContextProvider>
+          <RouterProvider router={router} />
+        </UserContextProvider>
+      </QueryClientProvider>
     </StrictMode>,
   )
 }

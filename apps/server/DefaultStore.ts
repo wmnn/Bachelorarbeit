@@ -50,6 +50,25 @@ export class DefaultStore implements AuthStore {
         return user;
     }
 
+    async getUsers(): Promise<undefined | User[]> {
+        if (!this.connection) {
+            return undefined;
+        }
+
+        const [rows] = await this.connection.execute<ResultSetHeader>(
+            'SELECT * FROM users', []
+        );
+
+        if (!Array.isArray(rows)) {
+            return undefined;
+        } 
+        const users = rows.map((user: User) => {
+            delete user.passwort
+            return user;
+        })
+        return users;
+    }
+
     async createUser(email: string, password: string, vorname: string, nachname: string): Promise<User | undefined> {
         if (!this.connection) {
             return undefined;
@@ -87,8 +106,16 @@ export class DefaultStore implements AuthStore {
         if (!Array.isArray(rows) || rows.length === 0) {
             return undefined;
         }
+        try {
+            const rollen = rows.map(row => {
+                row.berechtigungen = JSON.parse(row.berechtigungen)
+                return row;
+            })
 
-        return rows as Rolle[];
+            return rollen as Rolle[];
+        } catch (e) {
+            return undefined;
+        }
     }
 
     async createRole(role: Rolle): Promise<boolean> {

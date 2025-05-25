@@ -16,7 +16,7 @@ import { Route as IndexImport } from './routes/index'
 import { Route as authRegisterIndexImport } from './routes/(auth)/register/index'
 import { Route as authLoginIndexImport } from './routes/(auth)/login/index'
 import { Route as appSettingsIndexImport } from './routes/(app)/settings/index'
-import { Route as appRollenIndexImport } from './routes/(app)/rollen/index'
+import { Route as appRollenmanagementIndexImport } from './routes/(app)/rollenmanagement/index'
 import { Route as appResetPasswordIndexImport } from './routes/(app)/reset-password/index'
 import { Route as appDashboardIndexImport } from './routes/(app)/dashboard/index'
 
@@ -51,9 +51,9 @@ const appSettingsIndexRoute = appSettingsIndexImport.update({
   getParentRoute: () => appRouteRoute,
 } as any)
 
-const appRollenIndexRoute = appRollenIndexImport.update({
-  id: '/rollen/',
-  path: '/rollen/',
+const appRollenmanagementIndexRoute = appRollenmanagementIndexImport.update({
+  id: '/rollenmanagement/',
+  path: '/rollenmanagement/',
   getParentRoute: () => appRouteRoute,
 } as any)
 
@@ -101,11 +101,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appResetPasswordIndexImport
       parentRoute: typeof appRouteImport
     }
-    '/(app)/rollen/': {
-      id: '/(app)/rollen/'
-      path: '/rollen'
-      fullPath: '/rollen'
-      preLoaderRoute: typeof appRollenIndexImport
+    '/(app)/rollenmanagement/': {
+      id: '/(app)/rollenmanagement/'
+      path: '/rollenmanagement'
+      fullPath: '/rollenmanagement'
+      preLoaderRoute: typeof appRollenmanagementIndexImport
       parentRoute: typeof appRouteImport
     }
     '/(app)/settings/': {
@@ -137,14 +137,14 @@ declare module '@tanstack/react-router' {
 interface appRouteRouteChildren {
   appDashboardIndexRoute: typeof appDashboardIndexRoute
   appResetPasswordIndexRoute: typeof appResetPasswordIndexRoute
-  appRollenIndexRoute: typeof appRollenIndexRoute
+  appRollenmanagementIndexRoute: typeof appRollenmanagementIndexRoute
   appSettingsIndexRoute: typeof appSettingsIndexRoute
 }
 
 const appRouteRouteChildren: appRouteRouteChildren = {
   appDashboardIndexRoute: appDashboardIndexRoute,
   appResetPasswordIndexRoute: appResetPasswordIndexRoute,
-  appRollenIndexRoute: appRollenIndexRoute,
+  appRollenmanagementIndexRoute: appRollenmanagementIndexRoute,
   appSettingsIndexRoute: appSettingsIndexRoute,
 }
 
@@ -156,7 +156,7 @@ export interface FileRoutesByFullPath {
   '/': typeof appRouteRouteWithChildren
   '/dashboard': typeof appDashboardIndexRoute
   '/reset-password': typeof appResetPasswordIndexRoute
-  '/rollen': typeof appRollenIndexRoute
+  '/rollenmanagement': typeof appRollenmanagementIndexRoute
   '/settings': typeof appSettingsIndexRoute
   '/login': typeof authLoginIndexRoute
   '/register': typeof authRegisterIndexRoute
@@ -166,7 +166,7 @@ export interface FileRoutesByTo {
   '/': typeof appRouteRouteWithChildren
   '/dashboard': typeof appDashboardIndexRoute
   '/reset-password': typeof appResetPasswordIndexRoute
-  '/rollen': typeof appRollenIndexRoute
+  '/rollenmanagement': typeof appRollenmanagementIndexRoute
   '/settings': typeof appSettingsIndexRoute
   '/login': typeof authLoginIndexRoute
   '/register': typeof authRegisterIndexRoute
@@ -178,7 +178,7 @@ export interface FileRoutesById {
   '/(app)': typeof appRouteRouteWithChildren
   '/(app)/dashboard/': typeof appDashboardIndexRoute
   '/(app)/reset-password/': typeof appResetPasswordIndexRoute
-  '/(app)/rollen/': typeof appRollenIndexRoute
+  '/(app)/rollenmanagement/': typeof appRollenmanagementIndexRoute
   '/(app)/settings/': typeof appSettingsIndexRoute
   '/(auth)/login/': typeof authLoginIndexRoute
   '/(auth)/register/': typeof authRegisterIndexRoute
@@ -190,7 +190,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/reset-password'
-    | '/rollen'
+    | '/rollenmanagement'
     | '/settings'
     | '/login'
     | '/register'
@@ -199,7 +199,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/reset-password'
-    | '/rollen'
+    | '/rollenmanagement'
     | '/settings'
     | '/login'
     | '/register'
@@ -209,7 +209,7 @@ export interface FileRouteTypes {
     | '/(app)'
     | '/(app)/dashboard/'
     | '/(app)/reset-password/'
-    | '/(app)/rollen/'
+    | '/(app)/rollenmanagement/'
     | '/(app)/settings/'
     | '/(auth)/login/'
     | '/(auth)/register/'
@@ -254,7 +254,7 @@ export const routeTree = rootRoute
       "children": [
         "/(app)/dashboard/",
         "/(app)/reset-password/",
-        "/(app)/rollen/",
+        "/(app)/rollenmanagement/",
         "/(app)/settings/"
       ]
     },
@@ -266,8 +266,8 @@ export const routeTree = rootRoute
       "filePath": "(app)/reset-password/index.tsx",
       "parent": "/(app)"
     },
-    "/(app)/rollen/": {
-      "filePath": "(app)/rollen/index.tsx",
+    "/(app)/rollenmanagement/": {
+      "filePath": "(app)/rollenmanagement/index.tsx",
       "parent": "/(app)"
     },
     "/(app)/settings/": {

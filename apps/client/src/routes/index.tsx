@@ -19,6 +19,7 @@ function App() {
             <MainButton>
                 <Link 
                     to='/login'
+                    className='w-full h-full'                   
                 >
                     Login
                 </Link>
@@ -27,6 +28,7 @@ function App() {
             <MainButton>
                 <Link 
                     to='/register'
+                    className='w-full h-full'    
                 >
                     Registrierung
                 </Link>

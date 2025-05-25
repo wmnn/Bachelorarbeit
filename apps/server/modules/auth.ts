@@ -2,7 +2,7 @@ import express, { NextFunction } from 'express';
 import { Request, Response } from 'express';
 import { getDB } from "../singleton"
 import { LOGIN_ENDPOINT, REGISTER_ENDPOINT, SESSION_COOKIE_NAME } from '@thesis/config';
-import { LoginRequestBody, LoginResponseBody, RegisterRequestBody, RegisterResponseBody, User } from '@thesis/auth';
+import { LoginRequestBody, LoginResponseBody, RegisterRequestBody, RegisterResponseBody, User, UsersResponseBody } from '@thesis/auth';
 import { createHmac, randomUUID, timingSafeEqual } from 'crypto';
 import fs from "fs"
 import path from "path"
@@ -97,24 +97,20 @@ const addRoleDataToUser = async (user: User) => {
 
     const roles = await getDB().getRoles();
 
+    console.log(roles)
     if (!roles) {
         return user;
     }
-        
-    let rolle = null;
-    try {
-        for (const role of roles) {
-            const parsedBerechtigungen = JSON.parse(role.berechtigungen as any);
-            if (role.rolle === user.rolle) {
-                rolle = { ...role, berechtigungen: parsedBerechtigungen };
-                break;
-            }
-        }
-    } catch (_) { }
     
-    if (rolle) {
-        user.rolle = rolle;
+    for (const role of roles) {
+        if (role.rolle === user.rolle) {
+            
+            user.rolle = role;
+            break;
+        }
     }
+
+    console.log(user)
     return user;
 }
 
@@ -159,8 +155,22 @@ router.post(REGISTER_ENDPOINT, async (req: Request<RegisterRequestBody>, res: Re
     })
 })
 
-router.get('/user', (req,res) => {
+router.get('/users', async (req, res: Response<UsersResponseBody>) => {
+    let users = await getDB().getUsers()
+    const roles = await getDB().getRoles()
 
+    if (!users || !roles) {
+        res.status(500).json({
+            users: [],
+            rollen: []
+        })
+        return;
+    }
+
+    res.status(200).json({
+        users,
+        rollen: roles
+    })
 })
 
 router.patch('/user', (req,res) => {
@@ -171,9 +181,6 @@ router.delete('/user', (req,res) => {
     
 })
 
-router.get('/roles', (req,res) => {
-
-})
 router.post('/role', (req,res) => {
 
 })

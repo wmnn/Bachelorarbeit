@@ -17,6 +17,19 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+h1 {
+  font-size: 36px;
+  font-weight: 400;
+}
+h2 {
+  font-size: 24px;
+  font-weight: 200;
+}
+
+button {
+  cursor: pointer;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;

@@ -29,7 +29,7 @@ export const AppLayout = () => {
                 {
                     user.rolle?.berechtigungen[Berechtigung.RollenVerwalten] === true && 
                     <LayoutButton>
-                        <Link to="/rollen">Rollenmanagement</Link>
+                        <Link to="/rollenmanagement">Rollenmanagement</Link>
                     </LayoutButton>
                 }
                 

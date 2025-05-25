@@ -9,11 +9,11 @@ export interface RegisterResponseBody {
     user?: User;
 }
 
-export const register = async (vorname: string, nachname: string, email: string, password: string) => {
+export const register = async (vorname: string, nachname: string, email: string, passwort: string) => {
 
     const user: RegisterRequestBody = {
         email,
-        password,
+        passwort,
         vorname,
         nachname
     }
