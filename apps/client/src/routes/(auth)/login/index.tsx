@@ -30,7 +30,6 @@ export default function Login () {
         if (user.rolle && typeof user.rolle === "string") {
             return;
         }
-        
         setUser(user);
 
         navigate({

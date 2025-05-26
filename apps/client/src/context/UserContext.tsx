@@ -1,9 +1,9 @@
 import type { User } from '@thesis/auth';
-import { createContext, useState, type Dispatch, type ReactNode, type SetStateAction } from 'react'
+import { createContext, useEffect, useState, type ReactNode } from 'react'
 
 type UserContextType = {
     user: User | undefined;
-    setUser: Dispatch<SetStateAction<User | undefined>>;
+    setUser: (user: User) => void;
 };
 
 export const userContext = createContext<UserContextType>({
@@ -15,9 +15,25 @@ type ContextProps = {
     children: ReactNode;
 };
 
+const userKey = 'user'
 export default function UserContextProvider({ children }: ContextProps) {
 
-    const [user, setUser] = useState<User | undefined >(undefined);
+    const [user, setUserState] = useState<User | undefined >(undefined);
+
+
+    function setUser(user: User) {
+        localStorage.setItem(userKey, JSON.stringify(user)) 
+        setUserState(user)
+    }
+
+    useEffect(() => {
+        const savedUser = localStorage.getItem(userKey);
+        if (!savedUser) return;
+        try {
+            const parsedUser = JSON.parse(savedUser)
+            setUser(parsedUser)
+        } catch(e) { }
+    }, [])
    
     return (
         <userContext.Provider value={{ user, setUser }}>{children}</userContext.Provider> //everytime the render something inside this context we have access to this value
