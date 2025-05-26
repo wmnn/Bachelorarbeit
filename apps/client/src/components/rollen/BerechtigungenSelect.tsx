@@ -1,9 +1,8 @@
-import type { Updater } from "use-immer";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Berechtigung, BERECHTIGUNGEN_LABELS, BERECHTIGUNGEN_VALUES, type Rolle } from "@thesis/auth";
 
 interface BerechtigungenSelectProps {
-    setRolle: Updater<Rolle>,
+    setRolle: (neueRolle: Rolle) => void,
     rolle: Rolle,
 }
 export const BerechtigungenSelect = ({ rolle, setRolle }: BerechtigungenSelectProps) => {
@@ -22,10 +21,10 @@ const BerechtigungSelect = ({ berechtigung, rolle, setRolle }: { berechtigung: B
         <Select 
             value={rolle.berechtigungen[berechtigung] as string}
             onValueChange={(newValue) => {
-                setRolle((rolle) => {
-                    // @ts-ignore
-                    rolle.berechtigungen[berechtigung] = newValue as any;
-                })
+                let tmp = rolle;
+                // @ts-ignore
+                tmp.berechtigungen[berechtigung] = newValue as any;
+                setRolle(tmp)
             }}
         >
             <SelectTrigger className="w-[180px]">

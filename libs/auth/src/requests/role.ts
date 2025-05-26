@@ -57,3 +57,40 @@ export const deleteRole = async (rolle: string) => {
     }
 
 }
+
+export interface UpdateRoleRequestBody {
+    rollenbezeichnung: string
+    updated: Rolle,
+}
+export type UpdateRoleResponseBody = CreateRoleResponseBody
+
+/**
+ * Request um eine Rolle zu aktualisieren
+ * @param rollenbezeichnung die Rollenbezeichnung der Rolle die aktualisiert wird
+ * @param updated die aktualisierte Rolle
+ * @returns 
+ */
+export const updateRole = async (rollenbezeichnung: string, updated: Rolle) => {
+
+    try {
+        const res = await fetch(AUTH_API_ENDPOINT + ROLLE_ENDPOINT, {
+            method: 'PATCH',
+            body: JSON.stringify({
+                rollenbezeichnung,
+                updated
+            } as UpdateRoleRequestBody),
+            headers: {
+                'content-type': 'application/json'
+            },
+        })
+    
+        return await res.json() as UpdateRoleResponseBody;
+        
+    } catch (e) {
+        return {
+            success: false,
+            message: 'Die Rolle konnte nicht aktualisiert werden.'
+        };
+    }
+
+}

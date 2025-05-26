@@ -2,7 +2,7 @@ import express, { NextFunction } from 'express';
 import { Request, Response } from 'express';
 import { getDB } from "../singleton"
 import { LOGIN_ENDPOINT, REGISTER_ENDPOINT, SESSION_COOKIE_NAME } from '@thesis/config';
-import { Berechtigung, CreateRoleRequestBody, CreateRoleResponseBody, LoginRequestBody, LoginResponseBody, RegisterRequestBody, RegisterResponseBody, Rolle, ROLLE_ENDPOINT, User, UsersResponseBody } from '@thesis/auth';
+import { Berechtigung, CreateRoleRequestBody, CreateRoleResponseBody, LoginRequestBody, LoginResponseBody, RegisterRequestBody, RegisterResponseBody, Rolle, ROLLE_ENDPOINT, UpdateRoleRequestBody, User, UsersResponseBody } from '@thesis/auth';
 import { createHmac, randomUUID, timingSafeEqual } from 'crypto';
 import fs from "fs"
 import path from "path"
@@ -96,7 +96,7 @@ const addRoleDataToUser = async (user: User) => {
     }
 
     const roles = await getDB().getRoles();
-    
+
     if (!roles) {
         return user;
     }
@@ -200,15 +200,13 @@ router.post(ROLLE_ENDPOINT, async (req: Request<CreateRoleRequestBody>,res: Resp
     }
 
     const dbMessage = await getDB().createRole(legitRole)
-    if (!dbMessage.success) {
-        res.status(400).json(dbMessage)
-        return;
-    }
     res.status(200).json(dbMessage)
 })
 
-router.patch(ROLLE_ENDPOINT, (req,res) => {
-
+router.patch(ROLLE_ENDPOINT, async (req: Request<UpdateRoleRequestBody>, res) => {
+    const { rollenbezeichnung, updated } = req.body
+    const dbMessage = await getDB().updateRole(rollenbezeichnung, updated)
+    res.status(200).json(dbMessage)
 })
 router.delete(ROLLE_ENDPOINT, (req,res) => {
 

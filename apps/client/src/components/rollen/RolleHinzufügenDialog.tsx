@@ -8,36 +8,38 @@ import { useState } from "react";
 interface RolleHinzufügenDialogProps {
     closeDialog: () => void;
 }
+
+const defaultRolle: Rolle = {
+    rolle: "",
+    berechtigungen: {
+        [Berechtigung.KlasseCreate]: false,
+        [Berechtigung.KlasseRead]: "keine",
+        [Berechtigung.KlasseUpdate]: false,
+        [Berechtigung.KlasseDelete]: false,
+        [Berechtigung.GanztagsangebotCreate]: false,
+        [Berechtigung.GanztagsangebotRead]: "keine",
+        [Berechtigung.GanztagsangebotUpdate]: false,
+        [Berechtigung.GanztagsangebotDelete]: false,
+        [Berechtigung.SchuelerCreate]: false,
+        [Berechtigung.SchuelerRead]: "keine",
+        [Berechtigung.SchuelerUpdate]: false,
+        [Berechtigung.SchuelerDelete]: false,
+        [Berechtigung.AnwesenheitsstatusUpdate]: false,
+        [Berechtigung.AnwesenheitsstatusRead]: false,
+        [Berechtigung.DiagnostikverfahrenRead]: "keine",
+        [Berechtigung.DiagnostikverfahrenDelete]: false,
+        [Berechtigung.RollenVerwalten]: false,
+        [Berechtigung.NachrichtenvorlagenVerwalten]: false,
+        [Berechtigung.NachrichtenDelete]: "eigene",
+    }
+}
 export function RolleHinzufügenDialog({ closeDialog }: RolleHinzufügenDialogProps) { 
 
     const setRollen = useRollenStore((state) => state.setRollen);
     const rollen = useRollenStore((state) => state.rollen);
     const [isSuccess, setIsSuccess] = useState(true);
     const [message, setMessage] = useState("");
-    const [neueRolle, setNeueRolle] = useImmer<Rolle>({
-        rolle: "",
-        berechtigungen: {
-            [Berechtigung.KlasseCreate]: false,
-            [Berechtigung.KlasseRead]: "keine",
-            [Berechtigung.KlasseUpdate]: false,
-            [Berechtigung.KlasseDelete]: false,
-            [Berechtigung.GanztagsangebotCreate]: false,
-            [Berechtigung.GanztagsangebotRead]: "keine",
-            [Berechtigung.GanztagsangebotUpdate]: false,
-            [Berechtigung.GanztagsangebotDelete]: false,
-            [Berechtigung.SchuelerCreate]: false,
-            [Berechtigung.SchuelerRead]: "keine",
-            [Berechtigung.SchuelerUpdate]: false,
-            [Berechtigung.SchuelerDelete]: false,
-            [Berechtigung.AnwesenheitsstatusUpdate]: false,
-            [Berechtigung.AnwesenheitsstatusRead]: false,
-            [Berechtigung.DiagnostikverfahrenRead]: "keine",
-            [Berechtigung.DiagnostikverfahrenDelete]: false,
-            [Berechtigung.RollenVerwalten]: false,
-            [Berechtigung.NachrichtenvorlagenVerwalten]: false,
-            [Berechtigung.NachrichtenDelete]: "eigene",
-        }
-    });
+    const [neueRolle, setNeueRolle] = useImmer<Rolle>(defaultRolle);
     
     async function onSubmit() {
 
@@ -77,7 +79,7 @@ export function RolleHinzufügenDialog({ closeDialog }: RolleHinzufügenDialogPr
             }}/>
         </div>
         
-        <BerechtigungenSelect rolle={neueRolle} setRolle={setNeueRolle}/>
+        <BerechtigungenSelect rolle={neueRolle} setRolle={(neueRolle) => setNeueRolle(neueRolle)} />
         <div className="pb-8"/>
         { 
             !isSuccess && <p className="text-red-500">{message}</p>

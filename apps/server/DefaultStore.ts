@@ -159,6 +159,38 @@ export class DefaultStore implements AuthStore {
         };
     }
 
+    async updateRole(rollenbezeichnung: string, updatedRole: Rolle): Promise<DatabaseMessage> {
+        const defaultErrorMessage = {
+                success: false,
+                message: 'Die Rolle konnte nicht aktualisiert werden.'
+        };
+        if (!this.connection) {
+            return defaultErrorMessage;
+        }
+
+        try {
+            const [result] = await this.connection.execute<ResultSetHeader>(`
+                UPDATE rollen
+                SET rolle = ?, berechtigungen = ?
+                WHERE rolle = ?
+            `, [updatedRole.rolle, JSON.stringify(updatedRole.berechtigungen), rollenbezeichnung]);
+
+            if (result.affectedRows == 0) {
+                return { success: false, message: "Es existiert keine Rolle mit diesem Namen." };
+            }
+            if (result.affectedRows !== 1) {
+                return { success: false, message: "Fehler beim Aktualisieren der Rolle." };
+            } 
+        } catch (e: any) {
+            return { success: false, message: "Ein unerwarteter Fehler ist aufgetreten." };
+        }
+
+        return {
+            success: true,
+            message: 'Die Rolle wurde erfolgreich aktualisiert.'
+        };
+    }
+
     async getSession(sessionId: string): Promise<undefined | SessionData> {
         if (!this.connection) {
             return undefined;
