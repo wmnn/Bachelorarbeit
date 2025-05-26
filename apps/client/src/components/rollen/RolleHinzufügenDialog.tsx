@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Dialog } from "../Dialog";
+import { useImmer } from "use-immer";
 import { BerechtigungenSelect } from "./BerechtigungenSelect";
 import { Berechtigung, type Rolle } from "@thesis/auth";
 import { DialogWithButtons } from "../DialogWithButtons";
@@ -9,7 +8,7 @@ interface RolleHinzufügenDialogProps {
 }
 export function RolleHinzufügenDialog({ closeDialog }: RolleHinzufügenDialogProps) { 
 
-    const [neueRolle, setNeueRolle] = useState<Rolle>({
+    const [neueRolle, setNeueRolle] = useImmer<Rolle>({
         rolle: "",
         berechtigungen: {
             [Berechtigung.KlasseCreate]: false,
@@ -34,9 +33,9 @@ export function RolleHinzufügenDialog({ closeDialog }: RolleHinzufügenDialogPr
         }
     });
 
-    return <DialogWithButtons closeDialog={() => {}} onSubmit={() => {}} submitButtonText={"Hinzufügen"}>
+    return <DialogWithButtons closeDialog={() => closeDialog()} onSubmit={() => closeDialog()} submitButtonText={"Hinzufügen"}>
         <h1 className="mb-8">Rolle hinzufügen</h1>
-        <BerechtigungenSelect rolle={neueRolle} />
+        <BerechtigungenSelect rolle={neueRolle} setRolle={setNeueRolle}/>
         <div className="pb-8"/>
     </DialogWithButtons>
 }

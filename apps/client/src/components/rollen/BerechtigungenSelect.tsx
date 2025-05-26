@@ -1,22 +1,39 @@
+import type { Updater } from "use-immer";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Berechtigung, BERECHTIGUNGEN_LABELS, BERECHTIGUNGEN_VALUES, type Rolle } from "@thesis/auth";
 
-export const BerechtigungenSelect = ({ rolle }: { rolle: Rolle }) => {
+interface BerechtigungenSelectProps {
+    setRolle: Updater<Rolle>,
+    rolle: Rolle,
+}
+export const BerechtigungenSelect = ({ rolle, setRolle }: BerechtigungenSelectProps) => {
     return <div className="flex flex-col gap-2">{
         ((Object.keys(rolle.berechtigungen) as any) as Berechtigung[]).map((berechtigung) => {
-            return <BerechtigungSelect rolle={rolle} berechtigung={berechtigung} />
+            return <BerechtigungSelect rolle={rolle} berechtigung={berechtigung} setRolle={setRolle} />
         })
     }
     </div>
 }
-const BerechtigungSelect = ({ berechtigung, rolle }: { berechtigung: Berechtigung, rolle: Rolle}) => {
-    return <div className="flex justify-between">
+const BerechtigungSelect = ({ berechtigung, rolle, setRolle }: { berechtigung: Berechtigung} & BerechtigungenSelectProps) => {
+    return <div className="flex justify-between items-center">
         <label>{BERECHTIGUNGEN_LABELS[berechtigung]}</label>
 
         
-        <Select value={rolle.berechtigungen[berechtigung] as string}>
+        <Select 
+            value={rolle.berechtigungen[berechtigung] as string}
+            onValueChange={(newValue) => {
+                // do something when value changes
+                setRolle((rolle) => {
+                    // @ts-ignore
+                    rolle.berechtigungen[berechtigung] = newValue as any;
+                })
+
+                console.log(berechtigung)
+                console.log("Selected:", newValue);
+            }}
+        >
             <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Theme"/>
+                <SelectValue placeholder="Berechtigung"/>
             </SelectTrigger>
             <SelectContent>
                 {

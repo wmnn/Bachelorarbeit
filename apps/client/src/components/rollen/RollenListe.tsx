@@ -4,7 +4,6 @@ import { ButtonLight } from "../ButtonLight";
 import { BerechtigungenSelect } from "./BerechtigungenSelect";
 import { useState } from "react";
 import { RolleHinzufügenDialog } from "./RolleHinzufügenDialog";
-import { DialogWithButtons } from "../DialogWithButtons";
 
 interface RollenProps {
     rollen: Rolle[],
