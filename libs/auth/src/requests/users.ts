@@ -23,3 +23,24 @@ export const getUsers = async () => {
     }
 
 }
+
+export const deleteUser = async (userId: number) => {
+
+    try {
+        const res = await fetch(AUTH_API_ENDPOINT + "/user", {
+            method: 'DELETE',
+            body: JSON.stringify({
+                userId
+            }),
+            headers: {
+                'content-type': 'application/json'
+            },
+        })
+    
+        return await res.json() as UsersResponseBody;
+        
+    } catch (e) {
+        return undefined;
+    }
+
+}

@@ -68,10 +68,7 @@ export const BERECHTIGUNGEN_VALUES: Record<Berechtigung, Array<any>>= {
     [Berechtigung.NachrichtenDelete]: ["alle", "eigene"],
 }
 
-export type Berechtigungen = {
-  [K in keyof typeof BERECHTIGUNGEN_VALUES]: typeof BERECHTIGUNGEN_VALUES[K][number];
-};
-/*
+
 export type Berechtigungen = {
     [Berechtigung.KlasseCreate]: true | false;
     [Berechtigung.KlasseRead]: "alle" | "eigene" | "keine";
@@ -92,4 +89,4 @@ export type Berechtigungen = {
     [Berechtigung.RollenVerwalten]: true | false;
     [Berechtigung.NachrichtenvorlagenVerwalten]: true | false;
     [Berechtigung.NachrichtenDelete]: "alle" | "eigene";
-};*/
+};
