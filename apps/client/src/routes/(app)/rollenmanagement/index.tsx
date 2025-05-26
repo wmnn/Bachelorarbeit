@@ -1,9 +1,9 @@
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { getUsers, type User, type UsersResponseBody } from '@thesis/auth'
+import { getUsers, getUsersQueryKey, type UsersResponseBody } from '@thesis/auth'
 import { RollenListe } from '@/components/rollen/RollenListe'
 import { UserTable } from '@/components/rollen/UserTable'
+import { useRollenStore } from '@/components/rollen/RollenStore'
 
 export const Route = createFileRoute('/(app)/rollenmanagement/')({
   component: RouteComponent,
@@ -11,11 +11,13 @@ export const Route = createFileRoute('/(app)/rollenmanagement/')({
 
 function RouteComponent() {
 
-  const { isPending, error, data } = useQuery<UsersResponseBody | undefined>({
-    queryKey: ['users'],
+  const { isPending, data } = useQuery<UsersResponseBody | undefined>({
+    queryKey: [getUsersQueryKey],
     queryFn: getUsers,
     initialData: undefined,  
   })
+
+  const setRollen = useRollenStore((state) => state.setRollen);
 
   if (isPending) {
     return <p>Loading...</p>
@@ -24,13 +26,15 @@ function RouteComponent() {
   if (!data) {
     return;
   }
+
+  setRollen((_) => data.rollen)
   
   return <div className='min-h-full py-8 px-8 w-full'>
     <h1>Rollenmanagement</h1>
 
     <h2 className='mt-[24px]'>Rollen</h2>
-    <RollenListe rollen={data.rollen}/>
+    <RollenListe/>
 
-    <UserTable users={data.users} rollen={data.rollen}/>
+    <UserTable users={data.users} />
   </div>
 }

@@ -2,7 +2,7 @@ import express, { NextFunction } from 'express';
 import { Request, Response } from 'express';
 import { getDB } from "../singleton"
 import { LOGIN_ENDPOINT, REGISTER_ENDPOINT, SESSION_COOKIE_NAME } from '@thesis/config';
-import { LoginRequestBody, LoginResponseBody, RegisterRequestBody, RegisterResponseBody, User, UsersResponseBody } from '@thesis/auth';
+import { Berechtigung, CreateRoleRequestBody, CreateRoleResponseBody, LoginRequestBody, LoginResponseBody, RegisterRequestBody, RegisterResponseBody, Rolle, ROLLE_ENDPOINT, User, UsersResponseBody } from '@thesis/auth';
 import { createHmac, randomUUID, timingSafeEqual } from 'crypto';
 import fs from "fs"
 import path from "path"
@@ -96,8 +96,7 @@ const addRoleDataToUser = async (user: User) => {
     }
 
     const roles = await getDB().getRoles();
-
-    console.log(roles)
+    
     if (!roles) {
         return user;
     }
@@ -110,7 +109,6 @@ const addRoleDataToUser = async (user: User) => {
         }
     }
 
-    console.log(user)
     return user;
 }
 
@@ -181,13 +179,38 @@ router.delete('/user', (req,res) => {
     
 })
 
-router.post('/role', (req,res) => {
+router.post(ROLLE_ENDPOINT, async (req: Request<CreateRoleRequestBody>,res: Response<CreateRoleResponseBody>) => {
+    const { rolle, berechtigungen } = req.body
+
+    if (rolle.rolle == '') {
+        res.status(400).json({
+            success: false,
+            message: 'Die Rollenbezeichnung darf nicht leer sein.'
+        })
+        return;
+    }
+    // Verifying format
+    let legitRole: any = {
+        rolle,
+        berechtigungen: {},
+    }
+    for (const [key] of Object.entries(Berechtigung)) {
+        if (isNaN(Number(key))) continue;
+        legitRole["berechtigungen"][key] = berechtigungen[key];
+    }
+
+    const dbMessage = await getDB().createRole(legitRole)
+    if (!dbMessage.success) {
+        res.status(400).json(dbMessage)
+        return;
+    }
+    res.status(200).json(dbMessage)
+})
+
+router.patch(ROLLE_ENDPOINT, (req,res) => {
 
 })
-router.patch('/role', (req,res) => {
-
-})
-router.delete('/role', (req,res) => {
+router.delete(ROLLE_ENDPOINT, (req,res) => {
 
 })
 

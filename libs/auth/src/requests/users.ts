@@ -6,6 +6,7 @@ export interface UsersResponseBody {
     rollen: Rolle[]
 }
 
+export const getUsersQueryKey = "users"
 export const getUsers = async () => {
     
     try {

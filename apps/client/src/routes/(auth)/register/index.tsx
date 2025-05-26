@@ -17,7 +17,6 @@ export default function Register () {
     async function handleSubmit(e: React.SyntheticEvent<any>) {
         e.preventDefault()
         const res = await register(vorname, nachname, email, password)
-        console.log(res)
     }
     return <form>
 

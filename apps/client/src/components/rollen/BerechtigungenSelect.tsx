@@ -16,20 +16,16 @@ export const BerechtigungenSelect = ({ rolle, setRolle }: BerechtigungenSelectPr
 }
 const BerechtigungSelect = ({ berechtigung, rolle, setRolle }: { berechtigung: Berechtigung} & BerechtigungenSelectProps) => {
     return <div className="flex justify-between items-center">
-        <label>{BERECHTIGUNGEN_LABELS[berechtigung]}</label>
+        <label className="text-black!">{BERECHTIGUNGEN_LABELS[berechtigung]}</label>
 
         
         <Select 
             value={rolle.berechtigungen[berechtigung] as string}
             onValueChange={(newValue) => {
-                // do something when value changes
                 setRolle((rolle) => {
                     // @ts-ignore
                     rolle.berechtigungen[berechtigung] = newValue as any;
                 })
-
-                console.log(berechtigung)
-                console.log("Selected:", newValue);
             }}
         >
             <SelectTrigger className="w-[180px]">

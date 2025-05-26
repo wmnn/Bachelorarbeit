@@ -1,19 +1,22 @@
-import type { Rolle, User } from "@thesis/auth";
+import type { User } from "@thesis/auth";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import { UserRolleSelect } from "./UserRolleSelect";
 import { useState } from "react";
 import { DeleteUserDialog } from "./DeleteUserDialog";
+import { useRollenStore } from "./RollenStore";
 
 interface UserTableProps {
-    users: User[],
-    rollen: Rolle[]
+    users: User[]
 }
 
 const COLUMN_WIDTH = "w-[25%]"
-export function UserTable({ users, rollen }: UserTableProps) {
+export function UserTable({ users }: UserTableProps) {
 
     const [isDeleteDialogShown, setIsDeleteDialogShown] = useState(false);
     const [selectedUser, setSelectedUser] = useState<User | undefined>(undefined);
+    const rollen = useRollenStore((state) => state.rollen);
+
+    if (!rollen) return;
 
     return <>
 

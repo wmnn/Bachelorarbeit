@@ -3,6 +3,11 @@ import crypto from 'crypto';
 import mysql, { Connection, ResultSetHeader, RowDataPacket } from 'mysql2/promise'
 import { SessionData } from './modules/auth';
 
+interface DatabaseMessage {
+    success: boolean,
+    message: string,
+}
+
 export class DefaultStore implements AuthStore {
 
     private connection: undefined | Connection
@@ -118,22 +123,40 @@ export class DefaultStore implements AuthStore {
         }
     }
 
-    async createRole(role: Rolle): Promise<boolean> {
+    async createRole(role: Rolle): Promise<DatabaseMessage> {
 
+        const defaultErrorMessage = {
+                success: false,
+                message: 'Die Rolle konnte nicht erstellt werden.'
+        };
         if (!this.connection) {
-            return false;
+            return defaultErrorMessage
         }
   
-        const [result] = await this.connection.execute<ResultSetHeader>(`
-            INSERT INTO rollen (rolle, berechtigungen)
-            VALUES (?, ?)
-        `, [role.rolle , JSON.stringify(role.berechtigungen)]);
+        try {
+            const [result] = await this.connection.execute<ResultSetHeader>(`
+                INSERT INTO rollen (rolle, berechtigungen)
+                VALUES (?, ?)
+            `, [role.rolle , JSON.stringify(role.berechtigungen)]);
 
-        if (result.affectedRows !== 1) {
-            return false;
+            if (result.affectedRows !== 1) {
+                return defaultErrorMessage
+            }
+        } catch (e: any) {
+            if (e.code === 'ER_DUP_ENTRY') {
+                return {
+                    success: false,
+                    message: 'Es existiert bereits eine Rolle mit dem Namen.'
+                };
+            }
+
+            return defaultErrorMessage;
         }
 
-        return true;
+        return {
+            success: true,
+            message: 'Die Rolle wurde erfolgreich erstellt.'
+        };
     }
 
     async getSession(sessionId: string): Promise<undefined | SessionData> {
@@ -155,7 +178,6 @@ export class DefaultStore implements AuthStore {
         }
         
         const row = rows[0] as any
-        console.log(row)
         let user = undefined
         try {
             user = JSON.parse(row.session_data).user

@@ -22,11 +22,11 @@ export enum Berechtigung {
 
 export const BERECHTIGUNGEN_LABELS: Record<Berechtigung, string>= {
     [Berechtigung.KlasseCreate]: "Klasse erstellen",
-    [Berechtigung.KlasseRead]: "Klassen einsehen",
+    [Berechtigung.KlasseRead]: "Klassen Zugriff",
     [Berechtigung.KlasseUpdate]: "Klassen ändern",
     [Berechtigung.KlasseDelete]: "Klassen löschen",
     [Berechtigung.GanztagsangebotCreate]: "Ganztagsangebot erstellen",
-    [Berechtigung.GanztagsangebotRead]: "Ganztangsangebot einsehen",
+    [Berechtigung.GanztagsangebotRead]: "Ganztangsangebot Zugriff",
     [Berechtigung.GanztagsangebotUpdate]: "Ganztagsangebot verändern",
     [Berechtigung.GanztagsangebotDelete]: "Ganztagsangebot löschen",
     [Berechtigung.SchuelerCreate]: "Schüler erstellen",
@@ -35,7 +35,7 @@ export const BERECHTIGUNGEN_LABELS: Record<Berechtigung, string>= {
     [Berechtigung.SchuelerDelete]: "Schüler löschen",
     [Berechtigung.AnwesenheitsstatusUpdate]: "Anwesenheitsstatus setzen",
     [Berechtigung.AnwesenheitsstatusRead]: "Anwesenheitsstatus einsehen",
-    [Berechtigung.DiagnostikverfahrenRead]: "Diagnostikverfahren",
+    [Berechtigung.DiagnostikverfahrenRead]: "Diagnostikverfahren Zugriff",
     [Berechtigung.DiagnostikverfahrenDelete]: "Diagnostikverfahren löschen",
     [Berechtigung.RollenVerwalten]: "Rollen verwalten",
     [Berechtigung.NachrichtenvorlagenVerwalten]: "Nachrichtenvorlagen verwalten",

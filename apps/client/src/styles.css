@@ -30,6 +30,10 @@ button {
   cursor: pointer;
 }
 
+label {
+  color: var(--color-gray-400)
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
