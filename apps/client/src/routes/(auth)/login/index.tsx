@@ -1,4 +1,8 @@
+import { AuthForm } from "@/components/auth/AuthForm";
 import Button from "@/components/Button";
+import { ButtonLight } from "@/components/ButtonLight";
+import { Input } from "@/components/Input";
+import { MainButton } from "@/components/MainButton";
 import { userContext } from "@/context/UserContext";
 
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
@@ -36,28 +40,34 @@ export default function Login () {
             to: "/dashboard"
         })
     }
-    return <form>
+    return <AuthForm>
+            <label>Email</label>
+            <Input value={email} onChange={e => setEmail(e.target.value)} placeholder="Email"/>
+            <label>Passwort</label>
+            <Input type="password" value={passwort} onChange={e => setPasswort(e.target.value)} placeholder="Passwort"/>
+            
+            <div className="flex gap-2 mt-8">
+                <ButtonLight>
+                    <Link 
+                        to='/register'
+                    >
+                        Zur Registrierung
+                    </Link>
+                </ButtonLight>
 
-        <input value={email} onChange={e => setEmail(e.target.value)} placeholder="Email"/>
-        <input type="password" value={passwort} onChange={e => setPasswort(e.target.value)} placeholder="Passwort"/>
-        <Button type="submit" onClick={(e) => handleSubmit(e)}>
-            Login
-        </Button>
+                <MainButton type="submit" onClick={(e) => handleSubmit(e)}>
+                    Login
+                </MainButton>
+            </div>
+            
 
-        <Button>
-            <Link 
-                to='/register'
-            >
-                Registrierung
-            </Link>
-        </Button>
+            <Button className="mt-2">
+                <Link 
+                    to='/reset-password'
+                >
+                    Password vergessen?
+                </Link>
+            </Button>
 
-        <Button>
-            <Link 
-                to='/reset-password'
-            >
-                Password vergessen?
-            </Link>
-        </Button>
-    </form>
+        </AuthForm>
 }
