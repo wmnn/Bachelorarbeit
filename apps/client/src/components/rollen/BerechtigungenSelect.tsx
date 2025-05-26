@@ -8,7 +8,7 @@ interface BerechtigungenSelectProps {
 export const BerechtigungenSelect = ({ rolle, setRolle }: BerechtigungenSelectProps) => {
     return <div className="flex flex-col gap-2">{
         ((Object.keys(rolle.berechtigungen) as any) as Berechtigung[]).map((berechtigung) => {
-            return <BerechtigungSelect rolle={rolle} berechtigung={berechtigung} setRolle={setRolle} />
+            return <BerechtigungSelect key={rolle.rolle + berechtigung} rolle={rolle} berechtigung={berechtigung} setRolle={setRolle} />
         })
     }
     </div>
@@ -21,9 +21,11 @@ const BerechtigungSelect = ({ berechtigung, rolle, setRolle }: { berechtigung: B
         <Select 
             value={rolle.berechtigungen[berechtigung] as string}
             onValueChange={(newValue) => {
-                let tmp = rolle;
+                // It is done like this because of: 'Cannot assign to read only property'
+                let tmp = {...rolle};
+                tmp.berechtigungen = { ...tmp.berechtigungen }
                 // @ts-ignore
-                tmp.berechtigungen[berechtigung] = newValue as any;
+                tmp.berechtigungen[berechtigung] = newValue as string | boolean;
                 setRolle(tmp)
             }}
         >

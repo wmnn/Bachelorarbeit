@@ -79,7 +79,10 @@ export function RolleHinzufügenDialog({ closeDialog }: RolleHinzufügenDialogPr
             }}/>
         </div>
         
-        <BerechtigungenSelect rolle={neueRolle} setRolle={(neueRolle) => setNeueRolle(neueRolle)} />
+        <BerechtigungenSelect rolle={neueRolle} setRolle={(neueRolle) => {
+            console.log(neueRolle)
+            setNeueRolle((prev) => neueRolle)}
+        }/>
         <div className="pb-8"/>
         { 
             !isSuccess && <p className="text-red-500">{message}</p>

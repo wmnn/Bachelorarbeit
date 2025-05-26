@@ -21,7 +21,7 @@ export function RollenListe() {
 
         <Accordion type="single" collapsible>
             {
-                rollen?.map((rolle) => <RollenListeElement rolle={rolle}/> )
+                rollen?.map((rolle) => <RollenListeElement key={rolle.rolle} rolle={rolle}/> )
             }
         </Accordion>
         <ButtonLight className="mt-8 shadow-xs" onClick={() => {

@@ -15,7 +15,7 @@ export function UserRolleSelect({ user, rollen }: UserDialogProps) {
             <SelectContent>
                 {
                     rollen.map((rolle) => {
-                        return <SelectItem value={rolle.rolle == '' ? 'FEHLER' : rolle.rolle}>{rolle.rolle}</SelectItem>                                                            
+                        return <SelectItem key={user.email + rolle.rolle} value={rolle.rolle == '' ? 'FEHLER' : rolle.rolle}>{rolle.rolle}</SelectItem>                                                            
                     })
                 }
             </SelectContent>
