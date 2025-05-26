@@ -4,6 +4,11 @@ import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 import { resolve } from "node:path";
 import tailwindcssVite from '@tailwindcss/vite';
 
+const proxySettings = {
+  target: 'https://localhost:30001',
+  secure: false,
+ }
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [TanStackRouterVite({ autoCodeSplitting: true }), viteReact(), tailwindcssVite()],
@@ -18,10 +23,7 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/auth': {
-        target: 'https://localhost:30001',
-        secure: false,
-      }
+      '/auth': proxySettings,
     }
   }
 });

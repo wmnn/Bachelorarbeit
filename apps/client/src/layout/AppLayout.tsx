@@ -1,7 +1,7 @@
 import Button, { type ButtonProps } from "@/components/Button"
 import { userContext } from "@/context/UserContext"
 import { Link, Outlet, useNavigate } from "@tanstack/react-router"
-import { Berechtigung } from "@thesis/auth"
+import { Berechtigung, logout } from "@thesis/auth"
 import { useContext, useState, type FC } from "react"
 
 const LayoutButton: FC<ButtonProps> = (props) => {
@@ -19,6 +19,15 @@ export const AppLayout = () => {
 
     if (typeof user.rolle === "string") {
         return;
+    }
+
+    async function handleLogout() {
+        const isLoggedOut = await logout();
+        if (isLoggedOut) {
+            navigate({
+                to: '/'
+            })
+        }
     }
     
     return <div className="xl:flex min-h-[100vh]">
@@ -53,18 +62,16 @@ export const AppLayout = () => {
                     </div>
                 </LayoutButton>
 
-                <a href="/logout">
-                    <LayoutButton>
+            
+                <LayoutButton onClick={() => handleLogout()}>
                     <div className="flex justify-start gap-2 items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
                             <path strokeLinecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
                         </svg>
-
-
                         <p>Logout</p>
                     </div>
                 </LayoutButton>        
-                </a>
+              
                 
             </menu>
             

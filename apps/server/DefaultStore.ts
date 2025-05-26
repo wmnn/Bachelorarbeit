@@ -221,7 +221,7 @@ export class DefaultStore implements AuthStore {
             expiresAt: row.expires_at
         } as SessionData;
     }
-    async updateSession(sessionId: string, sessionData: SessionData) {
+    async createSession(sessionId: string, sessionData: SessionData) {
 
         if (!this.connection) {
             return false;
@@ -237,6 +237,22 @@ export class DefaultStore implements AuthStore {
         }
 
         return true;
+    }
+
+    async removeSession(sessionId: string): Promise<boolean> {
+        if (!this.connection) {
+            return false;
+        }
+
+        const [result] = await this.connection.execute<ResultSetHeader>(`
+            DELETE FROM session_store WHERE session_id = ?
+        `, [sessionId]);
+
+        if (result.affectedRows === 1) {
+            return true;
+        }
+
+        return false;
     }
 
     private createHash(stringToBeHashed: string) {

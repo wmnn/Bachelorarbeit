@@ -1,8 +1,8 @@
 import express, { NextFunction } from 'express';
 import { Request, Response } from 'express';
 import { getDB } from "../singleton"
-import { LOGIN_ENDPOINT, REGISTER_ENDPOINT, SESSION_COOKIE_NAME } from '@thesis/config';
-import { Berechtigung, CreateRoleRequestBody, CreateRoleResponseBody, LoginRequestBody, LoginResponseBody, RegisterRequestBody, RegisterResponseBody, Rolle, ROLLE_ENDPOINT, UpdateRoleRequestBody, User, UsersResponseBody } from '@thesis/auth';
+import { LOGIN_ENDPOINT, LOGOUT_ENDOINT, REGISTER_ENDPOINT, SESSION_COOKIE_NAME } from '@thesis/config';
+import { Berechtigung, Berechtigungen, CreateRoleRequestBody, CreateRoleResponseBody, LoginRequestBody, LoginResponseBody, RegisterRequestBody, RegisterResponseBody, Rolle, ROLLE_ENDPOINT, UpdateRoleRequestBody, User, UsersResponseBody } from '@thesis/auth';
 import { createHmac, randomUUID, timingSafeEqual } from 'crypto';
 import fs from "fs"
 import path from "path"
@@ -25,6 +25,7 @@ declare global {
   namespace Express {
     interface Request {
       sessionId?: string;
+      permissions?: Berechtigungen
     }
   }
 }
@@ -50,11 +51,11 @@ async function createSession(res: Response, user: User): Promise<Response> {
         createdAt: new Date(),
         expiresAt: new Date(Date.now() + SESSION_MAX_AGE),
     }
-    getDB().updateSession(sessionId, sessionData);
+    getDB().createSession(sessionId, sessionData);
     return res;
 }
 
-export const authMiddleware = (req: Request, res: Response, next: NextFunction) => { // Middleware to verify and add session cookie
+export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => { // Middleware to verify and add session cookie
     const cookie = req.cookies[SESSION_COOKIE_NAME];
 
     if (!cookie || !cookie.includes('.')) {
@@ -78,10 +79,24 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
         return;
     }
 
-    const sessionData = getDB().getSession(sessionId);
+    req.sessionId = sessionId
+    const sessionData = await getDB().getSession(sessionId);
     if (!sessionData) {
         next()
+        return;
     }
+
+    const user = sessionData.user
+    if (!user) {
+        next()
+        return
+    }
+    const rolle = (await addRoleDataToUser(user)).rolle
+    if (!rolle || typeof rolle === "string") {
+        next()
+        return;
+    }
+    req.permissions = rolle.berechtigungen
     next();
 }
 
@@ -112,6 +127,16 @@ const addRoleDataToUser = async (user: User) => {
     return user;
 }
 
+router.get(LOGOUT_ENDOINT, async (req, res) => {
+    res.clearCookie(SESSION_COOKIE_NAME, { path: '/' });
+    if (!req.sessionId) return;
+    const isSessionRemoved = await getDB().removeSession(req.sessionId);
+    if (isSessionRemoved) {
+        res.status(200).json({ message: 'Der Nutzer wurde erfolgreich abgemeldet.' });
+    } else {
+        res.status(400).json({ message: 'Der Nutzer konnte nicht abgemeldet werden.' });
+    }
+})
 router.post(LOGIN_ENDPOINT, async (req: Request<LoginRequestBody>, res: Response<LoginResponseBody>) => {
     const { email, passwort } = req.body;
     let user = await getDB().findUser(email, passwort);
