@@ -1,9 +1,11 @@
 import express, { NextFunction } from 'express';
 import { Request, Response } from 'express';
-import { getDB } from '../singleton';
+import { getDB } from '../../singleton';
 import {
+    AUTH_API_ENDPOINT,
     LOGIN_ENDPOINT,
     LOGOUT_ENDOINT,
+    REGISTER_CALLBACK_ENDPOINT,
     REGISTER_ENDPOINT,
     SESSION_COOKIE_NAME,
 } from '@thesis/config';
@@ -25,9 +27,15 @@ import {
 import { createHmac, randomUUID, timingSafeEqual } from 'crypto';
 import fs from 'fs';
 import path from 'path';
+import jwt from 'jsonwebtoken'
+import { sendActivateAccountEmail } from './smtp';
 
 const cookieKey = fs.readFileSync(
-    path.join(__dirname, '../../../cookie_signing.key'),
+    path.join(__dirname, '../../../../cookie_signing.key'),
+    'utf8'
+);
+const registerKey = fs.readFileSync(
+    path.join(__dirname, '../../../../register.key'),
     'utf8'
 );
 export const SESSION_MAX_AGE = 30 * 24 * 60 * 60 * 1000; // 30 days
@@ -109,7 +117,7 @@ export const authMiddleware = async (
     }
 
     const user = sessionData.user;
-    if (!user) {
+    if (!user || user.isLocked) {
         next();
         return;
     }
@@ -182,12 +190,51 @@ router.post(
         res = await createSession(res, user);
         user = await addRoleDataToUser(user);
 
+        if (user.isVerified) {
+            res.status(400).json({
+                status: 400,
+                user,
+            });
+            return;
+        }
+
+        if (user.isLocked) {
+            res.status(400).json({
+                status: 400,
+                user,
+            });
+            return;
+        }
+
         res.status(200).json({
             status: 200,
             user,
         });
     }
 );
+
+router.get(REGISTER_CALLBACK_ENDPOINT, async (req, res) => {
+    const token = req.query.token
+    if (!token) {
+        res.status(400).send('Das Konto konnte nicht aktiviert werden.')
+        return
+    }
+    try {
+        const decoded: any = jwt.verify(token as string, registerKey)
+        if (!decoded.userId || decoded.userId === -1) {
+            res.status(400).send('Das Konto konnte nicht aktiviert werden.')
+            return;
+        }
+        const success = await getDB().updateUser(decoded.userId, undefined, undefined, undefined, undefined, undefined, undefined, true)
+
+        if (success) {
+            res.status(200).redirect('/login')
+            return;
+        }
+
+    } catch (_) { }
+    res.status(400).send('Das Konto konnte nicht aktiviert werden.')
+})
 
 router.post(
     REGISTER_ENDPOINT,
@@ -205,15 +252,30 @@ router.post(
 
         if (!user) {
             res.status(401).json({
-                status: 401,
+                success: false,
                 message: 'Der Nutzer konnte nicht erstellt werden.',
             });
             return;
         }
 
+        const jwtPayload = {
+			userId: user.id ?? -1
+        }
+		
+	    const token = jwt.sign(jwtPayload, registerKey, {expiresIn: '2h'})
+        const cbEndpoint = req.headers.origin + AUTH_API_ENDPOINT + REGISTER_CALLBACK_ENDPOINT + '?token=' + token
+        const success = await sendActivateAccountEmail(user.email, cbEndpoint)
+        if (!success) {
+            res.status(401).json({
+                success: false,
+                message: 'Ein Fehler beim Senden der Aktivierungsemail ist aufgetreten.',
+            });
+            return;
+        }
+
         res.status(200).json({
-            status: 200,
-            user,
+            success: true,
+            message: 'Der Nutzer wurde erfolgreich erstellt. Schau in dein Email Postfach, um das Konto zu aktivieren.',
         });
     }
 );

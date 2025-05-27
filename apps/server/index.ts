@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import dotenv from 'dotenv';
-import { router as authRouter, authMiddleware } from "./modules/auth"
+import { router as authRouter, authMiddleware } from "./modules/auth/auth"
 import { AUTH_API_ENDPOINT } from "@thesis/config"
 import { getDB } from './singleton';
 import cookieParser from "cookie-parser"

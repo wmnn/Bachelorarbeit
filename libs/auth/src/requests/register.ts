@@ -4,9 +4,8 @@ import { User } from "../models";
 export type RegisterRequestBody = {} & User
 
 export interface RegisterResponseBody {
-    status: number;
-    message?: string;
-    user?: User;
+    success: boolean;
+    message: string;
 }
 
 export const register = async (vorname: string, nachname: string, email: string, passwort: string) => {
@@ -17,14 +16,19 @@ export const register = async (vorname: string, nachname: string, email: string,
         vorname,
         nachname
     }
-    const res: RegisterResponseBody = await fetch(AUTH_API_ENDPOINT + REGISTER_ENDPOINT, {
-        body: JSON.stringify(user),
-        method: 'POST',
-        headers: {
-            'content-type': 'application/json'
-        },
-    })
 
-    return res;
+    try {
+        const res = await fetch(AUTH_API_ENDPOINT + REGISTER_ENDPOINT, {
+            body: JSON.stringify(user),
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+        })
+
+        return await res.json() as RegisterResponseBody;
+    } catch (e) {
+        return undefined;
+    }
 
 }

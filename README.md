@@ -3,6 +3,10 @@
 ```
 openssl rand -base64 32 > cookie_signing.key
 ```
+### Generating a HMAC key for registering
+```
+openssl rand -base64 32 > register.key
+```
 
 ### Generating key pair and a self signed certificate for https
 
@@ -17,3 +21,7 @@ npm i lucide-react
 ### MIT Lizenz
 
 hero-icons
+
+### Activate SMTP for gmail
+
+https://www.youtube.com/watch?v=ZfEK3WP73eY&ab_channel=GuideRealm

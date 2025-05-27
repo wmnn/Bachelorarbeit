@@ -1,7 +1,7 @@
 import { AuthStore, User, Rolle } from '@thesis/auth';
 import crypto from 'crypto';
 import mysql, { Connection, ResultSetHeader, RowDataPacket } from 'mysql2/promise'
-import { SessionData } from './modules/auth';
+import { SessionData } from './modules/auth/auth';
 
 interface DatabaseMessage {
     success: boolean,
@@ -49,7 +49,9 @@ export class DefaultStore implements AuthStore {
             email: result.email,
             vorname: result.vorname,
             nachname: result.nachname,
-            rolle: result.rolle
+            rolle: result.rolle,
+            isVerified: result.is_verified,
+            isLocked: result.is_locked
         }
 
         return user;
@@ -80,22 +82,101 @@ export class DefaultStore implements AuthStore {
         }
   
         const rolle = 'admin';
-        const [result] = await this.connection.execute<ResultSetHeader>(`
-            INSERT INTO users (email, passwort, vorname, nachname, rolle)
-            VALUES (?, ?, ?, ?, ?)
-        `, [email, this.createHash(password), vorname, nachname, rolle]);
+        try {
+            const [result] = await this.connection.execute<ResultSetHeader>(`
+                INSERT INTO users (email, passwort, vorname, nachname, rolle, is_locked, is_verified)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            `, [email, this.createHash(password), vorname, nachname, rolle, false, false]);
 
-        if (result.affectedRows !== 1) {
-            return undefined;
+            if (result.affectedRows !== 1) {
+                return undefined;
+            }
+
+            const id = result.insertId;
+
+            return {
+                id,
+                email,
+                vorname,
+                nachname,
+                rolle,
+                isLocked: false,
+                isVerified: false,
+            } as User;
+        } catch (e) {
+            return undefined
+        }
+        
+    }
+
+    async updateUser(
+        id: number,
+        email?: string,
+        password?: string,
+        vorname?: string,
+        nachname?: string,
+        rolle?: string,
+        isLocked?: boolean,
+        isVerified?: boolean
+    ): Promise<boolean> {
+        if (!this.connection) {
+            return false;
         }
 
-        return {
-            email,
-            vorname,
-            nachname,
-            rolle,
-        } as User;
+        const fields: string[] = [];
+        const values: any[] = [];
+
+        if (email !== undefined) {
+            fields.push("email = ?");
+            values.push(email);
+        }
+        if (password !== undefined) {
+            fields.push("passwort = ?");
+            values.push(this.createHash(password));
+        }
+        if (vorname !== undefined) {
+            fields.push("vorname = ?");
+            values.push(vorname);
+        }
+        if (nachname !== undefined) {
+            fields.push("nachname = ?");
+            values.push(nachname);
+        }
+        if (rolle !== undefined) {
+            fields.push("rolle = ?");
+            values.push(rolle);
+        }
+        if (isLocked !== undefined) {
+            fields.push("is_locked = ?");
+            values.push(isLocked);
+        }
+        if (isVerified !== undefined) {
+            fields.push("is_verified = ?");
+            values.push(isVerified);
+        }
+
+        if (fields.length === 0) {
+            return false;
+        }
+
+        values.push(id);
+
+        const sql = `
+            UPDATE users
+            SET ${fields.join(", ")}
+            WHERE id = ?
+        `;
+
+        try {
+            const [result] = await this.connection.execute<ResultSetHeader>(sql, values);
+            return result.affectedRows === 1;
+        } catch (e) {
+            return false;
+        }
     }
+
+
+    
 
     async getRoles(): Promise<undefined | Rolle[]> {
         

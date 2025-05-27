@@ -1,6 +1,6 @@
 import { AuthForm } from "@/components/auth/AuthForm";
-import Button from "@/components/Button";
 import { ButtonLight } from "@/components/ButtonLight";
+import { ErrorDialog } from "@/components/ErrorDialog";
 import { Input } from "@/components/Input";
 import { MainButton } from "@/components/MainButton";
 import { createFileRoute, Link } from "@tanstack/react-router";
@@ -17,12 +17,25 @@ export default function Register () {
     const [nachname, setNachname] = useState<string>("")
     const [email, setEmail] = useState<string>("")
     const [password, setPassword] = useState<string>("")
+    const [isErrorDialogShown, setIsErrorDialogShown] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     async function handleSubmit(e: React.SyntheticEvent<any>) {
         e.preventDefault()
         const res = await register(vorname, nachname, email, password)
+
+        setIsErrorDialogShown(true);
+        if (!res?.success) { 
+            setErrorMessage(res?.message ?? 'Es konnte kein Account erstellt werden.')
+            return;
+        }
+        setErrorMessage(res?.message ?? 'Um dein Account zu aktivieren, schau in dein Email Postfach.')
     }
     return <AuthForm>
+
+        {
+            isErrorDialogShown && <ErrorDialog message={errorMessage} closeDialog={() => setIsErrorDialogShown(false)}/>
+        }
 
         <label>Vorname</label>
         <Input value={vorname} onChange={e => setVorname(e.target.value)} placeholder="Vorname"/>

@@ -9,11 +9,13 @@ CREATE TABLE rollen (
 
 CREATE TABLE users (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    email VARCHAR(255),
+    email VARCHAR(255) UNIQUE,
     passwort VARCHAR(255),
     vorname VARCHAR(255),
     nachname VARCHAR(255),
-    rolle VARCHAR(36)
+    rolle VARCHAR(36),
+    is_locked BOOLEAN,
+    is_verified BOOLEAN
 );
 
 
