@@ -1,7 +1,7 @@
 import { useImmer } from "use-immer";
 import { BerechtigungenSelect } from "./BerechtigungenSelect";
 import { Berechtigung, createRole, type Rolle } from "@thesis/auth";
-import { DialogWithButtons } from "../DialogWithButtons";
+import { DialogWithButtons } from "../dialog/DialogWithButtons";
 import { useRollenStore } from "./RollenStore";
 import { useState } from "react";
 
@@ -80,9 +80,8 @@ export function RolleHinzufügenDialog({ closeDialog }: RolleHinzufügenDialogPr
         </div>
         
         <BerechtigungenSelect rolle={neueRolle} setRolle={(neueRolle) => {
-            console.log(neueRolle)
-            setNeueRolle((prev) => neueRolle)}
-        }/>
+            setNeueRolle(neueRolle)
+        }}/>
         <div className="pb-8"/>
         { 
             !isSuccess && <p className="text-red-500">{message}</p>

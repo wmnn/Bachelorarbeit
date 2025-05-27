@@ -1,5 +1,5 @@
 import { Dialog } from "./Dialog"
-import { ButtonLight } from "./ButtonLight"
+import { ButtonLight } from "../ButtonLight"
 
 
 interface ErrorDialogProps {

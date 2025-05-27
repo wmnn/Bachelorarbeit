@@ -1,14 +1,24 @@
-import type { User } from "@thesis/auth";
-import { Dialog } from "../Dialog";
+import { deleteUser } from "@thesis/auth";
+import { Dialog } from "../dialog/Dialog";
 import { MainButton } from "../MainButton";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface DeleteUserDialogProps {
-    user: User,
+    userId: number,
     closeDialog: () => void;
+    setDeleteMsg: (val: string) => void,
+    setIsLoading: (val: boolean) => void
 }
-export function DeleteUserDialog({ user, closeDialog }: DeleteUserDialogProps) {
+export function DeleteUserDialog({ userId, closeDialog, setDeleteMsg, setIsLoading }: DeleteUserDialogProps) {
 
+    const queryClient = useQueryClient()
+    
     async function handleDelete() {
+        setIsLoading(true);
+        const res = await deleteUser(userId ?? -1)
+        setDeleteMsg(res.message)
+        queryClient.invalidateQueries({ queryKey: ['users'] })
+        setIsLoading(false);
         closeDialog()
     }
     return <Dialog className="p-8 flex flex-col justify-between">

@@ -1,6 +1,6 @@
 import { AuthForm } from "@/components/auth/AuthForm";
 import { ButtonLight } from "@/components/ButtonLight";
-import { ErrorDialog } from "@/components/ErrorDialog";
+import { ErrorDialog } from "@/components/dialog/ErrorDialog";
 import { Input } from "@/components/Input";
 import { MainButton } from "@/components/MainButton";
 import { createFileRoute, Link } from "@tanstack/react-router";

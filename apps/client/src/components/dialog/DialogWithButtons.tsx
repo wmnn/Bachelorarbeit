@@ -1,6 +1,6 @@
 import type { ReactNode } from "@tanstack/react-router"
 import { Dialog } from "./Dialog"
-import { ButtonLight } from "./ButtonLight"
+import { ButtonLight } from "../ButtonLight"
 
 
 interface DialogWithButtonsProps {

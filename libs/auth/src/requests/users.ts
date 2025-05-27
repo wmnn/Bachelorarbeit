@@ -57,20 +57,18 @@ export const deleteUser = async (userId: number) => {
 }
 
 export interface UpdateUserRequestBody {
-    userId: number,
     user: User
 }
 export interface UpdateUserResponseBody {
     success: boolean,
     message: string
 }
-export const updateUser = async (userId: number, user: User) => {
+export const updateUser = async (user: User) => {
 
     try {
         const res = await fetch(AUTH_API_ENDPOINT + "/user", {
-            method: 'DELETE',
+            method: 'PATCH',
             body: JSON.stringify({
-                userId,
                 user
             } as UpdateUserRequestBody),
             headers: {

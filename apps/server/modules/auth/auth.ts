@@ -14,6 +14,7 @@ import {
     Berechtigungen,
     CreateRoleRequestBody,
     CreateRoleResponseBody,
+    DeleteUserRequestBody,
     LoginRequestBody,
     LoginResponseBody,
     RegisterRequestBody,
@@ -344,17 +345,37 @@ router.patch('/user', (req: Request<{}, {}, UpdateUserRequestBody>, res: Respons
 
 });
 
-router.delete('/user', (req, res) => {});
+router.delete('/user', async (req: Request<{}, {}, DeleteUserRequestBody>, res) => {
+
+    const userId = req.body.userId
+    if (req.permissions?.[Berechtigung.RollenVerwalten] || (req.userId !== undefined && req.userId == userId)) {
+        const isDeleted = await getDB().deleteUser(userId)
+        if (!isDeleted) {
+            res.status(400).json({
+                success: false,
+                message: 'Das Konto konnte nicht gelöscht werden.'
+            });
+            return;
+        }
+        res.status(200).json({
+            success: true,
+            message: 'Das Konto wurde erfolgreich gelöscht.'
+        });
+        return;
+    }
+
+
+});
 
 router.post(
     ROLLE_ENDPOINT,
     async (
-        req: Request<CreateRoleRequestBody>,
+        req: Request<{}, {}, CreateRoleRequestBody>,
         res: Response<CreateRoleResponseBody>
     ) => {
         const { rolle, berechtigungen } = req.body;
 
-        if (rolle.rolle == '') {
+        if (rolle == '') {
             res.status(400).json({
                 success: false,
                 message: 'Die Rollenbezeichnung darf nicht leer sein.',
@@ -368,6 +389,7 @@ router.post(
         };
         for (const [key] of Object.entries(Berechtigung)) {
             if (isNaN(Number(key))) continue;
+            //@ts-ignore
             legitRole['berechtigungen'][key] = berechtigungen[key];
         }
 

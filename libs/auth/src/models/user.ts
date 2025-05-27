@@ -2,7 +2,7 @@ import { Rolle } from "./role"
 
 export type User = {
     id?: number,
-    email: string,
+    email?: string,
     passwort?: string,
     vorname?: string,
     nachname?: string,

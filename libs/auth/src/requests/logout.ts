@@ -10,7 +10,6 @@ export const logout = async (): Promise<boolean> => {
             },
         })
 
-        console.log(res.status)
 
         return res.status === 200;
         

@@ -176,7 +176,22 @@ export class DefaultStore implements AuthStore {
         }
     }
 
+    async deleteUser(id: number): Promise<boolean> {
+        if (!this.connection) {
+            return false;
+        }
 
+        try {
+            const [result] = await this.connection.execute<ResultSetHeader>(
+                `DELETE FROM users WHERE id = ?`,
+                [id]
+            );
+
+            return result.affectedRows === 1;
+        } catch (e) {
+            return false;
+        }
+    }
     
 
     async getRoles(): Promise<undefined | Rolle[]> {
