@@ -70,8 +70,12 @@ export class DefaultStore implements AuthStore {
         if (!Array.isArray(rows)) {
             return undefined;
         } 
-        const users = rows.map((user: User) => {
+        const users = rows.map((user: any) => {
             delete user.passwort
+            user.isLocked = user.is_locked
+            user.isVerified = user.is_verified
+            delete user.is_locked
+            delete user.is_verified
             return user;
         })
         return users;

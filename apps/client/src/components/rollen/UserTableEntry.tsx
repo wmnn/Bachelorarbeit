@@ -4,36 +4,34 @@ import { UserRolleSelect } from "./UserRolleSelect";
 import { useState } from "react";
 import { DeleteUserDialog } from "./DeleteUserDialog";
 import { COLUMN_WIDTH } from "./UserTable";
-import { ClipLoader } from "react-spinners";
-import { ErrorDialog } from "../dialog/ErrorDialog";
+import { ErrorDialog } from "../dialog/MessageDialog";
+import { LoadingSpinner } from "../LoadingSpinner";
+import { LockUserDialog } from "./LockUserDialog";
 
 export function UserTableEntry({ user, rollen}: { user: User, rollen: Rolle[]}) {
 
     const [isDeleteDialogShown, setIsDeleteDialogShown] = useState(false);
-    const [deleteMsg, setDeleteMsg] = useState('')
+    const [isLockUserDialogShown, setIsLockUserDialogShown] = useState(false);
+    const [responseMessage, setResponseMessage] = useState('')
     const [isLoading, setIsLoading] = useState(false);
 
     return <TableRow className='flex justify-between items-center relative' key={user.email}>
-            { 
-                isLoading && <div className="absolute h-full w-full flex justify-center items-center">
-                    <ClipLoader
-                        color={'gray'}
-                        loading={isLoading}
-                        size={20}
-                        aria-label="Loading Spinner"
-                        data-testid="loader"
-                    />
-
-
-                </div>
-            }
-            {(deleteMsg !== '') && <ErrorDialog message={deleteMsg} closeDialog={() => setDeleteMsg('')}/>}
+            { isLoading && <LoadingSpinner isLoading={isLoading} /> }
+            {(responseMessage !== '') && <ErrorDialog message={responseMessage} closeDialog={() => setResponseMessage('')}/>}
             {(isDeleteDialogShown) && <DeleteUserDialog 
                 userId={user.id ?? -1} 
                 closeDialog={() => {
                     setIsDeleteDialogShown(false);
                 }} 
-                setDeleteMsg={setDeleteMsg}
+                setDeleteMsg={setResponseMessage}
+                setIsLoading={setIsLoading}
+            />}
+            {(isLockUserDialogShown) && <LockUserDialog 
+                user={user} 
+                closeDialog={() => {
+                    setIsLockUserDialogShown(false);
+                }} 
+                setDeleteMsg={setResponseMessage}
                 setIsLoading={setIsLoading}
             />}
             <TableCell className={`basis-0 grow w-[${COLUMN_WIDTH}] xl:w-[20%]`}>{user.vorname}</TableCell>
@@ -43,9 +41,21 @@ export function UserTableEntry({ user, rollen}: { user: User, rollen: Rolle[]}) 
             </TableCell>
 
             <TableCell className={`basis-0 grow w-[${COLUMN_WIDTH}] text-right xl:w-[40%] flex justify-end gap-4 xl:gap-8`}>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
-                <path strokeLinecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
-            </svg>
+
+            <button onClick={async () => {
+                setIsLockUserDialogShown(true);
+            }}>
+                {
+                    user.isLocked == true ? <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                    </svg>
+
+                    : <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 1 1 9 0v3.75M3.75 21.75h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H3.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                    </svg>
+
+                }
+            </button>
 
             <button onClick={async () => {
                 setIsDeleteDialogShown(true);

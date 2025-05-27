@@ -2,7 +2,7 @@ import { updateUser, type Rolle, type User } from "@thesis/auth"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
-import { ErrorDialog } from "../dialog/ErrorDialog"
+import { ErrorDialog } from "../dialog/MessageDialog"
 
 interface UserDialogProps {
     rollen: Rolle[],
