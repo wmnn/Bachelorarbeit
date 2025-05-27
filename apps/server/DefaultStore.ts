@@ -46,6 +46,7 @@ export class DefaultStore implements AuthStore {
         }
         const result: any = rows[0]
         const user: User = {
+            id: result.id,
             email: result.email,
             vorname: result.vorname,
             nachname: result.nachname,
@@ -293,7 +294,7 @@ export class DefaultStore implements AuthStore {
         const row = rows[0] as any
         let user = undefined
         try {
-            user = JSON.parse(row.session_data).user
+            user = JSON.parse(row.session_data)
         } catch (_) { }
         return {
             sessionId: row.session_id,

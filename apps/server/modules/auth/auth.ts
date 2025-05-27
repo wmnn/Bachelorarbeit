@@ -18,9 +18,10 @@ import {
     LoginResponseBody,
     RegisterRequestBody,
     RegisterResponseBody,
-    Rolle,
     ROLLE_ENDPOINT,
     UpdateRoleRequestBody,
+    UpdateUserRequestBody,
+    UpdateUserResponseBody,
     User,
     UsersResponseBody,
 } from '@thesis/auth';
@@ -50,8 +51,9 @@ export type SessionData = {
 declare global {
     namespace Express {
         interface Request {
-            sessionId?: string;
-            permissions?: Berechtigungen;
+            sessionId?: string
+            userId?: number
+            permissions?: Berechtigungen
         }
     }
 }
@@ -67,7 +69,6 @@ async function createSession(res: Response, user: User): Promise<Response> {
         httpOnly: true,
         secure: true,
     });
-
     if (user.rolle && typeof user.rolle !== 'string') {
         user.rolle = user.rolle.rolle;
     }
@@ -121,11 +122,13 @@ export const authMiddleware = async (
         next();
         return;
     }
-    const rolle = (await addRoleDataToUser(user)).rolle;
+    const userWithPermissions = await addRoleDataToUser(user)
+    const rolle = userWithPermissions.rolle;
     if (!rolle || typeof rolle === 'string') {
         next();
         return;
     }
+    req.userId = user.id
     req.permissions = rolle.berechtigungen;
     next();
 };
@@ -172,7 +175,7 @@ router.get(LOGOUT_ENDOINT, async (req, res) => {
 router.post(
     LOGIN_ENDPOINT,
     async (
-        req: Request<LoginRequestBody>,
+        req: Request<{}, {}, LoginRequestBody>,
         res: Response<LoginResponseBody>
     ) => {
         const { email, passwort } = req.body;
@@ -250,7 +253,7 @@ router.post(
             passwort
         );
 
-        if (!user) {
+        if (!user || !user.email) {
             res.status(401).json({
                 success: false,
                 message: 'Der Nutzer konnte nicht erstellt werden.',
@@ -298,7 +301,48 @@ router.get('/users', async (req, res: Response<UsersResponseBody>) => {
     });
 });
 
-router.patch('/user', (req, res) => {});
+router.patch('/user', (req: Request<{}, {}, UpdateUserRequestBody>, res: Response<UpdateUserResponseBody>) => {
+    const user = req.body.user
+    const userId = user.id;
+
+    // Admin changes a user
+    if (userId !== undefined && req.userId !== undefined && userId !== req.userId) {
+
+        if (!req.permissions?.[Berechtigung.RollenVerwalten]) {
+            res.status(401).json({
+                success: false,
+                message: 'Du hast nicht die notwendigen Berechtigungen.'
+            });
+            return;
+        }
+
+        const rolle = req.body.user.rolle
+        if (typeof rolle == 'string') {
+            getDB().updateUser(userId, undefined, undefined, undefined, undefined, rolle, undefined, undefined)
+            res.status(200).json({
+                success: true,
+                message: 'Die Rolle des Nutzers wurde erfolgreich aktualisiert.',
+            });
+            return;
+        }
+
+        if (user.isLocked !== undefined) {
+            getDB().updateUser(userId, undefined, undefined, undefined, undefined, undefined, user.isLocked, undefined)
+            res.status(200).json({
+                success: true,
+                message: user.isLocked ? 'Der Nutzer wurde erfolgreich gesperrt.' : 'Der Nutzer wurde erfolgreich entsperrt.',
+            });
+            return;
+        }
+
+        res.status(400).json({
+            success: false,
+            message: 'Ein Fehler ist aufgetreten.'
+        });
+        return;
+    }
+
+});
 
 router.delete('/user', (req, res) => {});
 

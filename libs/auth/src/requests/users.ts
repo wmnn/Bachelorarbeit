@@ -25,6 +25,13 @@ export const getUsers = async () => {
 
 }
 
+export interface DeleteUserRequestBody {
+    userId: number,
+}
+export interface DeleteUserResponseBody {
+    success: boolean,
+    message: string
+}
 export const deleteUser = async (userId: number) => {
 
     try {
@@ -32,16 +39,52 @@ export const deleteUser = async (userId: number) => {
             method: 'DELETE',
             body: JSON.stringify({
                 userId
-            }),
+            } as DeleteUserRequestBody),
             headers: {
                 'content-type': 'application/json'
             },
         })
     
-        return await res.json() as UsersResponseBody;
+        return await res.json() as DeleteUserResponseBody;
         
     } catch (e) {
-        return undefined;
+        return {
+            success: false,
+            message: 'Ein Fehler ist aufgetreten.'
+        };
+    }
+
+}
+
+export interface UpdateUserRequestBody {
+    userId: number,
+    user: User
+}
+export interface UpdateUserResponseBody {
+    success: boolean,
+    message: string
+}
+export const updateUser = async (userId: number, user: User) => {
+
+    try {
+        const res = await fetch(AUTH_API_ENDPOINT + "/user", {
+            method: 'DELETE',
+            body: JSON.stringify({
+                userId,
+                user
+            } as UpdateUserRequestBody),
+            headers: {
+                'content-type': 'application/json'
+            },
+        })
+    
+        return await res.json() as UpdateUserResponseBody;
+        
+    } catch (e) {
+        return {
+            success: false,
+            message: 'Ein Fehler ist aufgetreten.'
+        };
     }
 
 }
