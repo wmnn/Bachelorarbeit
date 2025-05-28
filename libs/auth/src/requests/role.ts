@@ -53,7 +53,10 @@ export const deleteRole = async (rolle: string) => {
         return await res.json() as DeleteRoleResponseBody;
         
     } catch (e) {
-        return undefined;
+        return {
+            success: false,
+            message: 'Ein Fehler ist aufgetreten.'
+        };
     }
 
 }

@@ -14,6 +14,8 @@ import {
     Berechtigungen,
     CreateRoleRequestBody,
     CreateRoleResponseBody,
+    DeleteRoleRequestBody,
+    DeleteRoleResponseBody,
     DeleteUserRequestBody,
     LoginRequestBody,
     LoginResponseBody,
@@ -400,12 +402,23 @@ router.post(
 
 router.patch(
     ROLLE_ENDPOINT,
-    async (req: Request<UpdateRoleRequestBody>, res) => {
+    async (req: Request<{}, {}, UpdateRoleRequestBody>, res) => {
         const { rollenbezeichnung, updated } = req.body;
         const dbMessage = await getDB().updateRole(rollenbezeichnung, updated);
         res.status(200).json(dbMessage);
     }
 );
-router.delete(ROLLE_ENDPOINT, (req, res) => {});
+router.delete(ROLLE_ENDPOINT, async (req: Request<{}, {}, DeleteRoleRequestBody>, res: Response<DeleteRoleResponseBody>) => {
+    if (!req.permissions?.[Berechtigung.RollenVerwalten]) {
+        res.status(401).json({
+            success: false,
+            message: 'Du hast nicht die notwendigen Berechtigungen.'
+        });
+        return;
+    }
+    const { rolle } = req.body;
+    const dbMessage = await getDB().deleteRole(rolle);
+    res.status(200).json(dbMessage);
+});
 
 export { router };

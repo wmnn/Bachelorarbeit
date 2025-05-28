@@ -5,6 +5,11 @@ import * as AccordionPrimitive from "@radix-ui/react-accordion"
 import { ChevronDown } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { DeleteIcon } from "../icons/DeleteIcon"
+
+type AccordionTriggerProps = React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger> & {
+  handleDeleteIcon?: () => void
+}
 
 const Accordion = AccordionPrimitive.Root
 
@@ -22,9 +27,9 @@ AccordionItem.displayName = "AccordionItem"
 
 const AccordionTrigger = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger>
->(({ className, children, ...props }, ref) => (
-  <AccordionPrimitive.Header className="flex">
+  AccordionTriggerProps
+>(({ className, children, handleDeleteIcon, ...props }, ref) => (
+  <AccordionPrimitive.Header className="flex items-center">
     <AccordionPrimitive.Trigger
       ref={ref}
       className={cn(
@@ -33,9 +38,23 @@ const AccordionTrigger = React.forwardRef<
       )}
       {...props}
     >
-      {children}
-      <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-0 rotate-90" />
+        {children}
+      <div className={`flex gap-2 items-center`}>
+        { handleDeleteIcon && <div onClick={(e) => {
+            e.preventDefault()
+            handleDeleteIcon()
+
+          }}>
+            <DeleteIcon />
+              
+          </div>
+        }
+        
+        <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-0 rotate-90" />
+      </div>
+      
     </AccordionPrimitive.Trigger>
+    
   </AccordionPrimitive.Header>
 ))
 AccordionTrigger.displayName = AccordionPrimitive.Trigger.displayName

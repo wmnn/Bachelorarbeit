@@ -292,6 +292,43 @@ export class DefaultStore implements AuthStore {
         };
     }
 
+    async deleteRole(rolle: string): Promise<DatabaseMessage> {
+        const defaultErrorMessage = {
+            success: false,
+            message: 'Die Rolle konnte nicht gelöscht werden.'
+        };
+
+        if (!this.connection) {
+            return defaultErrorMessage;
+        }
+
+        try {
+            const [result] = await this.connection.execute<ResultSetHeader>(`
+                DELETE FROM rollen
+                WHERE rolle = ?
+            `, [rolle]);
+
+            if (result.affectedRows === 0) {
+                return {
+                    success: false,
+                    message: 'Es existiert keine Rolle mit diesem Namen.'
+                };
+            }
+
+            if (result.affectedRows !== 1) {
+                return defaultErrorMessage;
+            }
+        } catch (e: any) {
+            return defaultErrorMessage;
+        }
+
+        return {
+            success: true,
+            message: 'Die Rolle wurde erfolgreich gelöscht.'
+        };
+    }
+
+
     async getSession(sessionId: string): Promise<undefined | SessionData> {
         if (!this.connection) {
             return undefined;
