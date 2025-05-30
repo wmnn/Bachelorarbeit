@@ -22,6 +22,8 @@ import {
     RegisterRequestBody,
     RegisterResponseBody,
     ROLLE_ENDPOINT,
+    UpdatePasswordRequestBody,
+    UpdatePasswordResponseBody,
     UpdateRoleRequestBody,
     UpdateUserRequestBody,
     UpdateUserResponseBody,
@@ -322,6 +324,14 @@ router.patch('/user', async (req: Request<{}, {}, UpdateUserRequestBody>, res: R
     const user = req.body.user
     const userId = user.id;
 
+    if (!userId) {
+        res.status(400).json({
+            success: false,
+            message: 'Ein Fehler ist aufgetreten.'
+        });
+        return;
+    }
+
     if(req.userId == undefined) {
         res.status(401).json({
             success: false,
@@ -343,23 +353,21 @@ router.patch('/user', async (req: Request<{}, {}, UpdateUserRequestBody>, res: R
 
         const rolle = req.body.user.rolle
         if (typeof rolle == 'string') {
-            getDB().updateUser(userId, undefined, undefined, undefined, undefined, rolle, undefined, undefined)
-            res.status(200).json({
-                success: true,
-                message: 'Die Rolle des Nutzers wurde erfolgreich aktualisiert.',
-            });
+            const msg = await getDB().updateUser(userId, undefined, undefined, undefined, undefined, rolle, undefined, undefined)
+            res.status(200).json(msg);
             return;
         }
 
         if (user.isLocked !== undefined) {
-            const isLocked = await getDB().updateUser(userId, undefined, undefined, undefined, undefined, undefined, user.isLocked, undefined)
+            const { success: isLocked } = await getDB().updateUser(userId, undefined, undefined, undefined, undefined, undefined, user.isLocked, undefined)
             const isSessionRemoved = await getDB().removeSessionForUser(userId) 
-
-            res.status(200).json({
-                success: true,
-                message: user.isLocked ? 'Der Nutzer wurde erfolgreich gesperrt.' : 'Der Nutzer wurde erfolgreich entsperrt.',
-            });
-            return;
+            if (isLocked && isSessionRemoved) {
+                res.status(200).json({
+                    success: true,
+                    message: user.isLocked ? 'Der Nutzer wurde erfolgreich gesperrt.' : 'Der Nutzer wurde erfolgreich entsperrt.',
+                });
+                return;
+            }
         }
 
         res.status(400).json({
@@ -369,11 +377,28 @@ router.patch('/user', async (req: Request<{}, {}, UpdateUserRequestBody>, res: R
         return;
     }
 
+    // Change email
+    if (user.email) {
+        const msg = await getDB().updateUser(userId, user.email)
+        res.status(200).json(msg);
+        return;
+    }
+
+    const vorname = user.vorname
+    const nachname = user.nachname
+    if (vorname && nachname) {
+        const msg = await getDB().updateUser(userId, undefined, undefined, vorname, nachname)
+        res.status(200).json({
+            success: msg.success,
+            message: msg.success ? 'Der Name wurde erfolgreich aktualisiert.' : 'Ein Fehler ist aufgetreten.'
+        });
+        return;
+    }
+
     res.status(500).json({
         success: false,
         message: 'Diese Funktion ist noch nicht implementiert.'
     });
-    return;
 
 });
 
@@ -398,6 +423,35 @@ router.delete('/user', async (req: Request<{}, {}, DeleteUserRequestBody>, res) 
 
 
 });
+
+router.patch('/password', async (req: Request<{}, {}, UpdatePasswordRequestBody>, res: Response<UpdatePasswordResponseBody>) => {
+        const { userId, password, newPassword } = req.body;
+        if (!req.userId || !req.sessionId || userId !== req.userId) {
+            res.status(403).json({
+                success: false,
+                message: 'Du kannst das Passwort nicht aktualisiern'
+            })
+            return;
+        }
+
+        const sessionData = await getDB().getSession(req.sessionId)
+        if (!sessionData || !sessionData.user?.email) {
+            return;
+        }
+
+        const user = await getDB().findUser(sessionData.user?.email, password)
+        if (!user) {
+            res.status(400).json({
+                success: false,
+                message: 'Das Passwort war nicht korrekt.'
+            })
+            return;
+        }
+
+        const dbMessage = await getDB().updateUser(userId, undefined, newPassword);
+        res.status(200).json(dbMessage);
+    }
+);
 
 router.post(
     ROLLE_ENDPOINT,

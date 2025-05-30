@@ -1,4 +1,4 @@
-import { AuthForm } from "@/components/auth/AuthForm";
+import { AuthForm } from "@/components/auth/forms/AuthForm";
 import Button from "@/components/Button";
 import { ButtonLight } from "@/components/ButtonLight";
 import { Input } from "@/components/Input";

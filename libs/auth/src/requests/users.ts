@@ -98,3 +98,43 @@ export const updateUser = async (user: User) => {
     }
 
 }
+
+export interface UpdatePasswordRequestBody {
+    userId: number,
+    password: string,
+    newPassword: string
+}
+
+export interface UpdatePasswordResponseBody {
+    success: boolean,
+    message: string
+}
+export const updatePassword = async (userId: number, password: string, newPassword: string) => {
+
+    try {
+        const res = await fetch(AUTH_API_ENDPOINT + "/password", {
+            method: 'PATCH',
+            body: JSON.stringify({
+                userId,
+                password,
+                newPassword
+            } as UpdatePasswordRequestBody),
+            headers: {
+                'content-type': 'application/json'
+            },
+        })
+
+        if (res.status === 403) {
+            window.location.href = '/login'
+        }
+    
+        return await res.json() as UpdateUserResponseBody;
+        
+    } catch (e) {
+        return {
+            success: false,
+            message: 'Ein Fehler ist aufgetreten.'
+        };
+    }
+
+}

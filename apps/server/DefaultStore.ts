@@ -123,9 +123,12 @@ export class DefaultStore implements AuthStore {
         rolle?: string,
         isLocked?: boolean,
         isVerified?: boolean
-    ): Promise<boolean> {
+    ): Promise<DatabaseMessage> {
         if (!this.connection) {
-            return false;
+            return {
+                success: false,
+                message: 'Ein Fehler ist aufgetreten.'
+            };
         }
 
         const fields: string[] = [];
@@ -161,7 +164,10 @@ export class DefaultStore implements AuthStore {
         }
 
         if (fields.length === 0) {
-            return false;
+            return {
+                success: false,
+                message: 'Ein Fehler ist aufgetreten.'
+            };
         }
 
         values.push(id);
@@ -174,9 +180,15 @@ export class DefaultStore implements AuthStore {
 
         try {
             const [result] = await this.connection.execute<ResultSetHeader>(sql, values);
-            return result.affectedRows === 1;
+            return {
+                success: true,
+                message: 'Der Nutzer wurde erfolgreich aktualisiert.'
+            };
         } catch (e) {
-            return false;
+            return {
+                success: false,
+                message: 'Der Nutzer konnte nicht aktualisiert werden.'
+            };
         }
     }
 

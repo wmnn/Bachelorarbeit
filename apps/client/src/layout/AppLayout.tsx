@@ -2,7 +2,7 @@ import Button, { type ButtonProps } from "@/components/Button"
 import { userContext } from "@/context/UserContext"
 import { Link, Outlet, useNavigate } from "@tanstack/react-router"
 import { Berechtigung, logout } from "@thesis/auth"
-import { useContext, useState, type FC } from "react"
+import { useContext, useEffect, useState, type FC } from "react"
 
 const LayoutButton: FC<ButtonProps> = (props) => {
     return <Button className="hover:bg-black text-white text-xl rounded-xl px-4 py-2 cursor-pointer transition-all w-full flex justify-start hover:text-gray-200" {...props} />
@@ -13,11 +13,8 @@ export const AppLayout = () => {
     const [isNavShown, setIsNavShown] = useState(false);
     const navigate = useNavigate();
     const { user } = useContext(userContext)
-    if (!user) {
-        return navigate({ to: "/" });
-    }
 
-    if (typeof user.rolle === "string") {
+    if (typeof user?.rolle === "string") {
         return;
     }
 
@@ -29,6 +26,12 @@ export const AppLayout = () => {
             })
         }
     }
+
+    useEffect(() => {
+        if (!user) {
+            navigate({ to: "/" });
+        }
+    }, [user])
     
     return <div className="xl:flex min-h-[100vh]">
         
@@ -43,7 +46,7 @@ export const AppLayout = () => {
                     <Link to="/dashboard">Diagnostikverfahren</Link>
                 </LayoutButton>
                 {
-                    user.rolle?.berechtigungen[Berechtigung.RollenVerwalten] === true && 
+                    user?.rolle?.berechtigungen[Berechtigung.RollenVerwalten] === true && 
                     <LayoutButton>
                         <Link to="/rollenmanagement">Rollenmanagement</Link>
                     </LayoutButton>

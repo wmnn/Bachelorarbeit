@@ -3,7 +3,7 @@ import { createContext, useEffect, useState, type ReactNode } from 'react'
 
 type UserContextType = {
     user: User | undefined;
-    setUser: (user: User) => void;
+    setUser: (user: User | undefined) => void;
 };
 
 export const userContext = createContext<UserContextType>({
@@ -21,7 +21,7 @@ export default function UserContextProvider({ children }: ContextProps) {
     const [user, setUserState] = useState<User | undefined >(undefined);
 
 
-    function setUser(user: User) {
+    function setUser(user: User | undefined) {
         localStorage.setItem(userKey, JSON.stringify(user)) 
         setUserState(user)
     }
@@ -31,6 +31,7 @@ export default function UserContextProvider({ children }: ContextProps) {
         if (!savedUser) return;
         try {
             const parsedUser = JSON.parse(savedUser)
+            console.log(parsedUser)
             setUser(parsedUser)
         } catch(e) { }
     }, [])
