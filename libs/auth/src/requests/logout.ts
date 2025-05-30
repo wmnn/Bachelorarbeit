@@ -10,6 +10,10 @@ export const logout = async (): Promise<boolean> => {
             },
         })
 
+        if (res.status === 403) {
+            window.location.href = '/login'
+        }
+
 
         return res.status === 200;
         

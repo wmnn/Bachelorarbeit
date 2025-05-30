@@ -91,38 +91,52 @@ export const authMiddleware = async (
 ) => {
     // Middleware to verify and add session cookie
     const cookie = req.cookies[SESSION_COOKIE_NAME];
-
     if (!cookie || !cookie.includes('.')) {
         next();
         return;
     }
 
     const [sessionId, signature] = cookie.split('.');
-
     const expectedSignature = createHmac('sha256', cookieKey)
         .update(sessionId)
         .digest('hex');
-
     const valid = timingSafeEqual(
         Buffer.from(signature),
         Buffer.from(expectedSignature)
     );
 
     if (!valid) {
-        next();
+        res.clearCookie(SESSION_COOKIE_NAME, { path: '/' });
+        res.status(403).json({
+            success: false,
+            message: 'Die Sitzung ist abgelaufen.'
+        });
         return;
     }
 
     req.sessionId = sessionId;
     const sessionData = await getDB().getSession(sessionId);
     if (!sessionData) {
-        next();
+        res.clearCookie(SESSION_COOKIE_NAME, { path: '/' });
+        res.status(403).json({
+            success: false,
+            message: 'Es wurde keine Sitzung gefunden.'
+        });
         return;
     }
 
     const user = sessionData.user;
-    if (!user || user.isLocked) {
+    if (!user) {
         next();
+        return;
+    }
+    if (user.isLocked) {
+        res.clearCookie(SESSION_COOKIE_NAME, { path: '/' });
+        // Unreachable, because the session is removed on locking a user.
+        res.status(403).json({
+            success: false,
+            message: 'Dieser Nutzer ist gesperrt.'
+        });
         return;
     }
     const userWithPermissions = await addRoleDataToUser(user)
@@ -186,9 +200,25 @@ router.post(
 
         if (!user) {
             res.status(401).json({
-                status: 401,
+                success: false,
                 message:
                     'Es konnte kein Nutzer mit diesen Daten gefunden werden.',
+            });
+            return;
+        }
+
+        if (user.isLocked) {
+            res.status(403).json({
+                success: false,
+                message: 'Dieser Nutzer ist gesperrt.'
+            });
+            return;
+        }
+
+        if (!user.isVerified) {
+            res.status(403).json({
+                success: false,
+                message: 'Dieser Nutzer ist noch nicht aktiviert. Schau in dein Email Postfach.'
             });
             return;
         }
@@ -196,24 +226,8 @@ router.post(
         res = await createSession(res, user);
         user = await addRoleDataToUser(user);
 
-        if (user.isVerified) {
-            res.status(400).json({
-                status: 400,
-                user,
-            });
-            return;
-        }
-
-        if (user.isLocked) {
-            res.status(400).json({
-                status: 400,
-                user,
-            });
-            return;
-        }
-
         res.status(200).json({
-            status: 200,
+            success: true,
             user,
         });
     }
@@ -304,12 +318,20 @@ router.get('/users', async (req, res: Response<UsersResponseBody>) => {
     });
 });
 
-router.patch('/user', (req: Request<{}, {}, UpdateUserRequestBody>, res: Response<UpdateUserResponseBody>) => {
+router.patch('/user', async (req: Request<{}, {}, UpdateUserRequestBody>, res: Response<UpdateUserResponseBody>) => {
     const user = req.body.user
     const userId = user.id;
 
+    if(req.userId == undefined) {
+        res.status(401).json({
+            success: false,
+            message: 'Es wurde keine Sitzung gefunden.'
+        })
+        return;
+    }
+
     // Admin changes a user
-    if (userId !== undefined && req.userId !== undefined && userId !== req.userId) {
+    if (userId !== undefined && userId !== req.userId) {
 
         if (!req.permissions?.[Berechtigung.RollenVerwalten]) {
             res.status(401).json({
@@ -330,7 +352,9 @@ router.patch('/user', (req: Request<{}, {}, UpdateUserRequestBody>, res: Respons
         }
 
         if (user.isLocked !== undefined) {
-            getDB().updateUser(userId, undefined, undefined, undefined, undefined, undefined, user.isLocked, undefined)
+            const isLocked = await getDB().updateUser(userId, undefined, undefined, undefined, undefined, undefined, user.isLocked, undefined)
+            const isSessionRemoved = await getDB().removeSessionForUser(userId) 
+
             res.status(200).json({
                 success: true,
                 message: user.isLocked ? 'Der Nutzer wurde erfolgreich gesperrt.' : 'Der Nutzer wurde erfolgreich entsperrt.',
@@ -344,6 +368,12 @@ router.patch('/user', (req: Request<{}, {}, UpdateUserRequestBody>, res: Respons
         });
         return;
     }
+
+    res.status(500).json({
+        success: false,
+        message: 'Diese Funktion ist noch nicht implementiert.'
+    });
+    return;
 
 });
 

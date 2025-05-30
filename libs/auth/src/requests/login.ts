@@ -7,12 +7,12 @@ export interface LoginRequestBody {
 }
 
 export interface LoginResponseBody {
-    status: number;
+    success: boolean;
     message?: string;
     user?: User;
 }
 
-export const login = async (email: string, passwort: string): Promise<undefined | LoginResponseBody> => {
+export const login = async (email: string, passwort: string): Promise<LoginResponseBody> => {
 
     const user: LoginRequestBody = {
         email,
@@ -31,7 +31,10 @@ export const login = async (email: string, passwort: string): Promise<undefined 
         return await res.json() as LoginResponseBody;
         
     } catch (e) {
-        return undefined;
+        return {
+            success: false,
+            message: 'Ein Fehler ist aufgetreten.'
+        };
     }
     
 }

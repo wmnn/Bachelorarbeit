@@ -393,6 +393,62 @@ export class DefaultStore implements AuthStore {
         return false;
     }
 
+    async removeSessionForUser(userId: number): Promise<DatabaseMessage> {
+        if (!this.connection) {
+            return {
+                success: false,
+                message: 'Ein Fehler ist aufgetreten.'
+            };
+        }
+
+        let [rows] = await this.connection.execute<ResultSetHeader>(
+            'SELECT * FROM session_store',
+            []
+        );
+
+        if (!Array.isArray(rows)) {
+            return {
+                success: false,
+                message: 'Ein Fehler ist aufgetreten.'
+            };
+        } 
+
+        try {
+            const sessionsToDelete = rows.filter((row) => {
+                try {
+                    const user = JSON.parse(row.session_data) as User;
+                    return user?.id === userId;
+                } catch {
+                    return false;
+                }
+            });
+
+            if (sessionsToDelete.length === 0) {
+                return {
+                    success: false,
+                    message: 'Keine Sitzung für den Benutzer gefunden.'
+                };
+            }
+
+            for (const session of sessionsToDelete) {
+                await this.connection.execute(
+                    'DELETE FROM session_store WHERE session_id = ?',
+                    [session.session_id]
+                );
+            }
+
+            return {
+                success: true,
+                message: 'Sitzung(en) erfolgreich gelöscht.'
+            };
+        } catch(_) {
+            return {
+                success: false,
+                message: 'Ein Fehler ist aufgetreten.'
+            };
+        }
+    }
+
     private createHash(stringToBeHashed: string) {
         return crypto.createHash('sha256').update(stringToBeHashed).digest('hex')
     }

@@ -18,6 +18,10 @@ export const createRole = async (rolle: Rolle) => {
                 'content-type': 'application/json'
             },
         })
+
+        if (res.status === 403) {
+            window.location.href = '/login'
+        }
     
         return await res.json() as CreateRoleResponseBody;
         
@@ -49,6 +53,10 @@ export const deleteRole = async (rolle: string) => {
                 'content-type': 'application/json'
             },
         })
+
+        if (res.status === 403) {
+            window.location.href = '/login'
+        }
     
         return await res.json() as DeleteRoleResponseBody;
         
@@ -86,6 +94,10 @@ export const updateRole = async (rollenbezeichnung: string, updated: Rolle) => {
                 'content-type': 'application/json'
             },
         })
+
+        if (res.status === 403) {
+            window.location.href = '/login'
+        }
     
         return await res.json() as UpdateRoleResponseBody;
         

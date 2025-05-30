@@ -26,6 +26,10 @@ export const register = async (vorname: string, nachname: string, email: string,
             },
         })
 
+        if (res.status === 403) {
+            window.location.href = '/login'
+        }
+
         return await res.json() as RegisterResponseBody;
     } catch (e) {
         return undefined;

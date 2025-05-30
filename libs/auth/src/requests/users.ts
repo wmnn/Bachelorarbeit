@@ -16,6 +16,10 @@ export const getUsers = async () => {
                 'content-type': 'application/json'
             },
         })
+
+        if (res.status === 403) {
+            window.location.href = '/login'
+        }
     
         return await res.json() as UsersResponseBody;
         
@@ -44,6 +48,10 @@ export const deleteUser = async (userId: number) => {
                 'content-type': 'application/json'
             },
         })
+
+        if (res.status === 403) {
+            window.location.href = '/login'
+        }
     
         return await res.json() as DeleteUserResponseBody;
         
@@ -75,6 +83,10 @@ export const updateUser = async (user: User) => {
                 'content-type': 'application/json'
             },
         })
+
+        if (res.status === 403) {
+            window.location.href = '/login'
+        }
     
         return await res.json() as UpdateUserResponseBody;
         
