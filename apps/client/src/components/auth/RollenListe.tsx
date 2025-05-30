@@ -4,6 +4,7 @@ import { useState } from "react";
 import { RolleHinzufügenDialog } from "./RolleHinzufügenDialog";
 import { useRollenStore } from "./RollenStore";
 import { RollenListeElement } from "./RollenListeElement";
+import { Description } from "../Description";
 
 export function RollenListe() {
 
@@ -19,6 +20,10 @@ export function RollenListe() {
             }}/>
         }
 
+        <h2 className='mt-[24px]'>Rollen</h2>
+        <Description>
+            Alle verfügbaren Rollen werden hier aufgelistet. Klicke auf eine Rolle, um die zugehörigen Rechte anzuzeigen und zu bearbeiten.
+        </Description>
         <Accordion type="single" collapsible>
             {
                 rollen?.map((rolle) => <RollenListeElement key={rolle.rolle} rolle={rolle}/> )

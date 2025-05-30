@@ -31,10 +31,7 @@ function RouteComponent() {
   
   return <div className='min-h-full py-8 px-8 w-full'>
     <h1>Rollenmanagement</h1>
-
-    <h2 className='mt-[24px]'>Rollen</h2>
     <RollenListe/>
-
     <UserTable users={data.users} />
   </div>
 }
