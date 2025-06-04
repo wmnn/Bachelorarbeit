@@ -42,9 +42,33 @@ export const AppLayout = () => {
         </button>
         <header className={`${isNavShown ? 'block' : 'hidden xl:flex'} xl:w-[20%] bg-abcd shadow-2xl flex flex-col justify-between xl:pb-12 pt-24 xl:pt-16 pb-16 px-8 md:px-24 xl:px-8 bg-main xl:fixed top-0 left-0 h-[100vh] transition-all`}>
             <nav className="flex flex-col gap-4">
-                <LayoutButton onClick={() => setIsNavShown(false)}>
-                    <Link className="w-[100%] text-left" to="/dashboard">Diagnostikverfahren</Link>
-                </LayoutButton>
+                {
+                    user?.rolle?.berechtigungen[Berechtigung.KlasseRead] === "alle" && 
+                    <LayoutButton onClick={() => setIsNavShown(false)}>
+                        <Link className="w-[100%] text-left" to="/klassen">Klassen</Link>
+                    </LayoutButton>
+                }
+                {
+                    user?.rolle?.berechtigungen[Berechtigung.SchuelerRead] === "alle" && 
+                    <LayoutButton onClick={() => setIsNavShown(false)}>
+                        <Link className="w-[100%] text-left" to="/schueler">Schüler</Link>
+                    </LayoutButton>
+                }
+                {
+                    user?.rolle?.berechtigungen[Berechtigung.GanztagsangebotRead] === "alle" && 
+                    <LayoutButton onClick={() => setIsNavShown(false)}>
+                        <Link className="w-[100%] text-left" to="/ganztagsangebote">Ganztagsangebote</Link>
+                    </LayoutButton>
+                }
+                {
+                    (
+                        user?.rolle?.berechtigungen[Berechtigung.DiagnostikverfahrenRead] === "alle" || 
+                        user?.rolle?.berechtigungen[Berechtigung.DiagnostikverfahrenRead] === "eigene" 
+                    ) && 
+                    <LayoutButton onClick={() => setIsNavShown(false)}>
+                        <Link className="w-[100%] text-left" to="/dashboard">Diagnostikverfahren</Link>
+                    </LayoutButton>
+                }
                 {
                     user?.rolle?.berechtigungen[Berechtigung.RollenVerwalten] === true && 
                     <LayoutButton onClick={() => setIsNavShown(false)}>

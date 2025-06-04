@@ -16,8 +16,11 @@ import { Route as IndexImport } from './routes/index'
 import { Route as authRegisterIndexImport } from './routes/(auth)/register/index'
 import { Route as authLoginIndexImport } from './routes/(auth)/login/index'
 import { Route as appSettingsIndexImport } from './routes/(app)/settings/index'
+import { Route as appSchuelerIndexImport } from './routes/(app)/schueler/index'
 import { Route as appRollenmanagementIndexImport } from './routes/(app)/rollenmanagement/index'
 import { Route as appResetPasswordIndexImport } from './routes/(app)/reset-password/index'
+import { Route as appKlassenIndexImport } from './routes/(app)/klassen/index'
+import { Route as appGanztagsangeboteIndexImport } from './routes/(app)/ganztagsangebote/index'
 import { Route as appDashboardIndexImport } from './routes/(app)/dashboard/index'
 
 // Create/Update Routes
@@ -51,6 +54,12 @@ const appSettingsIndexRoute = appSettingsIndexImport.update({
   getParentRoute: () => appRouteRoute,
 } as any)
 
+const appSchuelerIndexRoute = appSchuelerIndexImport.update({
+  id: '/schueler/',
+  path: '/schueler/',
+  getParentRoute: () => appRouteRoute,
+} as any)
+
 const appRollenmanagementIndexRoute = appRollenmanagementIndexImport.update({
   id: '/rollenmanagement/',
   path: '/rollenmanagement/',
@@ -60,6 +69,18 @@ const appRollenmanagementIndexRoute = appRollenmanagementIndexImport.update({
 const appResetPasswordIndexRoute = appResetPasswordIndexImport.update({
   id: '/reset-password/',
   path: '/reset-password/',
+  getParentRoute: () => appRouteRoute,
+} as any)
+
+const appKlassenIndexRoute = appKlassenIndexImport.update({
+  id: '/klassen/',
+  path: '/klassen/',
+  getParentRoute: () => appRouteRoute,
+} as any)
+
+const appGanztagsangeboteIndexRoute = appGanztagsangeboteIndexImport.update({
+  id: '/ganztagsangebote/',
+  path: '/ganztagsangebote/',
   getParentRoute: () => appRouteRoute,
 } as any)
 
@@ -94,6 +115,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appDashboardIndexImport
       parentRoute: typeof appRouteImport
     }
+    '/(app)/ganztagsangebote/': {
+      id: '/(app)/ganztagsangebote/'
+      path: '/ganztagsangebote'
+      fullPath: '/ganztagsangebote'
+      preLoaderRoute: typeof appGanztagsangeboteIndexImport
+      parentRoute: typeof appRouteImport
+    }
+    '/(app)/klassen/': {
+      id: '/(app)/klassen/'
+      path: '/klassen'
+      fullPath: '/klassen'
+      preLoaderRoute: typeof appKlassenIndexImport
+      parentRoute: typeof appRouteImport
+    }
     '/(app)/reset-password/': {
       id: '/(app)/reset-password/'
       path: '/reset-password'
@@ -106,6 +141,13 @@ declare module '@tanstack/react-router' {
       path: '/rollenmanagement'
       fullPath: '/rollenmanagement'
       preLoaderRoute: typeof appRollenmanagementIndexImport
+      parentRoute: typeof appRouteImport
+    }
+    '/(app)/schueler/': {
+      id: '/(app)/schueler/'
+      path: '/schueler'
+      fullPath: '/schueler'
+      preLoaderRoute: typeof appSchuelerIndexImport
       parentRoute: typeof appRouteImport
     }
     '/(app)/settings/': {
@@ -136,15 +178,21 @@ declare module '@tanstack/react-router' {
 
 interface appRouteRouteChildren {
   appDashboardIndexRoute: typeof appDashboardIndexRoute
+  appGanztagsangeboteIndexRoute: typeof appGanztagsangeboteIndexRoute
+  appKlassenIndexRoute: typeof appKlassenIndexRoute
   appResetPasswordIndexRoute: typeof appResetPasswordIndexRoute
   appRollenmanagementIndexRoute: typeof appRollenmanagementIndexRoute
+  appSchuelerIndexRoute: typeof appSchuelerIndexRoute
   appSettingsIndexRoute: typeof appSettingsIndexRoute
 }
 
 const appRouteRouteChildren: appRouteRouteChildren = {
   appDashboardIndexRoute: appDashboardIndexRoute,
+  appGanztagsangeboteIndexRoute: appGanztagsangeboteIndexRoute,
+  appKlassenIndexRoute: appKlassenIndexRoute,
   appResetPasswordIndexRoute: appResetPasswordIndexRoute,
   appRollenmanagementIndexRoute: appRollenmanagementIndexRoute,
+  appSchuelerIndexRoute: appSchuelerIndexRoute,
   appSettingsIndexRoute: appSettingsIndexRoute,
 }
 
@@ -155,8 +203,11 @@ const appRouteRouteWithChildren = appRouteRoute._addFileChildren(
 export interface FileRoutesByFullPath {
   '/': typeof appRouteRouteWithChildren
   '/dashboard': typeof appDashboardIndexRoute
+  '/ganztagsangebote': typeof appGanztagsangeboteIndexRoute
+  '/klassen': typeof appKlassenIndexRoute
   '/reset-password': typeof appResetPasswordIndexRoute
   '/rollenmanagement': typeof appRollenmanagementIndexRoute
+  '/schueler': typeof appSchuelerIndexRoute
   '/settings': typeof appSettingsIndexRoute
   '/login': typeof authLoginIndexRoute
   '/register': typeof authRegisterIndexRoute
@@ -165,8 +216,11 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof appRouteRouteWithChildren
   '/dashboard': typeof appDashboardIndexRoute
+  '/ganztagsangebote': typeof appGanztagsangeboteIndexRoute
+  '/klassen': typeof appKlassenIndexRoute
   '/reset-password': typeof appResetPasswordIndexRoute
   '/rollenmanagement': typeof appRollenmanagementIndexRoute
+  '/schueler': typeof appSchuelerIndexRoute
   '/settings': typeof appSettingsIndexRoute
   '/login': typeof authLoginIndexRoute
   '/register': typeof authRegisterIndexRoute
@@ -177,8 +231,11 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/(app)': typeof appRouteRouteWithChildren
   '/(app)/dashboard/': typeof appDashboardIndexRoute
+  '/(app)/ganztagsangebote/': typeof appGanztagsangeboteIndexRoute
+  '/(app)/klassen/': typeof appKlassenIndexRoute
   '/(app)/reset-password/': typeof appResetPasswordIndexRoute
   '/(app)/rollenmanagement/': typeof appRollenmanagementIndexRoute
+  '/(app)/schueler/': typeof appSchuelerIndexRoute
   '/(app)/settings/': typeof appSettingsIndexRoute
   '/(auth)/login/': typeof authLoginIndexRoute
   '/(auth)/register/': typeof authRegisterIndexRoute
@@ -189,8 +246,11 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/dashboard'
+    | '/ganztagsangebote'
+    | '/klassen'
     | '/reset-password'
     | '/rollenmanagement'
+    | '/schueler'
     | '/settings'
     | '/login'
     | '/register'
@@ -198,8 +258,11 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/dashboard'
+    | '/ganztagsangebote'
+    | '/klassen'
     | '/reset-password'
     | '/rollenmanagement'
+    | '/schueler'
     | '/settings'
     | '/login'
     | '/register'
@@ -208,8 +271,11 @@ export interface FileRouteTypes {
     | '/'
     | '/(app)'
     | '/(app)/dashboard/'
+    | '/(app)/ganztagsangebote/'
+    | '/(app)/klassen/'
     | '/(app)/reset-password/'
     | '/(app)/rollenmanagement/'
+    | '/(app)/schueler/'
     | '/(app)/settings/'
     | '/(auth)/login/'
     | '/(auth)/register/'
@@ -253,13 +319,24 @@ export const routeTree = rootRoute
       "filePath": "(app)/route.tsx",
       "children": [
         "/(app)/dashboard/",
+        "/(app)/ganztagsangebote/",
+        "/(app)/klassen/",
         "/(app)/reset-password/",
         "/(app)/rollenmanagement/",
+        "/(app)/schueler/",
         "/(app)/settings/"
       ]
     },
     "/(app)/dashboard/": {
       "filePath": "(app)/dashboard/index.tsx",
+      "parent": "/(app)"
+    },
+    "/(app)/ganztagsangebote/": {
+      "filePath": "(app)/ganztagsangebote/index.tsx",
+      "parent": "/(app)"
+    },
+    "/(app)/klassen/": {
+      "filePath": "(app)/klassen/index.tsx",
       "parent": "/(app)"
     },
     "/(app)/reset-password/": {
@@ -268,6 +345,10 @@ export const routeTree = rootRoute
     },
     "/(app)/rollenmanagement/": {
       "filePath": "(app)/rollenmanagement/index.tsx",
+      "parent": "/(app)"
+    },
+    "/(app)/schueler/": {
+      "filePath": "(app)/schueler/index.tsx",
       "parent": "/(app)"
     },
     "/(app)/settings/": {
