@@ -10,7 +10,7 @@ export function DeleteUserForm() {
 
     const { user, setUser } = use(userContext);
     const [isDeleteDialogShown, setIsDeleteDialogShown] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    const [_, setIsLoading] = useState(false);
     const [responseMessage, setResponseMessage] = useState('')
 
     function closeDeleteDialog() {
@@ -27,7 +27,6 @@ export function DeleteUserForm() {
             onSubmit={async () => {
                 setIsLoading(true)
                 const res = await deleteUser(user?.id ?? -1)
-                console.log(res)
                 if (res.success) {
                 setUser(undefined)
                 return;

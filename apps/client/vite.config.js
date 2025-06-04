@@ -5,7 +5,7 @@ import { resolve } from "node:path";
 import tailwindcssVite from '@tailwindcss/vite';
 
 const proxySettings = {
-  target: 'https://localhost:30001',
+  target: 'https://localhost:443',
   secure: false,
  }
 

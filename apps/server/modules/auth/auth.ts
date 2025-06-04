@@ -266,10 +266,10 @@ router.post(
     ) => {
         const { vorname, nachname, email, passwort } = req.body;
         const user = await getDB().createUser(
-            vorname,
-            nachname,
             email,
-            passwort
+            passwort,
+            vorname,
+            nachname
         );
 
         if (!user || !user.email) {
@@ -286,6 +286,7 @@ router.post(
 		
 	    const token = jwt.sign(jwtPayload, registerKey, {expiresIn: '2h'})
         const cbEndpoint = req.headers.origin + AUTH_API_ENDPOINT + REGISTER_CALLBACK_ENDPOINT + '?token=' + token
+        console.log('Before sending email: ', user)
         const success = await sendActivateAccountEmail(user.email, cbEndpoint)
         if (!success) {
             res.status(401).json({

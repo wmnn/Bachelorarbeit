@@ -11,7 +11,7 @@ import fs from 'fs'
 
 const privateKey  = fs.readFileSync('../../https.key', 'utf8');
 const certificate = fs.readFileSync('../../https.crt', 'utf8');
-const PORT = process.env.PORT || 30001
+const PORT = process.env.PORT || 443
 const app = express();
 dotenv.config({
     path: '../../.env'
@@ -25,9 +25,11 @@ app.use(authMiddleware)
 app.use(AUTH_API_ENDPOINT, authRouter);
 app.use(express.static('../client/dist'))
 
-app.get('/', (req, res) => {
+app.get('/{*splat}', (req, res) => {
 	return res.sendFile(path.join(__dirname, '../client/dist', "index.html"));
 });
+
+
 
 https.createServer({ key: privateKey, cert: certificate }, app).listen(PORT)
 

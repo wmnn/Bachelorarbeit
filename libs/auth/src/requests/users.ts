@@ -1,5 +1,5 @@
-import { AUTH_API_ENDPOINT, REGISTER_ENDPOINT } from "@thesis/config"
-import { Rolle, User } from "../models";
+import { AUTH_API_ENDPOINT } from "@thesis/config"
+import type { Rolle, User } from "../models";
 
 export interface UsersResponseBody {
     users: User[],

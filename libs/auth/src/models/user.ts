@@ -1,4 +1,4 @@
-import { Rolle } from "./role"
+import type { Rolle } from "./role"
 
 export type User = {
     id?: number,

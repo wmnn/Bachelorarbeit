@@ -11,7 +11,7 @@ export function UpdateEmailForm() {
     const [updateEmailMessage, setUpdateEmailMessage] = useState('')
     const [isEmailUpdated, setIsEmailUpdated] = useState(false)
     const [email, setEmail] = useState(user?.email ?? '');
-    const [isLoading, setIsLoading] = useState(false);
+    const [_, setIsLoading] = useState(false);
 
     async function onChangeEmail() {
         setIsLoading(true);

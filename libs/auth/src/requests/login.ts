@@ -1,5 +1,5 @@
 import { AUTH_API_ENDPOINT, LOGIN_ENDPOINT } from "@thesis/config"
-import { User } from "../models";
+import type { User } from "../models";
 
 export interface LoginRequestBody {
     email: string;
