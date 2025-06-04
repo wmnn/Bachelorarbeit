@@ -57,7 +57,7 @@ CREATE TABLE klassen (
 );
 
 CREATE TABLE schueler (
-    id VARCHAR(36) PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     vorname VARCHAR(255),
     nachname VARCHAR(255),
     familiensprache VARCHAR(255),
@@ -70,7 +70,7 @@ CREATE TABLE schueler (
 );
 
 CREATE TABLE abholberechtigte_personen (
-    id VARCHAR(36) PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     vorname VARCHAR(255),
     nachname VARCHAR(255),
     strasse VARCHAR(255),

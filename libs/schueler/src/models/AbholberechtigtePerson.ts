@@ -1,0 +1,9 @@
+export type AbholberechtigtePerson = {
+    vorname: string,
+    nachname: string,
+    strasse: string,
+    hausnummer: string,
+    postleitzahl: string,
+    ort: string,
+    abholzeit: string,
+}

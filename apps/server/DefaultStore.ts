@@ -2,6 +2,7 @@ import { AuthStore, User, Rolle } from '@thesis/auth';
 import crypto from 'crypto';
 import mysql, { Connection, ResultSetHeader, RowDataPacket } from 'mysql2/promise'
 import { SessionData } from './modules/auth/auth';
+import { Schueler } from '@thesis/schueler';
 
 interface DatabaseMessage {
     success: boolean,
@@ -111,7 +112,7 @@ export class DefaultStore implements AuthStore {
         } catch (e) {
             return undefined
         }
-        
+
     }
 
     async updateUser(
@@ -471,4 +472,79 @@ export class DefaultStore implements AuthStore {
     private createHash(stringToBeHashed: string) {
         return crypto.createHash('sha256').update(stringToBeHashed).digest('hex')
     }
+
+
+    async createSchueler(schueler: Schueler): Promise<DatabaseMessage> {
+        if (!this.connection) {
+            return {
+                success: false,
+                message: 'Ein Fehler ist aufgetreten.'
+            };
+        }
+
+        const conn = this.connection;
+
+        try {
+            await conn.beginTransaction();
+
+            const [result] = await conn.execute<ResultSetHeader>(`
+                INSERT INTO schueler (vorname, nachname, familiensprache, geburtsdatum, strasse, hausnummer, wohnort, hat_sonderpaedagogische_kraft, verlaesst_schule_allein)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `, [
+                schueler.vorname,
+                schueler.nachname,
+                schueler.familiensprache,
+                schueler.geburtsdatum,
+                schueler.strasse,
+                schueler.hausnummer,
+                schueler.ort,
+                schueler.hatSonderpaedagogischeKraft,
+                schueler.verlaesstSchuleAllein
+            ]);
+
+            const id = result.insertId;
+
+            for (const element of schueler.allergienUndUnvertraeglichkeiten || []) {
+                await conn.execute(`
+                    INSERT INTO schueler_allergien_unvertraeglichkeiten (schueler_id, allergie_oder_unvertraeglichkeit)
+                    VALUES (?, ?)
+                `, [id, element]);
+            }
+
+            for (const medikament of schueler.medikamente || []) {
+                await conn.execute(`
+                    INSERT INTO schueler_medikamente (schueler_id, medikament)
+                    VALUES (?, ?)
+                `, [id, medikament]);
+            }
+
+            for (const person of schueler.abholberechtigtePersonen || []) {
+                await conn.execute(`
+                    INSERT INTO abholberechtigte_personen (vorname, nachname, strasse, hausnummer, wohnort, abholzeit)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                `, [
+                    person.vorname,
+                    person.nachname,
+                    person.strasse,
+                    person.hausnummer,
+                    person.ort,
+                    person.abholzeit
+                ]);
+            }
+
+            await conn.commit();
+
+            return {
+                success: true,
+                message: 'Der Schüler wurde erfolgreich erstellt.'
+            };
+        } catch (e) {
+            await conn.rollback();
+            return {
+                success: false,
+                message: 'Beim Erstellen des Schülers ist ein Fehler aufgetreten.'
+            };
+        }
+    }
+
 }

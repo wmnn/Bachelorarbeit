@@ -24,6 +24,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/auth': proxySettings,
+      '/schueler': proxySettings,
     }
   }
 });

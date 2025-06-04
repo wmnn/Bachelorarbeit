@@ -65,6 +65,9 @@ importers:
       '@thesis/auth':
         specifier: workspace:*
         version: link:../../libs/auth
+      '@thesis/schueler':
+        specifier: workspace:*
+        version: link:../../libs/schueler
       '@types/react':
         specifier: ^19.0.8
         version: 19.1.5
@@ -98,6 +101,9 @@ importers:
       '@thesis/config':
         specifier: workspace:*
         version: link:../../libs/config
+      '@thesis/schueler':
+        specifier: workspace:*
+        version: link:../../libs/schueler
       '@types/express':
         specifier: ^5.0.2
         version: 5.0.2
@@ -164,6 +170,12 @@ importers:
         version: 3.25.28
 
   libs/config: {}
+
+  libs/schueler:
+    dependencies:
+      '@thesis/config':
+        specifier: workspace:*
+        version: link:../config
 
 packages:
 
