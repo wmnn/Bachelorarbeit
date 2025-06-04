@@ -330,6 +330,13 @@ export class DefaultStore implements AuthStore {
             if (result.affectedRows !== 1) {
                 return defaultErrorMessage;
             }
+
+            await this.connection.execute<ResultSetHeader>(`
+                UPDATE users
+                SET rolle = ?
+                WHERE rolle = ?
+            `, ["", rolle]);
+
         } catch (e: any) {
             return defaultErrorMessage;
         }

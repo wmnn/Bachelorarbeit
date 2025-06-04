@@ -8,6 +8,7 @@ import { getDB } from './singleton';
 import cookieParser from "cookie-parser"
 import https from 'https';
 import fs from 'fs'
+import { Berechtigung } from '@thesis/auth';
 
 const privateKey  = fs.readFileSync('../../https.key', 'utf8');
 const certificate = fs.readFileSync('../../https.crt', 'utf8');
@@ -29,35 +30,4 @@ app.get('/{*splat}', (req, res) => {
 	return res.sendFile(path.join(__dirname, '../client/dist', "index.html"));
 });
 
-
-
 https.createServer({ key: privateKey, cert: certificate }, app).listen(PORT)
-
-// setTimeout(() => {
-//     return;
-//     console.log("creating role")
-//     getDB().createRole({
-//         rolle: `${crypto.randomUUID().slice(0, 24)}`,
-//         berechtigungen: {
-//             [Berechtigung.KlasseCreate]: true,
-//             [Berechtigung.KlasseRead]: "alle",
-//             [Berechtigung.KlasseUpdate]: true,
-//             [Berechtigung.KlasseDelete]: true,
-//             [Berechtigung.GanztagsangebotCreate]: true,
-//             [Berechtigung.GanztagsangebotRead]: "alle",
-//             [Berechtigung.GanztagsangebotUpdate]: true,
-//             [Berechtigung.GanztagsangebotDelete]: true,
-//             [Berechtigung.SchuelerCreate]: true,
-//             [Berechtigung.SchuelerRead]: "alle",
-//             [Berechtigung.SchuelerUpdate]: true,
-//             [Berechtigung.SchuelerDelete]: true,
-//             [Berechtigung.AnwesenheitsstatusUpdate]: true,
-//             [Berechtigung.AnwesenheitsstatusRead]: true,
-//             [Berechtigung.DiagnostikverfahrenRead]: "alle",
-//             [Berechtigung.DiagnostikverfahrenDelete]: true,
-//             [Berechtigung.RollenVerwalten]: true,
-//             [Berechtigung.NachrichtenvorlagenVerwalten]: true,
-//             [Berechtigung.NachrichtenDelete]: "alle",
-//         }
-//     })
-// }, 5000)

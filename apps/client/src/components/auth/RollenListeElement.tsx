@@ -5,6 +5,7 @@ import { useRollenStore } from "./RollenStore";
 import { useState } from "react";
 import { ErrorDialog } from "../dialog/MessageDialog";
 import { DeleteRoleDialog } from "./DeleteRoleDialog";
+import { RiskyActionDialog } from "../dialog/RiskyActionDialog";
 
 export function RollenListeElement({ rolle }: { rolle: Rolle }) {
 
@@ -12,8 +13,14 @@ export function RollenListeElement({ rolle }: { rolle: Rolle }) {
     const [isDeleteDialogShown, setIsDeleteDialogShown] = useState(false);
     const [responseMessage, setResponseMessage] = useState('')
     const rollenBezeichnung = rolle.rolle
+
+    const [isEditDialogShown, setIsEditDialogShown] = useState(false);
+    const [tmpRolle, setTmpRolle] = useState<undefined | Rolle>(undefined);
     
-    async function onPermissionChange(neueRolle: Rolle) {
+    async function onPermissionChange() {
+
+        const neueRolle = tmpRolle
+        if (!neueRolle) return;
         const res = await updateRole(rollenBezeichnung, neueRolle);
 
         if (res.success) {
@@ -27,6 +34,7 @@ export function RollenListeElement({ rolle }: { rolle: Rolle }) {
                 });
             })
         }
+        setIsEditDialogShown(false)
     }
 
     return <AccordionItem value={rollenBezeichnung}>
@@ -38,12 +46,22 @@ export function RollenListeElement({ rolle }: { rolle: Rolle }) {
             setResponseMsg={setResponseMessage}
             setIsLoading={() => {}}
         />}
+        {(isEditDialogShown) && <RiskyActionDialog 
+            closeDialog={() => {
+                setIsEditDialogShown(false);
+            }} 
+            message="Willst du die Rolle wirklich ändern?"
+            onSubmit={() => onPermissionChange()}
+        />}
         {(responseMessage !== '') && <ErrorDialog message={responseMessage} closeDialog={() => setResponseMessage('')}/>}
         <AccordionTrigger handleDeleteIcon={() => {
             setIsDeleteDialogShown(true);
         }}>{rollenBezeichnung}</AccordionTrigger>
         <AccordionContent className="flex flex-col gap-2 xl:pl-[600px]">
-            <BerechtigungenSelect rolle={rolle} setRolle={onPermissionChange}/>
+            <BerechtigungenSelect rolle={rolle} setRolle={(rolle) => {
+                setTmpRolle(rolle)
+                setIsEditDialogShown(true)
+            }}/>
         </AccordionContent>
     </AccordionItem>
 }

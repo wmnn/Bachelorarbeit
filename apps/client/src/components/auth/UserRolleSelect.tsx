@@ -33,7 +33,7 @@ export function UserRolleSelect({ user, rollen, setIsLoading }: UserDialogProps)
             }}
         >
             <SelectTrigger className="xl:w-[180px] w-min">
-                <SelectValue placeholder="Theme"/>
+                <SelectValue placeholder="Keine Rolle"/>
             </SelectTrigger>
             <SelectContent>
                 {
