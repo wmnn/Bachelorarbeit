@@ -1,8 +1,11 @@
 import type { AbholberechtigtePerson } from "./AbholberechtigtePerson";
 
-export interface Schueler {
+export interface SchuelerSimple {
+    id?: number,
     vorname: string,
-    nachname: string,
+    nachname: string
+}
+export type Schueler = {
     postleitzahl: string,
     ort: string,
     strasse: string,
@@ -14,4 +17,4 @@ export interface Schueler {
     hatSonderpaedagogischeKraft: boolean,
     verlaesstSchuleAllein: boolean,
     allergienUndUnvertraeglichkeiten: string[]
-}
+} & SchuelerSimple

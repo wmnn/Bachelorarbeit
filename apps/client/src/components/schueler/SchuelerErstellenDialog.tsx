@@ -4,6 +4,11 @@ import { ButtonLight } from "../ButtonLight";
 import { DialogWithButtons } from "../dialog/DialogWithButtons";
 import { AbholberechtigtePersonen } from "./AbholberechtigtePersonen";
 import { createSchueler, type Schueler } from "@thesis/schueler";
+import { useQueryClient } from "@tanstack/react-query";
+
+interface SchuelerErstellenDialogProps {
+  closeDialog: () => void,
+}
 
 function MultiInput({ values, setValues, label }: { values: Array<string>, setValues: (values: Array<string>) => void, label: string}) {
     return <div className="flex flex-col gap-2 my-2">
@@ -23,8 +28,9 @@ function MultiInput({ values, setValues, label }: { values: Array<string>, setVa
         </ButtonLight>
     </div>
 }
-export function SchuelerErstellenDialog() {
+export function SchuelerErstellenDialog({ closeDialog }: SchuelerErstellenDialogProps) {
 
+     const queryClient = useQueryClient()
     const [vorname, setVorname] = useState('');
     const [nachname, setNachname] = useState('');
     const [medikamente, setMedikamente] = useState<string[]>([]);
@@ -58,11 +64,13 @@ export function SchuelerErstellenDialog() {
         }
 
         const res = await createSchueler(schueler)
-        console.log(res)
+        closeDialog();
+        queryClient.invalidateQueries({ queryKey: ['schueler'] })
+        
 
     }
 
-    return <DialogWithButtons onSubmit={() => handleSubmit()} closeDialog={() => {}} submitButtonText="Erstellen">
+    return <DialogWithButtons onSubmit={() => handleSubmit()} closeDialog={() => closeDialog()} submitButtonText="Erstellen">
 
         <div className="flex flex-col justify-between">
             <h1>Schüler erstellen</h1>

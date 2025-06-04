@@ -1,8 +1,8 @@
 import { AuthStore, User, Rolle } from '@thesis/auth';
 import crypto from 'crypto';
-import mysql, { Connection, ResultSetHeader, RowDataPacket } from 'mysql2/promise'
+import mysql, { Connection, QueryResult, ResultSetHeader, RowDataPacket } from 'mysql2/promise'
 import { SessionData } from './modules/auth/auth';
-import { Schueler } from '@thesis/schueler';
+import { Schueler, SchuelerSimple } from '@thesis/schueler';
 
 interface DatabaseMessage {
     success: boolean,
@@ -473,6 +473,20 @@ export class DefaultStore implements AuthStore {
         return crypto.createHash('sha256').update(stringToBeHashed).digest('hex')
     }
 
+    async getSchueler(): Promise<SchuelerSimple[]> {
+        if (!this.connection) {
+            throw new Error('Keine Datenbankverbindung');
+        }
+
+        const conn = this.connection;
+
+        const [rows] = await conn.execute<QueryResult>(`
+            SELECT id, vorname, nachname FROM schueler
+        `);
+
+        return rows as SchuelerSimple[];
+    }
+
 
     async createSchueler(schueler: Schueler): Promise<DatabaseMessage> {
         if (!this.connection) {
@@ -546,5 +560,59 @@ export class DefaultStore implements AuthStore {
             };
         }
     }
+
+    async deleteSchueler(schuelerId: number): Promise<DatabaseMessage> {
+        if (!this.connection) {
+            return {
+                success: false,
+                message: 'Ein Fehler ist aufgetreten.'
+            };
+        }
+
+        const conn = this.connection;
+
+        try {
+            await conn.beginTransaction();
+
+            await conn.execute(`
+                DELETE FROM schueler_allergien_unvertraeglichkeiten
+                WHERE schueler_id = ?
+            `, [schuelerId]);
+
+            await conn.execute(`
+                DELETE FROM schueler_medikamente
+                WHERE schueler_id = ?
+            `, [schuelerId]);
+
+            // TODO delte abholberechtigte Personen if no other Schüler has them
+
+            const [result] = await conn.execute<ResultSetHeader>(`
+                DELETE FROM schueler
+                WHERE id = ?
+            `, [schuelerId]);
+
+            await conn.commit();
+
+            if (result.affectedRows === 0) {
+                return {
+                    success: false,
+                    message: 'Kein Schüler mit dieser ID gefunden.'
+                };
+            }
+
+            return {
+                success: true,
+                message: 'Der Schüler wurde erfolgreich gelöscht.'
+            };
+        } catch (e) {
+            await conn.rollback();
+            console.error(e);
+            return {
+                success: false,
+                message: 'Beim Löschen des Schülers ist ein Fehler aufgetreten.'
+            };
+        }
+    }
+
 
 }
