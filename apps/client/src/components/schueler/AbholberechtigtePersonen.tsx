@@ -93,7 +93,7 @@ export function AbholberechtigtePersonen ({ personen, setPersonen }: Abholberech
                 }}/>
 
                 <label>Abholzeit</label>
-                <Input key={idx} value={person.ort} onChange={(e) => {
+                <Input key={idx} value={person.abholzeit} onChange={(e) => {
                     setPersonen(personen.map((p, i) => {
                         if (i !== idx) {
                             return p;

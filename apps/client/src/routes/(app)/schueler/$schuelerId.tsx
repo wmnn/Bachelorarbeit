@@ -1,3 +1,5 @@
+import { SchuelerEditForm } from '@/components/schueler/SchuelerForm';
+import { SchuelerIcons } from '@/components/schueler/SchuelerIcons';
 import { SCHUELER_QUERY_KEY } from '@/reactQueryKeys';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, useRouter } from '@tanstack/react-router'
@@ -33,14 +35,22 @@ function RouteComponent() {
     
     return <div className='p-8 flex flex-col w-full'>
 
-        <div className='flex gap-2 items-center'>
+        <div className='flex gap-4 items-center'>
             <button onClick={() => router.history.back()}>
                 <MoveLeft />
             </button>
             <h1>{schueler.vorname} {schueler.nachname}</h1>
+            <div className='pt-2'>
+                <SchuelerIcons schueler={schueler} />
+            </div>
         </div>
 
-        {JSON.stringify(schueler)}
+        <SchuelerEditForm 
+            onSubmit={(_) => {}} 
+            onAbort={() => router.history.back()} 
+            submitButtonText="Speichern"
+            initialSchueler={schueler}
+        />
         
        
     </div>

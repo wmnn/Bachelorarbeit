@@ -5,7 +5,7 @@ import { KLASSEN_QUERY_KEY } from '@/reactQueryKeys';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router'
 import { getKlasse, type Halbjahr, type Klasse, type Schuljahr } from '@thesis/schule';
-import { useRouter, useCanGoBack } from '@tanstack/react-router'
+import { useRouter } from '@tanstack/react-router'
 import { SchuelerListItem } from '@/components/schueler/SchuelerListItem';
 import { MoveLeft } from 'lucide-react';
 

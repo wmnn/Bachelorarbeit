@@ -64,7 +64,8 @@ CREATE TABLE schueler (
     geburtsdatum DATE,
     strasse VARCHAR(255),
     hausnummer VARCHAR(255),
-    wohnort VARCHAR(255),
+    postleitzahl INT,
+    ort VARCHAR(255),
     hat_sonderpaedagogische_kraft VARCHAR(255),
     verlaesst_schule_allein VARCHAR(255)
 );
@@ -76,7 +77,7 @@ CREATE TABLE schueler_abholberechtigte_personen (
     strasse VARCHAR(255),
     hausnummer VARCHAR(255),
     postleitzahl INT,
-    wohnort VARCHAR(255),
+    ort VARCHAR(255),
     abholzeit VARCHAR(255)
 );
 

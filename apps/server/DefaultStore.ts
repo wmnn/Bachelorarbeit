@@ -14,6 +14,14 @@ const STANDARD_FEHLER = {
     success: false,
     message: 'Ein Fehler ist aufgetreten.'
 };
+
+function handleSchuelerRow(schueler: any): Schueler {
+    schueler.verlaesstSchuleAllein = schueler.verlaesst_schule_allein
+    schueler.hatSonderpaedagogischeKraft = schueler.hat_sonderpaedagogische_kraft
+    delete schueler.verlaesst_schule_allein
+    delete schueler.hat_sonderpaedagogische_kraft
+    return schueler
+}
 export class DefaultStore implements AuthStore {
 
     private connection: undefined | Connection
@@ -473,11 +481,15 @@ export class DefaultStore implements AuthStore {
 
         const conn = this.connection;
 
-        const [rows] = await conn.execute<QueryResult>(`
-            SELECT id, vorname, nachname FROM schueler
+        const [rows] = await conn.execute<ResultSetHeader>(`
+            SELECT id, vorname, nachname, hat_sonderpaedagogische_kraft, verlaesst_schule_allein FROM schueler
         `);
 
-        return rows as SchuelerSimple[];
+        if (!Array.isArray(rows) || rows.length === 0) {
+            return [];
+        }
+
+        return rows.map(row => handleSchuelerRow(row));
     }
 
     async getSchuelerComplete(schuelerId: number): Promise<Schueler | undefined> {
@@ -494,7 +506,7 @@ export class DefaultStore implements AuthStore {
         if (!Array.isArray(rows) || rows.length !== 1) {
             return undefined;
         }
-        let schueler = rows[0]
+        let schueler = handleSchuelerRow(rows[0])
 
         const [allergienUndUnvertraeglichkeiten] = await conn.execute<ResultSetHeader>(`
             SELECT * FROM schueler_allergien_unvertraeglichkeiten WHERE schueler_id = ?
@@ -535,8 +547,8 @@ export class DefaultStore implements AuthStore {
             await conn.beginTransaction();
 
             const [result] = await conn.execute<ResultSetHeader>(`
-                INSERT INTO schueler (vorname, nachname, familiensprache, geburtsdatum, strasse, hausnummer, wohnort, hat_sonderpaedagogische_kraft, verlaesst_schule_allein)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO schueler (vorname, nachname, familiensprache, geburtsdatum, strasse, hausnummer, ort, hat_sonderpaedagogische_kraft, verlaesst_schule_allein, postleitzahl)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `, [
                 schueler.vorname,
                 schueler.nachname,
@@ -546,7 +558,8 @@ export class DefaultStore implements AuthStore {
                 schueler.hausnummer,
                 schueler.ort,
                 schueler.hatSonderpaedagogischeKraft,
-                schueler.verlaesstSchuleAllein
+                schueler.verlaesstSchuleAllein,
+                schueler.postleitzahl === '' ? null : Number(schueler.postleitzahl)
             ]);
 
             const id = result.insertId;
@@ -567,8 +580,8 @@ export class DefaultStore implements AuthStore {
 
             for (const person of schueler.abholberechtigtePersonen || []) {
                 await conn.execute(`
-                    INSERT INTO schueler_abholberechtigte_personen (schueler_id, vorname, nachname, strasse, hausnummer, wohnort, abholzeit)
-                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    INSERT INTO schueler_abholberechtigte_personen (schueler_id, vorname, nachname, strasse, hausnummer, ort, abholzeit, postleitzahl)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 `, [
                     id,
                     person.vorname,
@@ -576,7 +589,8 @@ export class DefaultStore implements AuthStore {
                     person.strasse,
                     person.hausnummer,
                     person.ort,
-                    person.abholzeit
+                    person.abholzeit,
+                    (person.postleitzahl as string | number) === '' ? null : Number(person.postleitzahl)
                 ]);
             }
 
@@ -587,6 +601,7 @@ export class DefaultStore implements AuthStore {
                 message: 'Der Schüler wurde erfolgreich erstellt.'
             };
         } catch (e) {
+            console.log(e)
             await conn.rollback();
             return {
                 success: false,
