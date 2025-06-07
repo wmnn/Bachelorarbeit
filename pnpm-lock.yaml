@@ -68,6 +68,9 @@ importers:
       '@thesis/schueler':
         specifier: workspace:*
         version: link:../../libs/schueler
+      '@thesis/schule':
+        specifier: workspace:*
+        version: link:../../libs/schule
       '@types/react':
         specifier: ^19.0.8
         version: 19.1.5
@@ -104,6 +107,9 @@ importers:
       '@thesis/schueler':
         specifier: workspace:*
         version: link:../../libs/schueler
+      '@thesis/schule':
+        specifier: workspace:*
+        version: link:../../libs/schule
       '@types/express':
         specifier: ^5.0.2
         version: 5.0.2
@@ -176,6 +182,15 @@ importers:
       '@thesis/config':
         specifier: workspace:*
         version: link:../config
+
+  libs/schule:
+    dependencies:
+      '@thesis/config':
+        specifier: workspace:*
+        version: link:../config
+      '@thesis/schueler':
+        specifier: workspace:*
+        version: link:../schueler
 
 packages:
 

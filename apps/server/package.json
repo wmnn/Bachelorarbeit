@@ -13,6 +13,7 @@
   "dependencies": {
     "@thesis/auth": "workspace:*",
     "@thesis/config": "workspace:*",
+    "@thesis/schule": "workspace:*",
     "@thesis/schueler": "workspace:*",
     "@types/express": "^5.0.2",
     "@types/node": "^22.15.21",

@@ -1,4 +1,4 @@
-import { ButtonLight } from '@/components/ButtonLight'
+import { List } from '@/components/List'
 import { SchuelerErstellenDialog } from '@/components/schueler/SchuelerErstellenDialog'
 import { SchuelerListItem } from '@/components/schueler/SchuelerListItem'
 import { useQuery } from '@tanstack/react-query'
@@ -24,34 +24,17 @@ function RouteComponent() {
     return <p>Loading ...</p>
   }
 
-  // Fetching pupils
-  return <div className='flex flex-col p-8 w-full'>
-    <div className='flex justify-between mb-8'>
-      <h1>Schüler</h1>
-      <div className='flex gap-2'>
-        <ButtonLight>
-          Sortieren
-        </ButtonLight>
-        <ButtonLight>
-          Filtern
-        </ButtonLight>
-      </div>
-    </div>
+  return <List 
+    setIsCreateDialogShown={setIsCreateDialogShown} 
+    createButonLabel='Schüler erstellen'
+    leftHeader={<h1>Schüler</h1>}
     
+  >
+    { isCreateDialogShown && <SchuelerErstellenDialog closeDialog={() => setIsCreateDialogShown(false)}/>}
     {
-      isCreateDialogShown && <SchuelerErstellenDialog closeDialog={() => setIsCreateDialogShown(false)}/>
+      schuelerArr.map(schueler => {
+        return <SchuelerListItem schueler={schueler}/>
+      })
     }
-    <ul className='flex flex-col gap-2 border-[1px] border-gray-200 rounded-2xl divide-y divide-gray-200 w-full overflow-auto max-h-[80vh]'>
-      {
-        schuelerArr.map(schueler => {
-          return <SchuelerListItem schueler={schueler}/>
-        })
-      }
-    </ul>
-    
-
-    <ButtonLight onClick={() => setIsCreateDialogShown(true)} className='mt-8'>
-      Schüler erstellen
-    </ButtonLight>
-  </div>
+  </List>
 }

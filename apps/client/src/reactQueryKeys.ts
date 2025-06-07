@@ -1,0 +1,1 @@
+export const KLASSEN_QUERY_KEY = 'klassen'

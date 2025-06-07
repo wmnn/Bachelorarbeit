@@ -63,11 +63,10 @@ export function SchuelerErstellenDialog({ closeDialog }: SchuelerErstellenDialog
             allergienUndUnvertraeglichkeiten
         }
 
-        const res = await createSchueler(schueler)
+        await createSchueler(schueler)
         closeDialog();
         queryClient.invalidateQueries({ queryKey: ['schueler'] })
-        
-
+    
     }
 
     return <DialogWithButtons onSubmit={() => handleSubmit()} closeDialog={() => closeDialog()} submitButtonText="Erstellen">

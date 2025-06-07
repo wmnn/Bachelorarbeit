@@ -47,13 +47,13 @@ CREATE TABLE diagnostikverfahren (
 );
 
 CREATE TABLE ganztagsangebote (
-    id VARCHAR(36) PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     schuljahr VARCHAR(255),
     name VARCHAR(255)
 );
 
 CREATE TABLE klassen (
-    id VARCHAR(36) PRIMARY KEY
+    id INT AUTO_INCREMENT PRIMARY KEY
 );
 
 CREATE TABLE schueler (
@@ -87,7 +87,7 @@ CREATE TABLE nachrichtenversionen (
 );
 
 CREATE TABLE anwesenheitsstatus (
-    schueler_id VARCHAR(36),
+    schueler_id INT AUTO_INCREMENT PRIMARY KEY,
     datum DATE,
     status VARCHAR(255),
     typ VARCHAR(255),
@@ -95,11 +95,12 @@ CREATE TABLE anwesenheitsstatus (
 );
 
 CREATE TABLE klassenversionen (
-    klassen_id VARCHAR(36),
-    schuljahr VARCHAR(255),
+    klassen_id INT,
+    schuljahr VARCHAR(6),
+    halbjahr VARCHAR(12),
     klassenstufe VARCHAR(255),
     zusatz VARCHAR(255),
-    PRIMARY KEY (klassen_id, schuljahr, klassenstufe)
+    PRIMARY KEY (klassen_id, schuljahr, halbjahr, klassenstufe)
 );
 
 CREATE TABLE tests (
@@ -109,10 +110,10 @@ CREATE TABLE tests (
 );
 
 CREATE TABLE nachrichten (
-    id VARCHAR(36) PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     typ VARCHAR(255),
     schueler_id VARCHAR(36),
-    klassen_id VARCHAR(36),
+    klassen_id INT,
     user_id VARCHAR(36)
 );
 
@@ -131,11 +132,12 @@ CREATE TABLE ganztagsangebot_schueler (
 );
 
 CREATE TABLE klassenversion_schueler (
-    klassen_id VARCHAR(36),
-    schuljahr VARCHAR(255),
-    klassenstufe VARCHAR(255),
-    schueler_id VARCHAR(36),
-    PRIMARY KEY (klassen_id, schuljahr, klassenstufe, schueler_id)
+    klassen_id INT,
+    schuljahr VARCHAR(6),
+    halbjahr VARCHAR(12),
+    klassenstufe VARCHAR(12),
+    schueler_id INT,
+    PRIMARY KEY (klassen_id, schuljahr, halbjahr, klassenstufe, schueler_id)
 );
 
 CREATE TABLE user_leitet_klassenversion (

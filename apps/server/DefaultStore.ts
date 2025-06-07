@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import mysql, { Connection, QueryResult, ResultSetHeader, RowDataPacket } from 'mysql2/promise'
 import { SessionData } from './modules/auth/auth';
 import { Schueler, SchuelerSimple } from '@thesis/schueler';
+import { KlassenVersion } from '@thesis/schule';
 
 interface DatabaseMessage {
     success: boolean,
@@ -612,6 +613,72 @@ export class DefaultStore implements AuthStore {
                 message: 'Beim Löschen des Schülers ist ein Fehler aufgetreten.'
             };
         }
+    }
+
+    async createClass(klassen: KlassenVersion[]) {
+        if (!this.connection) {
+            return {
+                success: false,
+                message: 'Ein Fehler ist aufgetreten.'
+            };
+        }
+
+        const conn = this.connection;
+
+        try {
+            await conn.beginTransaction();
+
+            await conn.commit();
+
+            const [result] = await conn.execute<ResultSetHeader>(`
+                INSERT INTO klassen VALUES ()
+            `, []);
+
+            const id = result.insertId;
+
+            for (const klasse of klassen) {
+                await conn.execute(`
+                    INSERT INTO klassenversionen (klassen_id, schuljahr, halbjahr, klassenstufe, zusatz)
+                    VALUES (?, ?, ?, ?, ?)
+                `, [
+                    id,
+                    klasse.schuljahr,
+                    klasse.halbjahr,
+                    klasse.klassenstufe,
+                    klasse.zusatz
+                ]);
+                
+
+                for (const schueler of klasse.schueler) {
+                    if (!schueler.id || schueler.id === -1) continue;
+                    await conn.execute(`
+                        INSERT INTO klassenversion_schueler (klassen_id, schuljahr, halbjahr, klassenstufe, schueler_id)
+                        VALUES (?, ?, ?, ?, ?)
+                    `, [
+                        id,
+                        klasse.schuljahr,
+                        klasse.halbjahr,
+                        klasse.klassenstufe,
+                        schueler.id 
+                    ]);
+                }
+
+            }
+
+
+            return {
+                success: true,
+                message: 'Die Klasse wurde erfolgreich erstellt.'
+            };
+
+        } catch (e) {
+            await conn.rollback();
+            console.error(e);
+            return {
+                success: false,
+                message: 'Beim Erstellen der Klasse ist ein Fehler aufgetreten.'
+            };
+        }  
     }
 
 
