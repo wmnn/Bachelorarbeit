@@ -5,7 +5,8 @@ import dotenv from 'dotenv';
 import { router as authRouter, authMiddleware } from "./modules/auth/auth"
 import { router as schuelerRouter } from "./modules/schueler/schueler"
 import { router as klassenRouter } from "./modules/klassen/klassen"
-import { AUTH_API_ENDPOINT, KLASSEN_ENDPOINT, SCHUELER_ENDPOINT } from "@thesis/config"
+import { router as anwesenheitenRouter } from "./modules/anwesenheiten/anwesenheiten"
+import { ANWESENHEITEN_ENDPOINT, AUTH_API_ENDPOINT, KLASSEN_ENDPOINT, SCHUELER_ENDPOINT } from "@thesis/config"
 import { getDB } from './singleton';
 import cookieParser from "cookie-parser"
 import https from 'https';
@@ -57,6 +58,7 @@ app.use(authMiddleware)
 app.use(AUTH_API_ENDPOINT, authRouter);
 app.use(SCHUELER_ENDPOINT, schuelerRouter);
 app.use(KLASSEN_ENDPOINT, klassenRouter);
+app.use(ANWESENHEITEN_ENDPOINT, anwesenheitenRouter);
 app.use(express.static('../client/dist'))
 
 app.get('/{*splat}', (req, res) => {

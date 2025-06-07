@@ -4,6 +4,7 @@ import mysql, { Connection, QueryResult, ResultSetHeader, RowDataPacket } from '
 import { SessionData } from './modules/auth/auth';
 import { Schueler, SchuelerSimple } from '@thesis/schueler';
 import { Halbjahr, Klasse, KlassenVersion, Schuljahr } from '@thesis/schule';
+import { Anwesenheiten, AnwesenheitTyp } from '@thesis/anwesenheiten';
 
 interface DatabaseMessage {
     success: boolean,
@@ -601,7 +602,6 @@ export class DefaultStore implements AuthStore {
                 message: 'Der Schüler wurde erfolgreich erstellt.'
             };
         } catch (e) {
-            console.log(e)
             await conn.rollback();
             return {
                 success: false,
@@ -712,13 +712,7 @@ export class DefaultStore implements AuthStore {
                 if (!version.schueler) {
                     version.schueler = []
                 }
-                version.schueler.push({
-                    id: row.schueler_id,
-                    vorname,
-                    nachname,
-                    hatSonderpaedagogischeKraft: row.hat_sonderpaedagogische_kraft,
-                    verlaesstSchuleAllein: row.verlaesst_schule_allein,
-                })
+                version.schueler.push(row.schueler_id)
                 return version
             })
         }
@@ -791,8 +785,7 @@ export class DefaultStore implements AuthStore {
                 ]);
                 
 
-                for (const schueler of klasse.schueler || []) {
-                    if (!schueler.id || schueler.id === -1) continue;
+                for (const schuelerId of klasse.schueler || []) {
                     await conn.execute(`
                         INSERT INTO klassenversion_schueler (klassen_id, schuljahr, halbjahr, klassenstufe, schueler_id)
                         VALUES (?, ?, ?, ?, ?)
@@ -801,7 +794,7 @@ export class DefaultStore implements AuthStore {
                         klasse.schuljahr,
                         klasse.halbjahr,
                         klasse.klassenstufe,
-                        schueler.id 
+                        schuelerId
                     ]);
                 }
 
@@ -864,6 +857,45 @@ export class DefaultStore implements AuthStore {
         }
     }
 
+    async updateAnwesenheitsstatus(
+        schuelerId: number,
+        typ: AnwesenheitTyp,
+        status: Anwesenheiten,
+        datum: string
+    ): Promise<{ success: boolean; message?: string }> {
+        if (!this.connection) {
+            return { success: false, message: 'Keine Datenbankverbindung' };
+        }
 
+        const conn = this.connection;
+
+        try {
+            const [result] = await conn.execute<ResultSetHeader>(
+            `
+            INSERT INTO anwesenheitsstatus (schueler_id, datum, status, typ)
+            VALUES (?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE 
+                status = VALUES(status),
+                typ = VALUES(typ)
+            `,
+            [schuelerId, datum, status, typ]
+            );
+
+            const affected = result.affectedRows;
+
+            return {
+            success: affected > 0,
+            message: affected > 0
+                ? 'Anwesenheitsstatus erfolgreich aktualisiert oder eingefügt.'
+                : 'Kein Eintrag wurde geändert.',
+            };
+        } catch (e) {
+            console.error('Fehler beim Aktualisieren:', e);
+            return {
+            success: false,
+            message: 'Ein Fehler ist beim Aktualisieren aufgetreten.',
+            };
+        }
+    }
 
 }
