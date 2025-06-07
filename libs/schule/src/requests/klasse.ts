@@ -1,9 +1,9 @@
 import { KLASSEN_ENDPOINT } from '@thesis/config'
-import type { KlassenVersion } from '../models';
+import type { Halbjahr, KlassenVersion, Schuljahr } from '../models';
 
-export const getKlassen = async () => {
+export const getKlassen = async (schuljahr: Schuljahr, halbjahr: Halbjahr) => {
     try {
-        const res = await fetch(KLASSEN_ENDPOINT, {
+        const res = await fetch(KLASSEN_ENDPOINT + `?schuljahr=${schuljahr}&halbjahr=${halbjahr}`, {
             method: 'GET',
             headers: {
                 'content-type': 'application/json'

@@ -2,23 +2,23 @@ import { type SchuelerSimple } from "@thesis/schueler";
 import { useState } from "react";
 import { KlasseLoeschenDialog } from "./KlasseLoeschenDialog";
 import { DeleteIcon } from "../icons/DeleteIcon";
+import type { Klasse } from "@thesis/schule";
+import { getTitle } from "./util";
 
-export function KlasseListItem({ schueler }: { schueler: SchuelerSimple }) {
+export function KlasseListItem({ klasse }: { klasse: Klasse }) {
 
     const [isDeleteDialogShown, setIsDeleteDialogShown] = useState(false)
 
-    return <li className='py-2 px-8 flex justify-between w-[100%]'>
+    return <li className='py-2 px-8 flex justify-between w-[100%] gap-8'>
 
-        {
+        {/* {
             isDeleteDialogShown && <KlasseLoeschenDialog klasseId={schueler.id ?? -1} closeDialog={() => setIsDeleteDialogShown(false)}/>
-        }
-        <div className="flex gap-2">
-            <p>{schueler.vorname}</p> 
-            <p>{schueler.nachname}</p>
-        </div>
+        } */}
+        <button className="flex gap-2 w-full">
+            <p>{getTitle(klasse)}</p> 
+        </button>
         
         <div className='flex gap-4'>
-            <input type='checkbox'/>
             <button onClick={() => setIsDeleteDialogShown(true)}>
                 <DeleteIcon />
             </button>

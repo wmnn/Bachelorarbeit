@@ -1,10 +1,10 @@
 import type { Halbjahr } from "@thesis/schule"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
-import { useKlassenStore } from "./KlassenStore"
+import { useSchuljahrStore } from "./SchuljahrStore"
 
 export function HalbjahrSelect() {
-    const halbjahr = useKlassenStore((state) => state.ausgewaeltesHalbjahr)
-    const updateHalbjahr = useKlassenStore((state) => state.updateHalbjahr)
+    const halbjahr = useSchuljahrStore((state) => state.ausgewaeltesHalbjahr)
+    const updateHalbjahr = useSchuljahrStore((state) => state.updateHalbjahr)
 
     return (
         <Select 

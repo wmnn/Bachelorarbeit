@@ -7,9 +7,10 @@ export type Klasse = {
 }
 
 export type KlassenVersion = {
+    klassenId?: number,
     schuljahr: Schuljahr,
     halbjahr: Halbjahr,
     klassenstufe: number | undefined,
     zusatz: string | undefined,
-    schueler: SchuelerSimple[]
+    schueler?: SchuelerSimple[]
 }

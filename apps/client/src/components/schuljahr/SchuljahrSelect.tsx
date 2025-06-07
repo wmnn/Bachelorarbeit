@@ -1,10 +1,10 @@
 import { getSchuljahr, type Schuljahr } from "@thesis/schule";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
-import { useKlassenStore } from "./KlassenStore"
+import { useSchuljahrStore } from "./SchuljahrStore";
 
 export function SchuljahrSelect() {
-    const schuljahr = useKlassenStore((state) => state.ausgewaeltesSchuljahr)
-    const updateSchuljahr = useKlassenStore((state) => state.updateSchuljahr)
+    const schuljahr = useSchuljahrStore((state) => state.ausgewaeltesSchuljahr)
+    const updateSchuljahr = useSchuljahrStore((state) => state.updateSchuljahr)
 
     const generateSchuljahre = () => {
     const currentDate = new Date();

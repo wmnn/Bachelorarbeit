@@ -3,13 +3,17 @@ import crypto from 'crypto';
 import mysql, { Connection, QueryResult, ResultSetHeader, RowDataPacket } from 'mysql2/promise'
 import { SessionData } from './modules/auth/auth';
 import { Schueler, SchuelerSimple } from '@thesis/schueler';
-import { KlassenVersion } from '@thesis/schule';
+import { Halbjahr, Klasse, KlassenVersion, Schuljahr } from '@thesis/schule';
 
 interface DatabaseMessage {
     success: boolean,
     message: string,
 }
 
+const STANDARD_FEHLER = {
+    success: false,
+    message: 'Ein Fehler ist aufgetreten.'
+};
 export class DefaultStore implements AuthStore {
 
     private connection: undefined | Connection
@@ -127,10 +131,7 @@ export class DefaultStore implements AuthStore {
         isVerified?: boolean
     ): Promise<DatabaseMessage> {
         if (!this.connection) {
-            return {
-                success: false,
-                message: 'Ein Fehler ist aufgetreten.'
-            };
+            return STANDARD_FEHLER
         }
 
         const fields: string[] = [];
@@ -416,10 +417,7 @@ export class DefaultStore implements AuthStore {
 
     async removeSessionForUser(userId: number): Promise<DatabaseMessage> {
         if (!this.connection) {
-            return {
-                success: false,
-                message: 'Ein Fehler ist aufgetreten.'
-            };
+            return STANDARD_FEHLER
         }
 
         let [rows] = await this.connection.execute<ResultSetHeader>(
@@ -428,10 +426,7 @@ export class DefaultStore implements AuthStore {
         );
 
         if (!Array.isArray(rows)) {
-            return {
-                success: false,
-                message: 'Ein Fehler ist aufgetreten.'
-            };
+            return STANDARD_FEHLER
         } 
 
         try {
@@ -463,10 +458,7 @@ export class DefaultStore implements AuthStore {
                 message: 'Sitzung(en) erfolgreich gelöscht.'
             };
         } catch(_) {
-            return {
-                success: false,
-                message: 'Ein Fehler ist aufgetreten.'
-            };
+            return STANDARD_FEHLER
         }
     }
 
@@ -491,10 +483,7 @@ export class DefaultStore implements AuthStore {
 
     async createSchueler(schueler: Schueler): Promise<DatabaseMessage> {
         if (!this.connection) {
-            return {
-                success: false,
-                message: 'Ein Fehler ist aufgetreten.'
-            };
+            return STANDARD_FEHLER
         }
 
         const conn = this.connection;
@@ -564,10 +553,7 @@ export class DefaultStore implements AuthStore {
 
     async deleteSchueler(schuelerId: number): Promise<DatabaseMessage> {
         if (!this.connection) {
-            return {
-                success: false,
-                message: 'Ein Fehler ist aufgetreten.'
-            };
+            return STANDARD_FEHLER
         }
 
         const conn = this.connection;
@@ -615,6 +601,38 @@ export class DefaultStore implements AuthStore {
         }
     }
 
+    async getClasses(schuljahr: Schuljahr, halbjahr: Halbjahr): Promise<Klasse[]> {
+        if (!this.connection) {
+            return [];
+        }
+
+        const [rows] = await this.connection.execute<any[]>(
+            'SELECT * FROM `klassenversionen` WHERE schuljahr = ? AND halbjahr = ?',
+            [schuljahr, halbjahr]
+        );
+
+        if (!Array.isArray(rows)) {
+            return [];
+        }
+
+        return rows.reduce((prev: Klasse[], current) => {
+            let klasse = prev.find(k => k.id === current.klassen_id);
+
+            if (!klasse) {
+            klasse = { id: current.klassen_id, versionen: [] };
+            prev.push(klasse);
+            }
+
+            klasse.versionen.push({
+                ...current,
+                klassenId: current.klassen_id,
+            } as KlassenVersion);
+
+            return prev;
+        }, []) as Klasse[];
+    }
+
+
     async createClass(klassen: KlassenVersion[]) {
         if (!this.connection) {
             return {
@@ -649,7 +667,7 @@ export class DefaultStore implements AuthStore {
                 ]);
                 
 
-                for (const schueler of klasse.schueler) {
+                for (const schueler of klasse.schueler || []) {
                     if (!schueler.id || schueler.id === -1) continue;
                     await conn.execute(`
                         INSERT INTO klassenversion_schueler (klassen_id, schuljahr, halbjahr, klassenstufe, schueler_id)

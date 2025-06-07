@@ -3,14 +3,17 @@ import { DialogWithButtons } from "../dialog/DialogWithButtons";
 import { createKlasse, type KlassenVersion } from "@thesis/schule";
 import { useKlassenStore } from "./KlassenStore";
 import { KlasseErstellenDialogKlasse } from "./KlasseErstellenDialogKlasse";
+import { useQueryClient } from "@tanstack/react-query";
+import { KLASSEN_QUERY_KEY } from "@/reactQueryKeys";
+import { useSchuljahrStore } from "../schuljahr/SchuljahrStore";
 
 interface KlasseErstellenDialogProps {
   closeDialog: () => void,
 }
 export function KlasseErstellenDialog({ closeDialog }: KlasseErstellenDialogProps) {
 
-    const schuljahr = useKlassenStore(state => state.ausgewaeltesSchuljahr)
-    const halbjahr = useKlassenStore(state => state.ausgewaeltesHalbjahr)
+    const schuljahr = useSchuljahrStore(state => state.ausgewaeltesSchuljahr)
+    const halbjahr = useSchuljahrStore(state => state.ausgewaeltesHalbjahr)
     const klassen = useKlassenStore(state => state.neueKlassen)
     const setKlassen = useKlassenStore(state => state.setNeueKlassen)
 
@@ -30,9 +33,14 @@ export function KlasseErstellenDialog({ closeDialog }: KlasseErstellenDialogProp
         setKlassen(prev => [...prev, NEW_CLASS])
     }
 
+    const queryClient = useQueryClient();
+
     async function handleSubmit() {
-        const res = await createKlasse(klassen);
-        alert(res);
+        await createKlasse(klassen);
+        queryClient.invalidateQueries({
+            queryKey: [KLASSEN_QUERY_KEY]
+        })
+        closeDialog();
     }
     return <DialogWithButtons onSubmit={() => handleSubmit()} closeDialog={() => closeDialog()} submitButtonText="Erstellen">
         <h1>Klasse hinzufügen</h1>
