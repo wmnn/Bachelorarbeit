@@ -77,6 +77,9 @@ importers:
       '@testing-library/react':
         specifier: ^16.2.0
         version: 16.3.0(@testing-library/dom@10.4.0)(@types/react-dom@19.1.5(@types/react@19.1.5))(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@thesis/anwesenheiten':
+        specifier: workspace:*
+        version: link:../../libs/anwesenheiten
       '@thesis/auth':
         specifier: workspace:*
         version: link:../../libs/auth
@@ -113,6 +116,9 @@ importers:
 
   apps/server:
     dependencies:
+      '@thesis/anwesenheiten':
+        specifier: workspace:*
+        version: link:../../libs/anwesenheiten
       '@thesis/auth':
         specifier: workspace:*
         version: link:../../libs/auth
@@ -175,6 +181,8 @@ importers:
         specifier: ^4.19.4
         version: 4.19.4
 
+  libs/anwesenheiten: {}
+
   libs/auth:
     dependencies:
       '@thesis/config':
@@ -194,6 +202,9 @@ importers:
 
   libs/schueler:
     dependencies:
+      '@thesis/anwesenheiten':
+        specifier: workspace:*
+        version: link:../anwesenheiten
       '@thesis/config':
         specifier: workspace:*
         version: link:../config

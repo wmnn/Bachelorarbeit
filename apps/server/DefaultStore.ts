@@ -482,12 +482,31 @@ export class DefaultStore implements AuthStore {
 
         const conn = this.connection;
 
-        const [rows] = await conn.execute<ResultSetHeader>(`
+        let [rows] = await conn.execute<RowDataPacket[]>(`
             SELECT id, vorname, nachname, hat_sonderpaedagogische_kraft, verlaesst_schule_allein FROM schueler
         `);
 
         if (!Array.isArray(rows) || rows.length === 0) {
             return [];
+        }
+
+        const [anwesenheiten] = await conn.execute<RowDataPacket[]>(`
+            SELECT schueler_id, typ, status FROM anwesenheitsstatus a WHERE a.datum = CURDATE()
+        `);
+        if (Array.isArray(anwesenheiten) && anwesenheiten.length > 0) {
+            for (const anwesenheit of anwesenheiten) {
+                rows = rows.map((row: any) => {
+                    if (row.id !== anwesenheit.schueler_id) {
+                        return row;
+                    }
+                    if (anwesenheit.typ === AnwesenheitTyp.GANZTAG) {
+                        row.heutigerGanztagAnwesenheitsstatus = anwesenheit.status
+                    } else {
+                        row.heutigerSchultagAnwesenheitsstatus = anwesenheit.status
+                    }
+                    return row
+                })
+            }
         }
 
         return rows.map(row => handleSchuelerRow(row));
@@ -862,9 +881,9 @@ export class DefaultStore implements AuthStore {
         typ: AnwesenheitTyp,
         status: Anwesenheiten,
         datum: string
-    ): Promise<{ success: boolean; message?: string }> {
+    ): Promise<DatabaseMessage> {
         if (!this.connection) {
-            return { success: false, message: 'Keine Datenbankverbindung' };
+            return STANDARD_FEHLER
         }
 
         const conn = this.connection;
@@ -884,10 +903,10 @@ export class DefaultStore implements AuthStore {
             const affected = result.affectedRows;
 
             return {
-            success: affected > 0,
-            message: affected > 0
-                ? 'Anwesenheitsstatus erfolgreich aktualisiert oder eingefügt.'
-                : 'Kein Eintrag wurde geändert.',
+                success: affected > 0,
+                message: affected > 0
+                    ? 'Anwesenheitsstatus erfolgreich aktualisiert oder eingefügt.'
+                    : 'Kein Eintrag wurde geändert.',
             };
         } catch (e) {
             console.error('Fehler beim Aktualisieren:', e);
@@ -897,5 +916,43 @@ export class DefaultStore implements AuthStore {
             };
         }
     }
+
+    async deleteAnwesenheitsstatus(
+        schuelerId: number,
+        typ: AnwesenheitTyp,
+        datum: string
+    ): Promise<DatabaseMessage> {
+        if (!this.connection) {
+            return STANDARD_FEHLER;
+        }
+
+        const conn = this.connection;
+
+        try {
+            const [result] = await conn.execute<ResultSetHeader>(
+                `
+                DELETE FROM anwesenheitsstatus
+                WHERE schueler_id = ? AND typ = ? AND datum = ?
+                `,
+                [schuelerId, typ, datum]
+            );
+
+            const affected = result.affectedRows;
+
+            return {
+                success: affected > 0,
+                message: affected > 0
+                    ? 'Anwesenheitsstatus erfolgreich gelöscht.'
+                    : 'Kein passender Eintrag gefunden.',
+            };
+        } catch (e) {
+            console.error('Fehler beim Löschen:', e);
+            return {
+                success: false,
+                message: 'Ein Fehler ist beim Löschen aufgetreten.',
+            };
+        }
+    }
+
 
 }

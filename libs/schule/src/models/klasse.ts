@@ -12,5 +12,5 @@ export type KlassenVersion = {
     halbjahr: Halbjahr,
     klassenstufe: number | undefined,
     zusatz: string | undefined,
-    schueler?: SchuelerSimple[]
+    schueler?: number[]
 }

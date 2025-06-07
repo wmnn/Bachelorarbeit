@@ -8,6 +8,7 @@ import { getKlasse, type Halbjahr, type Klasse, type Schuljahr } from '@thesis/s
 import { useRouter } from '@tanstack/react-router'
 import { SchuelerListItem } from '@/components/schueler/SchuelerListItem';
 import { MoveLeft } from 'lucide-react';
+import { AnwesenheitTyp } from '@thesis/anwesenheiten';
 
 export const Route = createFileRoute('/(app)/klassen/$klassenId')({
   component: RouteComponent,
@@ -59,10 +60,9 @@ function RouteComponent() {
       >
   
         <>
-  
           {
-            version.schueler?.map(schueler => {
-              return <SchuelerListItem schueler={schueler} />
+            version.schueler?.map(id => {
+              return <SchuelerListItem schuelerId={id} typ={AnwesenheitTyp.UNTERRICHT} />
             
             })
           }

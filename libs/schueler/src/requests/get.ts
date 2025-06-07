@@ -1,5 +1,5 @@
 import { SCHUELER_ENDPOINT } from "@thesis/config";
-import type { Schueler, SchuelerSimple } from '../models'
+import type { Schueler } from '../models'
 
 export const getSchueler = async () => {
     try {
@@ -14,7 +14,7 @@ export const getSchueler = async () => {
             window.location.href = '/login'
         }
     
-        return await res.json() as SchuelerSimple[];
+        return await res.json() as Schueler[];
         
     } catch (e) {
         return [];

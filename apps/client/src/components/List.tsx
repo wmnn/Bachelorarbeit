@@ -27,7 +27,7 @@ export function List<T>({ setIsCreateDialogShown, children, createButonLabel, le
             </div>
         </div>
 
-        <ul className='flex flex-col gap-2 border-[1px] border-gray-200 rounded-2xl divide-y divide-gray-200 w-full overflow-auto max-h-[80vh]'>
+        <ul className='flex flex-col gap-2 border-[1px] border-gray-200 rounded-2xl divide-y divide-gray-200 w-full overflow-visible max-h-[80vh]'>
           { children }
         </ul>
     

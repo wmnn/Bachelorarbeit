@@ -1,12 +1,14 @@
 import { List } from '@/components/List'
 import { SchuelerErstellenDialog } from '@/components/schueler/SchuelerErstellenDialog'
 import { SchuelerListItem } from '@/components/schueler/SchuelerListItem'
+import { useSchuelerStore } from '@/components/schueler/SchuelerStore'
 import { SCHUELER_QUERY_KEY } from '@/reactQueryKeys'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { type SchuelerSimple } from '@thesis/schueler';
+import { AnwesenheitTyp } from '@thesis/anwesenheiten'
+import { type Schueler } from '@thesis/schueler';
 import { getSchueler } from '@thesis/schueler'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export const Route = createFileRoute('/(app)/schueler/')({
   component: RouteComponent,
@@ -15,8 +17,8 @@ export const Route = createFileRoute('/(app)/schueler/')({
 function RouteComponent() {
 
   const [isCreateDialogShown, setIsCreateDialogShown] = useState(false)
-
-  const { isPending, data: schuelerArr } = useQuery<SchuelerSimple[]>({
+  const setSchueler = useSchuelerStore(store => store.setSchueler);
+  const { isPending, data: schuelerArr } = useQuery<Schueler[]>({
     queryKey: [SCHUELER_QUERY_KEY],
     queryFn: getSchueler,
     initialData: [],  
@@ -24,6 +26,12 @@ function RouteComponent() {
   if (isPending) {
     return <p>Loading ...</p>
   }
+
+  useEffect(() => {
+    if (schuelerArr) {
+      setSchueler((_) => schuelerArr ?? [])
+    }
+  }, [schuelerArr])
 
   return <List 
     setIsCreateDialogShown={setIsCreateDialogShown} 
@@ -35,7 +43,7 @@ function RouteComponent() {
     { isCreateDialogShown && <SchuelerErstellenDialog closeDialog={() => setIsCreateDialogShown(false)}/>}
     {
       schuelerArr.map(schueler => {
-        return <SchuelerListItem schueler={schueler}/>
+        return <SchuelerListItem schuelerId={schueler.id ?? -1} typ={AnwesenheitTyp.UNTERRICHT}/>
       })
     }
   </List>

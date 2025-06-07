@@ -89,10 +89,10 @@ CREATE TABLE nachrichtenversionen (
 );
 
 CREATE TABLE anwesenheitsstatus (
-    schueler_id INT AUTO_INCREMENT PRIMARY KEY,
+    schueler_id INT,
     datum DATE,
-    status VARCHAR(255),
-    typ VARCHAR(255),
+    status INT,
+    typ INT,
     PRIMARY KEY (schueler_id, datum)
 );
 

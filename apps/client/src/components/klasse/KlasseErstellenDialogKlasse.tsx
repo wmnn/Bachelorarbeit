@@ -25,13 +25,13 @@ export function KlasseErstellenDialogKlasse({ klasse, setKlasse }: {
 
     function handleSchuelerSelection(element: SchuelerSimple) {
         const newId = element.id ?? -1
-        if (!klasse.schueler?.find(o => o.id === (newId ?? -1))) {
+        if (!klasse.schueler?.find(id => id === (newId ?? -1))) {
             setKlasse({
                 ...klasse,
-                schueler: [...klasse.schueler ?? [], element]
+                schueler: [...klasse.schueler ?? [], element.id ?? -1]
             })
         } else {
-            const filtered = klasse.schueler?.filter(o => o.id !== element.id)
+            const filtered = klasse.schueler?.filter(id => id !== element.id)
             setKlasse({
                 ...klasse,
                 schueler: filtered
@@ -65,7 +65,7 @@ export function KlasseErstellenDialogKlasse({ klasse, setKlasse }: {
                 <li>
                     <input
                         type="checkbox"
-                        checked={klasse.schueler?.find(o => o.id === (element.id ?? -1)) ? true : false}
+                        checked={klasse.schueler?.find(id => id === (element.id ?? -1)) ? true : false}
                     />
 
                     <button onClick={() => handleSchuelerSelection(element)}>

@@ -1,4 +1,5 @@
 import type { AbholberechtigtePerson } from "./AbholberechtigtePerson";
+import { type Anwesenheiten } from "@thesis/anwesenheiten"
 
 export interface SchuelerSimple {
     id?: number,
@@ -16,6 +17,8 @@ export type Schueler = {
     medikamente: string[],
     familiensprache: string,
     geburtsdatum: string,
+    heutigerSchultagAnwesenheitsstatus?: Anwesenheiten,
+    heutigerGanztagAnwesenheitsstatus?: Anwesenheiten,
     hatSonderpaedagogischeKraft: boolean,
     verlaesstSchuleAllein: boolean,
     allergienUndUnvertraeglichkeiten: string[]

@@ -9,3 +9,4 @@ export const SESSION_COOKIE_NAME = 'session_cookie'
 
 export const SCHUELER_ENDPOINT = '/api/schueler'
 export const KLASSEN_ENDPOINT = '/api/klassen'
+export const ANWESENHEITEN_ENDPOINT = '/api/anwesenheiten'

@@ -4,7 +4,7 @@ import { KlasseListItem } from '@/components/klasse/KlasseListItem'
 import { SchuljahrSelect } from '@/components/schuljahr/SchuljahrSelect'
 import { List } from '@/components/List'
 import { useSchuelerStore } from '@/components/schueler/SchuelerStore'
-import { KLASSEN_QUERY_KEY } from '@/reactQueryKeys'
+import { KLASSEN_QUERY_KEY, SCHUELER_QUERY_KEY } from '@/reactQueryKeys'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { getSchueler, type SchuelerSimple } from '@thesis/schueler'
@@ -23,7 +23,7 @@ function RouteComponent() {
   const halbjahr = useSchuljahrStore(state => state.ausgewaeltesHalbjahr)
 
   const { isPending: isPending2, data: schueler } = useQuery<SchuelerSimple[]>({
-    queryKey: ['schueler'],
+    queryKey: [SCHUELER_QUERY_KEY],
     queryFn: getSchueler,
   })
 

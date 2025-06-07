@@ -3,7 +3,7 @@ export type AbholberechtigtePerson = {
     nachname: string,
     strasse: string,
     hausnummer: string,
-    postleitzahl: number,
+    postleitzahl: number | string,
     ort: string,
     abholzeit: string,
 }
