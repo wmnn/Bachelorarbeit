@@ -19,6 +19,7 @@ export type Schueler = {
     geburtsdatum: string,
     heutigerSchultagAnwesenheitsstatus?: Anwesenheiten,
     heutigerGanztagAnwesenheitsstatus?: Anwesenheiten,
+    klasse?: string, // im aktuellen Schulhalbjahr
     hatSonderpaedagogischeKraft: boolean,
     verlaesstSchuleAllein: boolean,
     allergienUndUnvertraeglichkeiten: string[]

@@ -17,7 +17,7 @@ export const getKlasse = async (schuljahr: Schuljahr, halbjahr: Halbjahr, klasse
         return await res.json();
         
     } catch (e) {
-        return [];
+        return undefined
     }
 }
 
@@ -62,10 +62,13 @@ export const createKlasse = async (klassen: KlassenVersion[]) => {
             window.location.href = '/login'
         }
     
-        return await res.json();
+        return await res.json() as CreateClassResponseBody;
         
     } catch (e) {
-        return [];
+        return {
+            success: false,
+            message: 'Ein Fehler ist aufgetreten.'
+        };
     }
 }
 

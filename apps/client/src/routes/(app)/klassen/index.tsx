@@ -11,6 +11,7 @@ import { getSchueler, type SchuelerSimple } from '@thesis/schueler'
 import { getKlassen, type Halbjahr, type Klasse, type Schuljahr } from '@thesis/schule' 
 import { useEffect, useState } from 'react'
 import { useSchuljahrStore } from '@/components/schuljahr/SchuljahrStore'
+import { ErrorDialog } from '@/components/dialog/MessageDialog'
 
 export const Route = createFileRoute('/(app)/klassen/')({
   component: RouteComponent,
@@ -37,7 +38,7 @@ function RouteComponent() {
   });
 
   const [isCreateDialogShown, setIsCreateDialogShown] = useState(false)
-  
+  const [responseMessage, setResponseMessage] = useState('')
 
   useEffect(() => {
     if (schueler) {
@@ -61,7 +62,8 @@ function RouteComponent() {
 
   return <div className='w-full'>
 
-    { isCreateDialogShown && <KlasseErstellenDialog closeDialog={() => setIsCreateDialogShown(false)}/>}
+    { isCreateDialogShown && <KlasseErstellenDialog closeDialog={() => setIsCreateDialogShown(false)} setResponseMessage={setResponseMessage} />}
+    {(responseMessage !== '') && <ErrorDialog message={responseMessage} closeDialog={() => setResponseMessage('')}/>}
 
     <List 
       setIsCreateDialogShown={setIsCreateDialogShown} 

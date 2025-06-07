@@ -28,7 +28,7 @@ function RouteComponent() {
       const [_key, schuljahr, halbjahr] = queryKey;
       return getKlasse((schuljahr as Schuljahr), (halbjahr as Halbjahr), parseInt(klassenId));
     },
-    initialData: [],
+    initialData: undefined,
   });
  
 
@@ -36,8 +36,11 @@ function RouteComponent() {
     return <p>Loading...</p>
   }
 
+  const BackButton = <button onClick={() => router.history.back()}>
+    <MoveLeft />
+  </button>
   if (!klasse.versionen) {
-    return <p>Ein Fehler ist aufgetreten</p>
+    return <p>{BackButton} Ein Fehler ist aufgetreten</p>
   }
 
   return <div className='w-full p-8 flex flex-col gap-8'>

@@ -22,13 +22,13 @@ router.get('/:klassenId', async (req, res) => {
     const { klassenId } = req.params
     const { schuljahr, halbjahr } = req.query;
     const klasse = await getDB().getClass(schuljahr as Schuljahr, halbjahr as Halbjahr, parseInt(klassenId))
-    res.status(klasse ? 200 : 400).json(klasse);
+    res.status(klasse ? 200 : 500).json(klasse);
 });
 
 
 router.post('/', async (req: Request<{}, {}, CreateClassRequestBody>, res: Response<CreateClassResponseBody>) => {
     const msg = await getDB().createClass(req.body)
-    res.status(500).json(msg);
+    res.status(msg.success ? 200 : 400).json(msg);
 });
 
 router.delete('/', async (req: Request<{}, {}, DeleteKlasseRequestBody>, res: Response<DeleteKlasseResponseBody>) => {

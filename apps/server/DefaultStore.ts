@@ -688,15 +688,27 @@ export class DefaultStore implements AuthStore {
         }
 
         const [rows] = await this.connection.execute<any[]>(
-            `SELECT * FROM klassenversionen
-            NATURAL JOIN klassenversion_schueler
-            JOIN schueler ON schueler_id = schueler.id
-            WHERE schuljahr = ? AND halbjahr = ? AND klassen_id = ?;`,
+            `SELECT * FROM klassenversionen kv
+            LEFT JOIN klassenversion_schueler ks ON kv.klassen_id = ks.klassen_id AND kv.schuljahr = ks.schuljahr AND kv.halbjahr = ks.halbjahr
+            LEFT JOIN schueler ON schueler_id = schueler.id
+            WHERE kv.schuljahr = ? AND kv.halbjahr = ? AND kv.klassen_id = ?;`,
             [schuljahr, halbjahr, klassenId]
         );
 
+        
+        // const [rows] = await this.connection.execute<any[]>(
+        //     `SELECT * FROM klassenversionen
+        //     NATURAL JOIN klassenversion_schueler
+        //     JOIN schueler ON schueler_id = schueler.id
+        //     WHERE schuljahr = ? AND halbjahr = ? AND klassen_id = ?;`,
+        //     [schuljahr, halbjahr, klassenId]
+        // );
+
         if (!Array.isArray(rows)) {
-            return undefined;
+            return {
+                id: klassenId,
+                versionen: []
+            };
         }
 
         let klasse = rows.reduce((prev: Klasse[], current) => {
@@ -770,20 +782,15 @@ export class DefaultStore implements AuthStore {
     }
 
 
-    async createClass(klassen: KlassenVersion[]) {
+    async createClass(klassen: KlassenVersion[]): Promise<DatabaseMessage> {
         if (!this.connection) {
-            return {
-                success: false,
-                message: 'Ein Fehler ist aufgetreten.'
-            };
+            return STANDARD_FEHLER
         }
 
         const conn = this.connection;
 
         try {
             await conn.beginTransaction();
-
-            await conn.commit();
 
             const [result] = await conn.execute<ResultSetHeader>(`
                 INSERT INTO klassen VALUES ()
@@ -802,32 +809,35 @@ export class DefaultStore implements AuthStore {
                     klasse.klassenstufe,
                     klasse.zusatz
                 ]);
-                
 
-                for (const schuelerId of klasse.schueler || []) {
-                    await conn.execute(`
-                        INSERT INTO klassenversion_schueler (klassen_id, schuljahr, halbjahr, klassenstufe, schueler_id)
-                        VALUES (?, ?, ?, ?, ?)
-                    `, [
-                        id,
-                        klasse.schuljahr,
-                        klasse.halbjahr,
-                        klasse.klassenstufe,
-                        schuelerId
-                    ]);
+                try {
+                    for (const schuelerId of klasse.schueler || []) {
+                        await conn.execute(`
+                            INSERT INTO klassenversion_schueler (klassen_id, schuljahr, halbjahr, klassenstufe, schueler_id)
+                            VALUES (?, ?, ?, ?, ?)
+                        `, [
+                            id,
+                            klasse.schuljahr,
+                            klasse.halbjahr,
+                            klasse.klassenstufe,
+                            schuelerId
+                        ]);
+                    }
+                } catch(_) {
+                    await conn.rollback()
+                    return {
+                        success: false,
+                        message: 'Ein Schüler kann nur in einer Klasse sein.'
+                    };
                 }
-
             }
-
-
+            await conn.commit();
             return {
                 success: true,
                 message: 'Die Klasse wurde erfolgreich erstellt.'
             };
-
         } catch (e) {
-            await conn.rollback();
-            console.error(e);
+            await conn.rollback()
             return {
                 success: false,
                 message: 'Beim Erstellen der Klasse ist ein Fehler aufgetreten.'

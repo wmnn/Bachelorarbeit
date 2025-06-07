@@ -139,7 +139,7 @@ CREATE TABLE klassenversion_schueler (
     halbjahr VARCHAR(12),
     klassenstufe VARCHAR(12),
     schueler_id INT,
-    PRIMARY KEY (klassen_id, schuljahr, halbjahr, klassenstufe, schueler_id)
+    PRIMARY KEY (schuljahr, halbjahr, schueler_id)
 );
 
 CREATE TABLE user_leitet_klassenversion (

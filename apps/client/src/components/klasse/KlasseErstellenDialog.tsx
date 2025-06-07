@@ -6,41 +6,48 @@ import { KlasseErstellenDialogKlasse } from "./KlasseErstellenDialogKlasse";
 import { useQueryClient } from "@tanstack/react-query";
 import { KLASSEN_QUERY_KEY } from "@/reactQueryKeys";
 import { useSchuljahrStore } from "../schuljahr/SchuljahrStore";
+import { useEffect } from "react";
 
 interface KlasseErstellenDialogProps {
   closeDialog: () => void,
+  setResponseMessage: (val: string) => void
 }
-export function KlasseErstellenDialog({ closeDialog }: KlasseErstellenDialogProps) {
+export function KlasseErstellenDialog({ closeDialog, setResponseMessage }: KlasseErstellenDialogProps) {
 
     const schuljahr = useSchuljahrStore(state => state.ausgewaeltesSchuljahr)
     const halbjahr = useSchuljahrStore(state => state.ausgewaeltesHalbjahr)
     const klassen = useKlassenStore(state => state.neueKlassen)
     const setKlassen = useKlassenStore(state => state.setNeueKlassen)
 
-    const NEW_CLASS = {
-        schuljahr,
-        halbjahr,
-        klassenstufe: undefined,
-        zusatz: undefined,
-        schueler: []
-    }
-
-    if (klassen.length == 0) {
-        klasseHinzufügen()
-    }
+    useEffect(() => {
+        setKlassen((_) => [{
+            schuljahr,
+            halbjahr,
+            klassenstufe: undefined,
+            zusatz: undefined,
+            schueler: []
+        }])
+    }, [schuljahr, halbjahr])
 
     function klasseHinzufügen() {
-        setKlassen(prev => [...prev, NEW_CLASS])
+        setKlassen(prev => [...prev, {
+            schuljahr,
+            halbjahr,
+            klassenstufe: undefined,
+            zusatz: undefined,
+            schueler: []
+        }])
     }
 
     const queryClient = useQueryClient();
 
     async function handleSubmit() {
-        await createKlasse(klassen);
+        const res = await createKlasse(klassen);
+        setResponseMessage(res.message)
         queryClient.invalidateQueries({
             queryKey: [KLASSEN_QUERY_KEY]
         })
-        closeDialog();
+        // closeDialog();
     }
     return <DialogWithButtons onSubmit={() => handleSubmit()} closeDialog={() => closeDialog()} submitButtonText="Erstellen">
         <h1>Klasse hinzufügen</h1>

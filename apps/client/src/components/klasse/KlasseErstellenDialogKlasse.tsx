@@ -16,7 +16,7 @@ export function KlasseErstellenDialogKlasse({ klasse, setKlasse }: {
             zusatz: val
         })
     }
-    function setKlassenStufe(val: number) {
+    function setKlassenStufe(val: string) {
         setKlasse({
             ...klasse,
             klassenstufe: val
@@ -43,14 +43,11 @@ export function KlasseErstellenDialogKlasse({ klasse, setKlasse }: {
         <div className="flex gap-2">
             <div className="flex flex-col">
                 <label>Klassenstufe</label>
-                <Input value={klasse.klassenstufe} onChange={(e) => {
-                    const parsed = parseInt(e.target.value)
-                    setKlassenStufe(parsed)
-                }}/>
+                <Input value={klasse.klassenstufe ?? ''} onChange={(e) => setKlassenStufe(e.target.value)}/>
             </div>
             <div className="flex flex-col">
                 <label>Zusatz</label>
-                <Input value={klasse.zusatz} onChange={(e) => {
+                <Input value={klasse.zusatz ?? ''} onChange={(e) => {
                     setZusatz(e.target.value)
                 }}/>
             </div>
