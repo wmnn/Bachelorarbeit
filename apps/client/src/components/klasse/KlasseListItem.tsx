@@ -1,4 +1,3 @@
-import { type SchuelerSimple } from "@thesis/schueler";
 import { useState } from "react";
 import { KlasseLoeschenDialog } from "./KlasseLoeschenDialog";
 import { DeleteIcon } from "../icons/DeleteIcon";
@@ -11,9 +10,9 @@ export function KlasseListItem({ klasse }: { klasse: Klasse }) {
 
     return <li className='py-2 px-8 flex justify-between w-[100%] gap-8'>
 
-        {/* {
-            isDeleteDialogShown && <KlasseLoeschenDialog klasseId={schueler.id ?? -1} closeDialog={() => setIsDeleteDialogShown(false)}/>
-        } */}
+        {
+            isDeleteDialogShown && <KlasseLoeschenDialog klasseId={klasse.id} closeDialog={() => setIsDeleteDialogShown(false)}/>
+        }
         <button className="flex gap-2 w-full">
             <p>{getTitle(klasse)}</p> 
         </button>

@@ -48,3 +48,39 @@ export const createKlasse = async (klassen: KlassenVersion[]) => {
     }
 }
 
+export interface DeleteKlasseRequestBody {
+   klassenId: number
+}
+
+export interface DeleteKlasseResponseBody {
+    success: boolean;
+    message: string;
+}
+
+export const deleteKlasse = async (klassenId: number) => {
+
+    try {
+        const res = await fetch(KLASSEN_ENDPOINT, {
+            method: 'DELETE',
+            body: JSON.stringify({
+                klassenId
+            } as DeleteKlasseRequestBody),
+            headers: {
+                'content-type': 'application/json'
+            },
+        })
+
+        if (res.status === 403) {
+            window.location.href = '/login'
+        }
+    
+        return await res.json() as DeleteKlasseResponseBody;
+        
+    } catch (e) {
+        return {
+            success: false,
+            message: 'Ein Fehler ist aufgetreten.'
+        };
+    }
+
+}

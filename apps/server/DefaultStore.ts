@@ -698,6 +698,48 @@ export class DefaultStore implements AuthStore {
             };
         }  
     }
+    async deleteClass(klassenId: number) {
+        if (!this.connection) {
+            return STANDARD_FEHLER
+        }
+
+        const conn = this.connection;
+
+        try {
+            await conn.beginTransaction();
+
+            await conn.execute(
+                `DELETE FROM klassenversion_schueler WHERE klassen_id = ?`,
+                [klassenId]
+            );
+
+            await conn.execute(
+                `DELETE FROM klassenversionen WHERE klassen_id = ?`,
+                [klassenId]
+            );
+
+            await conn.execute(
+                `DELETE FROM klassen WHERE id = ?`,
+                [klassenId]
+            );
+
+            await conn.commit();
+
+            return {
+                success: true,
+                message: 'Die Klasse wurde erfolgreich gelöscht.'
+            };
+
+        } catch (e) {
+            await conn.rollback();
+            console.error(e);
+            return {
+                success: false,
+                message: 'Beim Löschen der Klasse ist ein Fehler aufgetreten.'
+            };
+        }
+    }
+
 
 
 }

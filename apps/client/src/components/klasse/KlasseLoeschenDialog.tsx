@@ -1,6 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { RiskyActionDialog } from "../dialog/RiskyActionDialog";
-import { deleteSchueler } from "@thesis/schueler";
+import { KLASSEN_QUERY_KEY } from "@/reactQueryKeys";
+import { deleteKlasse } from "@thesis/schule";
 
 interface KlasseLoeschenDialogProps {
     klasseId: number,
@@ -13,14 +14,13 @@ interface KlasseLoeschenDialogProps {
 export function KlasseLoeschenDialog({ klasseId, closeDialog, setDeleteMsg, setIsLoading, onSubmit }: KlasseLoeschenDialogProps) {
 
     const queryClient = useQueryClient()
-    
 
     async function handleDelete() {
         if (setIsLoading) {
             setIsLoading(true);
         }
-        const res = await deleteSchueler(klasseId);
-        queryClient.invalidateQueries({ queryKey: ['schueler'] })
+        const res = await deleteKlasse(klasseId);
+        queryClient.invalidateQueries({ queryKey: [KLASSEN_QUERY_KEY] })
         if (setDeleteMsg) {
             setDeleteMsg(res.message)
         }
@@ -29,8 +29,9 @@ export function KlasseLoeschenDialog({ klasseId, closeDialog, setDeleteMsg, setI
         }
         closeDialog()
     }
+
     return <RiskyActionDialog 
-        message={'Willst du den Schüler wirklich löschen?'} 
+        message={'Willst du die Klasse wirklich löschen?'} 
         closeDialog={() => closeDialog()}
         onSubmit={() => {
             if (onSubmit) {

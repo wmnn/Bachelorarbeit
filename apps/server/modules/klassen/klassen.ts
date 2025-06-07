@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import { getDB } from '../../singleton';
-import { CreateClassRequestBody, CreateClassResponseBody, Halbjahr, Schuljahr } from '@thesis/schule';
+import { CreateClassRequestBody, CreateClassResponseBody, DeleteKlasseRequestBody, DeleteKlasseResponseBody, Halbjahr, Schuljahr } from '@thesis/schule';
+import { DeleteSchuelerResponseBody } from '@thesis/schueler';
 
 let router = express.Router();
 
@@ -23,5 +24,10 @@ router.post('/', async (req: Request<{}, {}, CreateClassRequestBody>, res: Respo
     res.status(500).json(msg);
 });
 
+router.delete('/', async (req: Request<{}, {}, DeleteKlasseRequestBody>, res: Response<DeleteKlasseResponseBody>) => {
+    const klassenId = req.body.klassenId
+    const msg = await getDB().deleteClass(klassenId)
+    res.status(200).json(msg as DeleteSchuelerResponseBody);
+});
 
 export { router };
