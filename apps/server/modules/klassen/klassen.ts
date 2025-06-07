@@ -14,10 +14,19 @@ router.get('/', async (req, res) => {
         });
         return;
     }
-
     const klassen = await getDB().getClasses(schuljahr as Schuljahr, halbjahr as Halbjahr)
     res.status(200).json(klassen);
 });
+
+router.get('/:klassenId', async (req, res) => {
+    const { klassenId } = req.params
+    const { schuljahr, halbjahr } = req.query;
+    console.log(klassenId, schuljahr, halbjahr)
+    const klasse = await getDB().getClass(schuljahr as Schuljahr, halbjahr as Halbjahr, parseInt(klassenId))
+    console.log(klasse)
+    res.status(klasse ? 200 : 400).json(klasse);
+});
+
 
 router.post('/', async (req: Request<{}, {}, CreateClassRequestBody>, res: Response<CreateClassResponseBody>) => {
     const msg = await getDB().createClass(req.body)

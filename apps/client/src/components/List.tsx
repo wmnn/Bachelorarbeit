@@ -9,10 +9,11 @@ interface ListProps<T> {
     createButonLabel: string,
     title?: string,
     leftHeader?: ReactNode,
-    rightHeader?: ReactNode
+    rightHeader?: ReactNode,
+    className?: string
 }
-export function List<T>({ setIsCreateDialogShown, children, createButonLabel, leftHeader, rightHeader}: ListProps<T> ) {
-    return <div className='flex flex-col p-8 w-full'>
+export function List<T>({ setIsCreateDialogShown, children, createButonLabel, leftHeader, rightHeader, className}: ListProps<T> ) {
+    return <div className={`flex flex-col w-full ${className}`}>
         <div className='flex justify-between mb-8'>
             { leftHeader }
             <div className='flex gap-2'>

@@ -68,6 +68,7 @@ function RouteComponent() {
       createButonLabel='Klasse erstellen'
       leftHeader={LeftHeader}
       rightHeader={RightHeader}
+      className='p-8'
     >
       {
         klassen.map((item: Klasse) => {

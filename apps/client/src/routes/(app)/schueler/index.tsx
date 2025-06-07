@@ -28,6 +28,7 @@ function RouteComponent() {
     setIsCreateDialogShown={setIsCreateDialogShown} 
     createButonLabel='Schüler erstellen'
     leftHeader={<h1>Schüler</h1>}
+    className='p-8'
     
   >
     { isCreateDialogShown && <SchuelerErstellenDialog closeDialog={() => setIsCreateDialogShown(false)}/>}

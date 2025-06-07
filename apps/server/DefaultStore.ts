@@ -601,6 +601,68 @@ export class DefaultStore implements AuthStore {
         }
     }
 
+    async getClass(schuljahr: Schuljahr, halbjahr: Halbjahr, klassenId: number): Promise<Klasse | undefined> {
+        if (!this.connection) {
+            return undefined;
+        }
+
+        const [rows] = await this.connection.execute<any[]>(
+            `SELECT * FROM klassenversionen
+            NATURAL JOIN klassenversion_schueler
+            JOIN schueler ON schueler_id = schueler.id
+            WHERE schuljahr = ? AND halbjahr = ? AND klassen_id = ?;`,
+            [schuljahr, halbjahr, klassenId]
+        );
+
+        if (!Array.isArray(rows)) {
+            return undefined;
+        }
+
+        let klasse = rows.reduce((prev: Klasse[], current) => {
+            const { klassenstufe, zusatz, schuljahr, halbjahr, klassen_id: klassenId } = current
+            let klasse = prev.find(k => k.id === klassenId);
+
+            if (!klasse) {
+                klasse = { id: current.klassen_id, versionen: [] };
+                prev.push(klasse);
+            }
+
+            if (!klasse.versionen.some(o => o.zusatz === zusatz && o.klassenstufe === klassenstufe)) {
+                klasse.versionen.push({
+                    klassenId,
+                    klassenstufe,
+                    zusatz,
+                    schuljahr, 
+                    halbjahr
+                } as KlassenVersion);
+            }
+
+            return prev;
+        }, [])[0];
+
+        // Adding schueler to class
+        for (const row of rows) {
+            const { klassenstufe, zusatz, vorname, nachname } = row;
+            klasse.versionen.map((version) => {
+                if (version.klassenstufe !== klassenstufe || version.zusatz !== zusatz) {
+                    return version
+                }
+                if (!version.schueler) {
+                    version.schueler = []
+                }
+                version.schueler.push({
+                    id: row.schueler_id,
+                    vorname,
+                    nachname,
+                    hatSonderpaedagogischeKraft: row.hat_sonderpaedagogische_kraft,
+                    verlaesstSchuleAllein: row.verlaesst_schule_allein,
+                })
+                return version
+            })
+        }
+        return klasse;
+    }
+
     async getClasses(schuljahr: Schuljahr, halbjahr: Halbjahr): Promise<Klasse[]> {
         if (!this.connection) {
             return [];

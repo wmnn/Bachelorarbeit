@@ -3,6 +3,7 @@ import { KlasseLoeschenDialog } from "./KlasseLoeschenDialog";
 import { DeleteIcon } from "../icons/DeleteIcon";
 import type { Klasse } from "@thesis/schule";
 import { getTitle } from "./util";
+import { Link } from "@tanstack/react-router";
 
 export function KlasseListItem({ klasse }: { klasse: Klasse }) {
 
@@ -13,9 +14,14 @@ export function KlasseListItem({ klasse }: { klasse: Klasse }) {
         {
             isDeleteDialogShown && <KlasseLoeschenDialog klasseId={klasse.id} closeDialog={() => setIsDeleteDialogShown(false)}/>
         }
-        <button className="flex gap-2 w-full">
+        <Link className="flex gap-2 w-full"
+            to="/klassen/$klassenId"
+            params={{
+                klassenId: `${klasse.id}`
+            }}
+        >
             <p>{getTitle(klasse)}</p> 
-        </button>
+        </Link>
         
         <div className='flex gap-4'>
             <button onClick={() => setIsDeleteDialogShown(true)}>
