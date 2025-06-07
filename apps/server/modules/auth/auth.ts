@@ -286,7 +286,6 @@ router.post(
 		
 	    const token = jwt.sign(jwtPayload, registerKey, {expiresIn: '2h'})
         const cbEndpoint = req.headers.origin + AUTH_API_ENDPOINT + REGISTER_CALLBACK_ENDPOINT + '?token=' + token
-        console.log('Before sending email: ', user)
         const success = await sendActivateAccountEmail(user.email, cbEndpoint)
         if (!success) {
             res.status(401).json({

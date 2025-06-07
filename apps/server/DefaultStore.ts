@@ -480,6 +480,49 @@ export class DefaultStore implements AuthStore {
         return rows as SchuelerSimple[];
     }
 
+    async getSchuelerComplete(schuelerId: number): Promise<Schueler | undefined> {
+        if (!this.connection) {
+            return undefined;
+        }
+
+        const conn = this.connection;
+
+        const [rows] = await conn.execute<ResultSetHeader>(`
+            SELECT * FROM schueler WHERE id = ?
+        `, [schuelerId]);
+
+        if (!Array.isArray(rows) || rows.length !== 1) {
+            return undefined;
+        }
+        let schueler = rows[0]
+
+        const [allergienUndUnvertraeglichkeiten] = await conn.execute<ResultSetHeader>(`
+            SELECT * FROM schueler_allergien_unvertraeglichkeiten WHERE schueler_id = ?
+        `, [schuelerId]);
+
+        if (Array.isArray(allergienUndUnvertraeglichkeiten) && allergienUndUnvertraeglichkeiten.length > 0) {
+            schueler.allergienUndUnvertraeglichkeiten = allergienUndUnvertraeglichkeiten.map((entry) => entry.allergie_oder_unvertraeglichkeit)
+        }
+
+        const [medikamente] = await conn.execute<ResultSetHeader>(`
+            SELECT * FROM schueler_medikamente WHERE schueler_id = ?
+        `, [schuelerId]);
+
+        if (Array.isArray(medikamente) && medikamente.length > 0) {
+            schueler.medikamente = medikamente.map((entry) => entry.medikament)
+        }
+
+        const [abholberechtigtePersonen] = await conn.execute<ResultSetHeader>(`
+            SELECT * FROM schueler_abholberechtigte_personen WHERE schueler_id = ?
+        `, [schuelerId]);
+
+        if (Array.isArray(abholberechtigtePersonen) && abholberechtigtePersonen.length > 0) {
+            schueler.abholberechtigtePersonen = abholberechtigtePersonen
+        }
+
+        return schueler;
+    }
+
 
     async createSchueler(schueler: Schueler): Promise<DatabaseMessage> {
         if (!this.connection) {
@@ -524,9 +567,10 @@ export class DefaultStore implements AuthStore {
 
             for (const person of schueler.abholberechtigtePersonen || []) {
                 await conn.execute(`
-                    INSERT INTO abholberechtigte_personen (vorname, nachname, strasse, hausnummer, wohnort, abholzeit)
-                    VALUES (?, ?, ?, ?, ?, ?)
+                    INSERT INTO schueler_abholberechtigte_personen (schueler_id, vorname, nachname, strasse, hausnummer, wohnort, abholzeit)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
                 `, [
+                    id,
                     person.vorname,
                     person.nachname,
                     person.strasse,
@@ -571,7 +615,10 @@ export class DefaultStore implements AuthStore {
                 WHERE schueler_id = ?
             `, [schuelerId]);
 
-            // TODO delte abholberechtigte Personen if no other Schüler has them
+            await conn.execute(`
+                DELETE FROM schueler_abholberechtigte_personen
+                WHERE schueler_id = ?
+            `, [schuelerId]);
 
             const [result] = await conn.execute<ResultSetHeader>(`
                 DELETE FROM schueler

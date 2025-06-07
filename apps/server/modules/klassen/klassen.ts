@@ -21,9 +21,7 @@ router.get('/', async (req, res) => {
 router.get('/:klassenId', async (req, res) => {
     const { klassenId } = req.params
     const { schuljahr, halbjahr } = req.query;
-    console.log(klassenId, schuljahr, halbjahr)
     const klasse = await getDB().getClass(schuljahr as Schuljahr, halbjahr as Halbjahr, parseInt(klassenId))
-    console.log(klasse)
     res.status(klasse ? 200 : 400).json(klasse);
 });
 

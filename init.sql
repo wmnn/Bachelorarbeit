@@ -1,6 +1,6 @@
-CREATE TABLE berechtigungen (
-    label VARCHAR(255) PRIMARY KEY
-);
+-- CREATE TABLE berechtigungen (
+--     label VARCHAR(255) PRIMARY KEY
+-- );
 
 CREATE TABLE rollen (
     rolle VARCHAR(36) PRIMARY KEY,
@@ -69,12 +69,13 @@ CREATE TABLE schueler (
     verlaesst_schule_allein VARCHAR(255)
 );
 
-CREATE TABLE abholberechtigte_personen (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE schueler_abholberechtigte_personen (
+    schueler_id INT PRIMARY KEY,
     vorname VARCHAR(255),
     nachname VARCHAR(255),
     strasse VARCHAR(255),
     hausnummer VARCHAR(255),
+    postleitzahl INT,
     wohnort VARCHAR(255),
     abholzeit VARCHAR(255)
 );
@@ -155,13 +156,13 @@ CREATE TABLE user_fuehrt_ganztagsangebot (
 );
 
 CREATE TABLE schueler_allergien_unvertraeglichkeiten (
-    schueler_id VARCHAR(36),
+    schueler_id INT,
     allergie_oder_unvertraeglichkeit VARCHAR(255),
     PRIMARY KEY (schueler_id, allergie_oder_unvertraeglichkeit)
 );
 
 CREATE TABLE schueler_medikamente (
-    schueler_id VARCHAR(36),
+    schueler_id INT,
     medikament VARCHAR(255),
     PRIMARY KEY (schueler_id, medikament)
 );

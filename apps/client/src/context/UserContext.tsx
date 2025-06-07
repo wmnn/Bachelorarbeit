@@ -31,7 +31,6 @@ export default function UserContextProvider({ children }: ContextProps) {
         if (!savedUser) return;
         try {
             const parsedUser = JSON.parse(savedUser)
-            console.log(parsedUser)
             setUser(parsedUser)
         } catch(e) { }
     }, [])

@@ -30,7 +30,7 @@ function MultiInput({ values, setValues, label }: { values: Array<string>, setVa
 }
 export function SchuelerErstellenDialog({ closeDialog }: SchuelerErstellenDialogProps) {
 
-     const queryClient = useQueryClient()
+    const queryClient = useQueryClient()
     const [vorname, setVorname] = useState('');
     const [nachname, setNachname] = useState('');
     const [medikamente, setMedikamente] = useState<string[]>([]);

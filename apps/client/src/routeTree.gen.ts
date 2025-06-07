@@ -22,6 +22,7 @@ import { Route as appResetPasswordIndexImport } from './routes/(app)/reset-passw
 import { Route as appKlassenIndexImport } from './routes/(app)/klassen/index'
 import { Route as appGanztagsangeboteIndexImport } from './routes/(app)/ganztagsangebote/index'
 import { Route as appDashboardIndexImport } from './routes/(app)/dashboard/index'
+import { Route as appSchuelerSchuelerIdImport } from './routes/(app)/schueler/$schuelerId'
 import { Route as appKlassenKlassenIdImport } from './routes/(app)/klassen/$klassenId'
 
 // Create/Update Routes
@@ -91,6 +92,12 @@ const appDashboardIndexRoute = appDashboardIndexImport.update({
   getParentRoute: () => appRouteRoute,
 } as any)
 
+const appSchuelerSchuelerIdRoute = appSchuelerSchuelerIdImport.update({
+  id: '/schueler/$schuelerId',
+  path: '/schueler/$schuelerId',
+  getParentRoute: () => appRouteRoute,
+} as any)
+
 const appKlassenKlassenIdRoute = appKlassenKlassenIdImport.update({
   id: '/klassen/$klassenId',
   path: '/klassen/$klassenId',
@@ -120,6 +127,13 @@ declare module '@tanstack/react-router' {
       path: '/klassen/$klassenId'
       fullPath: '/klassen/$klassenId'
       preLoaderRoute: typeof appKlassenKlassenIdImport
+      parentRoute: typeof appRouteImport
+    }
+    '/(app)/schueler/$schuelerId': {
+      id: '/(app)/schueler/$schuelerId'
+      path: '/schueler/$schuelerId'
+      fullPath: '/schueler/$schuelerId'
+      preLoaderRoute: typeof appSchuelerSchuelerIdImport
       parentRoute: typeof appRouteImport
     }
     '/(app)/dashboard/': {
@@ -192,6 +206,7 @@ declare module '@tanstack/react-router' {
 
 interface appRouteRouteChildren {
   appKlassenKlassenIdRoute: typeof appKlassenKlassenIdRoute
+  appSchuelerSchuelerIdRoute: typeof appSchuelerSchuelerIdRoute
   appDashboardIndexRoute: typeof appDashboardIndexRoute
   appGanztagsangeboteIndexRoute: typeof appGanztagsangeboteIndexRoute
   appKlassenIndexRoute: typeof appKlassenIndexRoute
@@ -203,6 +218,7 @@ interface appRouteRouteChildren {
 
 const appRouteRouteChildren: appRouteRouteChildren = {
   appKlassenKlassenIdRoute: appKlassenKlassenIdRoute,
+  appSchuelerSchuelerIdRoute: appSchuelerSchuelerIdRoute,
   appDashboardIndexRoute: appDashboardIndexRoute,
   appGanztagsangeboteIndexRoute: appGanztagsangeboteIndexRoute,
   appKlassenIndexRoute: appKlassenIndexRoute,
@@ -219,6 +235,7 @@ const appRouteRouteWithChildren = appRouteRoute._addFileChildren(
 export interface FileRoutesByFullPath {
   '/': typeof appRouteRouteWithChildren
   '/klassen/$klassenId': typeof appKlassenKlassenIdRoute
+  '/schueler/$schuelerId': typeof appSchuelerSchuelerIdRoute
   '/dashboard': typeof appDashboardIndexRoute
   '/ganztagsangebote': typeof appGanztagsangeboteIndexRoute
   '/klassen': typeof appKlassenIndexRoute
@@ -233,6 +250,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof appRouteRouteWithChildren
   '/klassen/$klassenId': typeof appKlassenKlassenIdRoute
+  '/schueler/$schuelerId': typeof appSchuelerSchuelerIdRoute
   '/dashboard': typeof appDashboardIndexRoute
   '/ganztagsangebote': typeof appGanztagsangeboteIndexRoute
   '/klassen': typeof appKlassenIndexRoute
@@ -249,6 +267,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/(app)': typeof appRouteRouteWithChildren
   '/(app)/klassen/$klassenId': typeof appKlassenKlassenIdRoute
+  '/(app)/schueler/$schuelerId': typeof appSchuelerSchuelerIdRoute
   '/(app)/dashboard/': typeof appDashboardIndexRoute
   '/(app)/ganztagsangebote/': typeof appGanztagsangeboteIndexRoute
   '/(app)/klassen/': typeof appKlassenIndexRoute
@@ -265,6 +284,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/klassen/$klassenId'
+    | '/schueler/$schuelerId'
     | '/dashboard'
     | '/ganztagsangebote'
     | '/klassen'
@@ -278,6 +298,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/klassen/$klassenId'
+    | '/schueler/$schuelerId'
     | '/dashboard'
     | '/ganztagsangebote'
     | '/klassen'
@@ -292,6 +313,7 @@ export interface FileRouteTypes {
     | '/'
     | '/(app)'
     | '/(app)/klassen/$klassenId'
+    | '/(app)/schueler/$schuelerId'
     | '/(app)/dashboard/'
     | '/(app)/ganztagsangebote/'
     | '/(app)/klassen/'
@@ -341,6 +363,7 @@ export const routeTree = rootRoute
       "filePath": "(app)/route.tsx",
       "children": [
         "/(app)/klassen/$klassenId",
+        "/(app)/schueler/$schuelerId",
         "/(app)/dashboard/",
         "/(app)/ganztagsangebote/",
         "/(app)/klassen/",
@@ -352,6 +375,10 @@ export const routeTree = rootRoute
     },
     "/(app)/klassen/$klassenId": {
       "filePath": "(app)/klassen/$klassenId.tsx",
+      "parent": "/(app)"
+    },
+    "/(app)/schueler/$schuelerId": {
+      "filePath": "(app)/schueler/$schuelerId.tsx",
       "parent": "/(app)"
     },
     "/(app)/dashboard/": {

@@ -1,6 +1,7 @@
 import { List } from '@/components/List'
 import { SchuelerErstellenDialog } from '@/components/schueler/SchuelerErstellenDialog'
 import { SchuelerListItem } from '@/components/schueler/SchuelerListItem'
+import { SCHUELER_QUERY_KEY } from '@/reactQueryKeys'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { type SchuelerSimple } from '@thesis/schueler';
@@ -16,7 +17,7 @@ function RouteComponent() {
   const [isCreateDialogShown, setIsCreateDialogShown] = useState(false)
 
   const { isPending, data: schuelerArr } = useQuery<SchuelerSimple[]>({
-    queryKey: ['schueler'],
+    queryKey: [SCHUELER_QUERY_KEY],
     queryFn: getSchueler,
     initialData: [],  
   })

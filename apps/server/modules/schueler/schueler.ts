@@ -16,6 +16,12 @@ router.get('/', async (req, res) => {
     res.status(200).json(msg);
 });
 
+router.get('/:schuelerId', async (req, res) => {
+    const { schuelerId } = req.params
+    const msg = await getDB().getSchuelerComplete(parseInt(schuelerId))
+    res.status(200).json(msg);
+});
+
 router.delete('/', async (req: Request<{}, {}, DeleteSchuelerRequestBody>, res: Response<DeleteSchuelerResponseBody>) => {
     const schuelerId = req.body.schuelerId
     const msg = await getDB().deleteSchueler(schuelerId)
