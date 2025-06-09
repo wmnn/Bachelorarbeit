@@ -22,9 +22,15 @@ import { Route as appResetPasswordIndexImport } from './routes/(app)/reset-passw
 import { Route as appKlassenIndexImport } from './routes/(app)/klassen/index'
 import { Route as appGanztagsangeboteIndexImport } from './routes/(app)/ganztagsangebote/index'
 import { Route as appDashboardIndexImport } from './routes/(app)/dashboard/index'
-import { Route as appSchuelerSchuelerIdImport } from './routes/(app)/schueler/$schuelerId'
+import { Route as appSchuelerSchuelerIdIndexImport } from './routes/(app)/schueler/$schuelerId/index'
 import { Route as appKlassenKlassenIdIndexImport } from './routes/(app)/klassen/$klassenId/index'
+import { Route as appSchuelerSchuelerIdMonitoringImport } from './routes/(app)/schueler/$schuelerId/monitoring'
+import { Route as appSchuelerSchuelerIdHistorieImport } from './routes/(app)/schueler/$schuelerId/historie'
+import { Route as appSchuelerSchuelerIdBrettImport } from './routes/(app)/schueler/$schuelerId/brett'
+import { Route as appSchuelerSchuelerIdAnwesenheitenImport } from './routes/(app)/schueler/$schuelerId/anwesenheiten'
+import { Route as appKlassenKlassenIdTestsImport } from './routes/(app)/klassen/$klassenId/tests'
 import { Route as appKlassenKlassenIdEditImport } from './routes/(app)/klassen/$klassenId/edit'
+import { Route as appKlassenKlassenIdBrettImport } from './routes/(app)/klassen/$klassenId/brett'
 
 // Create/Update Routes
 
@@ -93,11 +99,13 @@ const appDashboardIndexRoute = appDashboardIndexImport.update({
   getParentRoute: () => appRouteRoute,
 } as any)
 
-const appSchuelerSchuelerIdRoute = appSchuelerSchuelerIdImport.update({
-  id: '/schueler/$schuelerId',
-  path: '/schueler/$schuelerId',
-  getParentRoute: () => appRouteRoute,
-} as any)
+const appSchuelerSchuelerIdIndexRoute = appSchuelerSchuelerIdIndexImport.update(
+  {
+    id: '/schueler/$schuelerId/',
+    path: '/schueler/$schuelerId/',
+    getParentRoute: () => appRouteRoute,
+  } as any,
+)
 
 const appKlassenKlassenIdIndexRoute = appKlassenKlassenIdIndexImport.update({
   id: '/klassen/$klassenId/',
@@ -105,9 +113,50 @@ const appKlassenKlassenIdIndexRoute = appKlassenKlassenIdIndexImport.update({
   getParentRoute: () => appRouteRoute,
 } as any)
 
+const appSchuelerSchuelerIdMonitoringRoute =
+  appSchuelerSchuelerIdMonitoringImport.update({
+    id: '/schueler/$schuelerId/monitoring',
+    path: '/schueler/$schuelerId/monitoring',
+    getParentRoute: () => appRouteRoute,
+  } as any)
+
+const appSchuelerSchuelerIdHistorieRoute =
+  appSchuelerSchuelerIdHistorieImport.update({
+    id: '/schueler/$schuelerId/historie',
+    path: '/schueler/$schuelerId/historie',
+    getParentRoute: () => appRouteRoute,
+  } as any)
+
+const appSchuelerSchuelerIdBrettRoute = appSchuelerSchuelerIdBrettImport.update(
+  {
+    id: '/schueler/$schuelerId/brett',
+    path: '/schueler/$schuelerId/brett',
+    getParentRoute: () => appRouteRoute,
+  } as any,
+)
+
+const appSchuelerSchuelerIdAnwesenheitenRoute =
+  appSchuelerSchuelerIdAnwesenheitenImport.update({
+    id: '/schueler/$schuelerId/anwesenheiten',
+    path: '/schueler/$schuelerId/anwesenheiten',
+    getParentRoute: () => appRouteRoute,
+  } as any)
+
+const appKlassenKlassenIdTestsRoute = appKlassenKlassenIdTestsImport.update({
+  id: '/klassen/$klassenId/tests',
+  path: '/klassen/$klassenId/tests',
+  getParentRoute: () => appRouteRoute,
+} as any)
+
 const appKlassenKlassenIdEditRoute = appKlassenKlassenIdEditImport.update({
   id: '/klassen/$klassenId/edit',
   path: '/klassen/$klassenId/edit',
+  getParentRoute: () => appRouteRoute,
+} as any)
+
+const appKlassenKlassenIdBrettRoute = appKlassenKlassenIdBrettImport.update({
+  id: '/klassen/$klassenId/brett',
+  path: '/klassen/$klassenId/brett',
   getParentRoute: () => appRouteRoute,
 } as any)
 
@@ -128,13 +177,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof appRouteImport
       parentRoute: typeof rootRoute
-    }
-    '/(app)/schueler/$schuelerId': {
-      id: '/(app)/schueler/$schuelerId'
-      path: '/schueler/$schuelerId'
-      fullPath: '/schueler/$schuelerId'
-      preLoaderRoute: typeof appSchuelerSchuelerIdImport
-      parentRoute: typeof appRouteImport
     }
     '/(app)/dashboard/': {
       id: '/(app)/dashboard/'
@@ -199,11 +241,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authRegisterIndexImport
       parentRoute: typeof rootRoute
     }
+    '/(app)/klassen/$klassenId/brett': {
+      id: '/(app)/klassen/$klassenId/brett'
+      path: '/klassen/$klassenId/brett'
+      fullPath: '/klassen/$klassenId/brett'
+      preLoaderRoute: typeof appKlassenKlassenIdBrettImport
+      parentRoute: typeof appRouteImport
+    }
     '/(app)/klassen/$klassenId/edit': {
       id: '/(app)/klassen/$klassenId/edit'
       path: '/klassen/$klassenId/edit'
       fullPath: '/klassen/$klassenId/edit'
       preLoaderRoute: typeof appKlassenKlassenIdEditImport
+      parentRoute: typeof appRouteImport
+    }
+    '/(app)/klassen/$klassenId/tests': {
+      id: '/(app)/klassen/$klassenId/tests'
+      path: '/klassen/$klassenId/tests'
+      fullPath: '/klassen/$klassenId/tests'
+      preLoaderRoute: typeof appKlassenKlassenIdTestsImport
+      parentRoute: typeof appRouteImport
+    }
+    '/(app)/schueler/$schuelerId/anwesenheiten': {
+      id: '/(app)/schueler/$schuelerId/anwesenheiten'
+      path: '/schueler/$schuelerId/anwesenheiten'
+      fullPath: '/schueler/$schuelerId/anwesenheiten'
+      preLoaderRoute: typeof appSchuelerSchuelerIdAnwesenheitenImport
+      parentRoute: typeof appRouteImport
+    }
+    '/(app)/schueler/$schuelerId/brett': {
+      id: '/(app)/schueler/$schuelerId/brett'
+      path: '/schueler/$schuelerId/brett'
+      fullPath: '/schueler/$schuelerId/brett'
+      preLoaderRoute: typeof appSchuelerSchuelerIdBrettImport
+      parentRoute: typeof appRouteImport
+    }
+    '/(app)/schueler/$schuelerId/historie': {
+      id: '/(app)/schueler/$schuelerId/historie'
+      path: '/schueler/$schuelerId/historie'
+      fullPath: '/schueler/$schuelerId/historie'
+      preLoaderRoute: typeof appSchuelerSchuelerIdHistorieImport
+      parentRoute: typeof appRouteImport
+    }
+    '/(app)/schueler/$schuelerId/monitoring': {
+      id: '/(app)/schueler/$schuelerId/monitoring'
+      path: '/schueler/$schuelerId/monitoring'
+      fullPath: '/schueler/$schuelerId/monitoring'
+      preLoaderRoute: typeof appSchuelerSchuelerIdMonitoringImport
       parentRoute: typeof appRouteImport
     }
     '/(app)/klassen/$klassenId/': {
@@ -213,13 +297,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appKlassenKlassenIdIndexImport
       parentRoute: typeof appRouteImport
     }
+    '/(app)/schueler/$schuelerId/': {
+      id: '/(app)/schueler/$schuelerId/'
+      path: '/schueler/$schuelerId'
+      fullPath: '/schueler/$schuelerId'
+      preLoaderRoute: typeof appSchuelerSchuelerIdIndexImport
+      parentRoute: typeof appRouteImport
+    }
   }
 }
 
 // Create and export the route tree
 
 interface appRouteRouteChildren {
-  appSchuelerSchuelerIdRoute: typeof appSchuelerSchuelerIdRoute
   appDashboardIndexRoute: typeof appDashboardIndexRoute
   appGanztagsangeboteIndexRoute: typeof appGanztagsangeboteIndexRoute
   appKlassenIndexRoute: typeof appKlassenIndexRoute
@@ -227,12 +317,18 @@ interface appRouteRouteChildren {
   appRollenmanagementIndexRoute: typeof appRollenmanagementIndexRoute
   appSchuelerIndexRoute: typeof appSchuelerIndexRoute
   appSettingsIndexRoute: typeof appSettingsIndexRoute
+  appKlassenKlassenIdBrettRoute: typeof appKlassenKlassenIdBrettRoute
   appKlassenKlassenIdEditRoute: typeof appKlassenKlassenIdEditRoute
+  appKlassenKlassenIdTestsRoute: typeof appKlassenKlassenIdTestsRoute
+  appSchuelerSchuelerIdAnwesenheitenRoute: typeof appSchuelerSchuelerIdAnwesenheitenRoute
+  appSchuelerSchuelerIdBrettRoute: typeof appSchuelerSchuelerIdBrettRoute
+  appSchuelerSchuelerIdHistorieRoute: typeof appSchuelerSchuelerIdHistorieRoute
+  appSchuelerSchuelerIdMonitoringRoute: typeof appSchuelerSchuelerIdMonitoringRoute
   appKlassenKlassenIdIndexRoute: typeof appKlassenKlassenIdIndexRoute
+  appSchuelerSchuelerIdIndexRoute: typeof appSchuelerSchuelerIdIndexRoute
 }
 
 const appRouteRouteChildren: appRouteRouteChildren = {
-  appSchuelerSchuelerIdRoute: appSchuelerSchuelerIdRoute,
   appDashboardIndexRoute: appDashboardIndexRoute,
   appGanztagsangeboteIndexRoute: appGanztagsangeboteIndexRoute,
   appKlassenIndexRoute: appKlassenIndexRoute,
@@ -240,8 +336,16 @@ const appRouteRouteChildren: appRouteRouteChildren = {
   appRollenmanagementIndexRoute: appRollenmanagementIndexRoute,
   appSchuelerIndexRoute: appSchuelerIndexRoute,
   appSettingsIndexRoute: appSettingsIndexRoute,
+  appKlassenKlassenIdBrettRoute: appKlassenKlassenIdBrettRoute,
   appKlassenKlassenIdEditRoute: appKlassenKlassenIdEditRoute,
+  appKlassenKlassenIdTestsRoute: appKlassenKlassenIdTestsRoute,
+  appSchuelerSchuelerIdAnwesenheitenRoute:
+    appSchuelerSchuelerIdAnwesenheitenRoute,
+  appSchuelerSchuelerIdBrettRoute: appSchuelerSchuelerIdBrettRoute,
+  appSchuelerSchuelerIdHistorieRoute: appSchuelerSchuelerIdHistorieRoute,
+  appSchuelerSchuelerIdMonitoringRoute: appSchuelerSchuelerIdMonitoringRoute,
   appKlassenKlassenIdIndexRoute: appKlassenKlassenIdIndexRoute,
+  appSchuelerSchuelerIdIndexRoute: appSchuelerSchuelerIdIndexRoute,
 }
 
 const appRouteRouteWithChildren = appRouteRoute._addFileChildren(
@@ -250,7 +354,6 @@ const appRouteRouteWithChildren = appRouteRoute._addFileChildren(
 
 export interface FileRoutesByFullPath {
   '/': typeof appRouteRouteWithChildren
-  '/schueler/$schuelerId': typeof appSchuelerSchuelerIdRoute
   '/dashboard': typeof appDashboardIndexRoute
   '/ganztagsangebote': typeof appGanztagsangeboteIndexRoute
   '/klassen': typeof appKlassenIndexRoute
@@ -260,13 +363,19 @@ export interface FileRoutesByFullPath {
   '/settings': typeof appSettingsIndexRoute
   '/login': typeof authLoginIndexRoute
   '/register': typeof authRegisterIndexRoute
+  '/klassen/$klassenId/brett': typeof appKlassenKlassenIdBrettRoute
   '/klassen/$klassenId/edit': typeof appKlassenKlassenIdEditRoute
+  '/klassen/$klassenId/tests': typeof appKlassenKlassenIdTestsRoute
+  '/schueler/$schuelerId/anwesenheiten': typeof appSchuelerSchuelerIdAnwesenheitenRoute
+  '/schueler/$schuelerId/brett': typeof appSchuelerSchuelerIdBrettRoute
+  '/schueler/$schuelerId/historie': typeof appSchuelerSchuelerIdHistorieRoute
+  '/schueler/$schuelerId/monitoring': typeof appSchuelerSchuelerIdMonitoringRoute
   '/klassen/$klassenId': typeof appKlassenKlassenIdIndexRoute
+  '/schueler/$schuelerId': typeof appSchuelerSchuelerIdIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof appRouteRouteWithChildren
-  '/schueler/$schuelerId': typeof appSchuelerSchuelerIdRoute
   '/dashboard': typeof appDashboardIndexRoute
   '/ganztagsangebote': typeof appGanztagsangeboteIndexRoute
   '/klassen': typeof appKlassenIndexRoute
@@ -276,15 +385,21 @@ export interface FileRoutesByTo {
   '/settings': typeof appSettingsIndexRoute
   '/login': typeof authLoginIndexRoute
   '/register': typeof authRegisterIndexRoute
+  '/klassen/$klassenId/brett': typeof appKlassenKlassenIdBrettRoute
   '/klassen/$klassenId/edit': typeof appKlassenKlassenIdEditRoute
+  '/klassen/$klassenId/tests': typeof appKlassenKlassenIdTestsRoute
+  '/schueler/$schuelerId/anwesenheiten': typeof appSchuelerSchuelerIdAnwesenheitenRoute
+  '/schueler/$schuelerId/brett': typeof appSchuelerSchuelerIdBrettRoute
+  '/schueler/$schuelerId/historie': typeof appSchuelerSchuelerIdHistorieRoute
+  '/schueler/$schuelerId/monitoring': typeof appSchuelerSchuelerIdMonitoringRoute
   '/klassen/$klassenId': typeof appKlassenKlassenIdIndexRoute
+  '/schueler/$schuelerId': typeof appSchuelerSchuelerIdIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/(app)': typeof appRouteRouteWithChildren
-  '/(app)/schueler/$schuelerId': typeof appSchuelerSchuelerIdRoute
   '/(app)/dashboard/': typeof appDashboardIndexRoute
   '/(app)/ganztagsangebote/': typeof appGanztagsangeboteIndexRoute
   '/(app)/klassen/': typeof appKlassenIndexRoute
@@ -294,15 +409,21 @@ export interface FileRoutesById {
   '/(app)/settings/': typeof appSettingsIndexRoute
   '/(auth)/login/': typeof authLoginIndexRoute
   '/(auth)/register/': typeof authRegisterIndexRoute
+  '/(app)/klassen/$klassenId/brett': typeof appKlassenKlassenIdBrettRoute
   '/(app)/klassen/$klassenId/edit': typeof appKlassenKlassenIdEditRoute
+  '/(app)/klassen/$klassenId/tests': typeof appKlassenKlassenIdTestsRoute
+  '/(app)/schueler/$schuelerId/anwesenheiten': typeof appSchuelerSchuelerIdAnwesenheitenRoute
+  '/(app)/schueler/$schuelerId/brett': typeof appSchuelerSchuelerIdBrettRoute
+  '/(app)/schueler/$schuelerId/historie': typeof appSchuelerSchuelerIdHistorieRoute
+  '/(app)/schueler/$schuelerId/monitoring': typeof appSchuelerSchuelerIdMonitoringRoute
   '/(app)/klassen/$klassenId/': typeof appKlassenKlassenIdIndexRoute
+  '/(app)/schueler/$schuelerId/': typeof appSchuelerSchuelerIdIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/schueler/$schuelerId'
     | '/dashboard'
     | '/ganztagsangebote'
     | '/klassen'
@@ -312,12 +433,18 @@ export interface FileRouteTypes {
     | '/settings'
     | '/login'
     | '/register'
+    | '/klassen/$klassenId/brett'
     | '/klassen/$klassenId/edit'
+    | '/klassen/$klassenId/tests'
+    | '/schueler/$schuelerId/anwesenheiten'
+    | '/schueler/$schuelerId/brett'
+    | '/schueler/$schuelerId/historie'
+    | '/schueler/$schuelerId/monitoring'
     | '/klassen/$klassenId'
+    | '/schueler/$schuelerId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/schueler/$schuelerId'
     | '/dashboard'
     | '/ganztagsangebote'
     | '/klassen'
@@ -327,13 +454,19 @@ export interface FileRouteTypes {
     | '/settings'
     | '/login'
     | '/register'
+    | '/klassen/$klassenId/brett'
     | '/klassen/$klassenId/edit'
+    | '/klassen/$klassenId/tests'
+    | '/schueler/$schuelerId/anwesenheiten'
+    | '/schueler/$schuelerId/brett'
+    | '/schueler/$schuelerId/historie'
+    | '/schueler/$schuelerId/monitoring'
     | '/klassen/$klassenId'
+    | '/schueler/$schuelerId'
   id:
     | '__root__'
     | '/'
     | '/(app)'
-    | '/(app)/schueler/$schuelerId'
     | '/(app)/dashboard/'
     | '/(app)/ganztagsangebote/'
     | '/(app)/klassen/'
@@ -343,8 +476,15 @@ export interface FileRouteTypes {
     | '/(app)/settings/'
     | '/(auth)/login/'
     | '/(auth)/register/'
+    | '/(app)/klassen/$klassenId/brett'
     | '/(app)/klassen/$klassenId/edit'
+    | '/(app)/klassen/$klassenId/tests'
+    | '/(app)/schueler/$schuelerId/anwesenheiten'
+    | '/(app)/schueler/$schuelerId/brett'
+    | '/(app)/schueler/$schuelerId/historie'
+    | '/(app)/schueler/$schuelerId/monitoring'
     | '/(app)/klassen/$klassenId/'
+    | '/(app)/schueler/$schuelerId/'
   fileRoutesById: FileRoutesById
 }
 
@@ -384,7 +524,6 @@ export const routeTree = rootRoute
     "/(app)": {
       "filePath": "(app)/route.tsx",
       "children": [
-        "/(app)/schueler/$schuelerId",
         "/(app)/dashboard/",
         "/(app)/ganztagsangebote/",
         "/(app)/klassen/",
@@ -392,13 +531,16 @@ export const routeTree = rootRoute
         "/(app)/rollenmanagement/",
         "/(app)/schueler/",
         "/(app)/settings/",
+        "/(app)/klassen/$klassenId/brett",
         "/(app)/klassen/$klassenId/edit",
-        "/(app)/klassen/$klassenId/"
+        "/(app)/klassen/$klassenId/tests",
+        "/(app)/schueler/$schuelerId/anwesenheiten",
+        "/(app)/schueler/$schuelerId/brett",
+        "/(app)/schueler/$schuelerId/historie",
+        "/(app)/schueler/$schuelerId/monitoring",
+        "/(app)/klassen/$klassenId/",
+        "/(app)/schueler/$schuelerId/"
       ]
-    },
-    "/(app)/schueler/$schuelerId": {
-      "filePath": "(app)/schueler/$schuelerId.tsx",
-      "parent": "/(app)"
     },
     "/(app)/dashboard/": {
       "filePath": "(app)/dashboard/index.tsx",
@@ -434,12 +576,40 @@ export const routeTree = rootRoute
     "/(auth)/register/": {
       "filePath": "(auth)/register/index.tsx"
     },
+    "/(app)/klassen/$klassenId/brett": {
+      "filePath": "(app)/klassen/$klassenId/brett.tsx",
+      "parent": "/(app)"
+    },
     "/(app)/klassen/$klassenId/edit": {
       "filePath": "(app)/klassen/$klassenId/edit.tsx",
       "parent": "/(app)"
     },
+    "/(app)/klassen/$klassenId/tests": {
+      "filePath": "(app)/klassen/$klassenId/tests.tsx",
+      "parent": "/(app)"
+    },
+    "/(app)/schueler/$schuelerId/anwesenheiten": {
+      "filePath": "(app)/schueler/$schuelerId/anwesenheiten.tsx",
+      "parent": "/(app)"
+    },
+    "/(app)/schueler/$schuelerId/brett": {
+      "filePath": "(app)/schueler/$schuelerId/brett.tsx",
+      "parent": "/(app)"
+    },
+    "/(app)/schueler/$schuelerId/historie": {
+      "filePath": "(app)/schueler/$schuelerId/historie.tsx",
+      "parent": "/(app)"
+    },
+    "/(app)/schueler/$schuelerId/monitoring": {
+      "filePath": "(app)/schueler/$schuelerId/monitoring.tsx",
+      "parent": "/(app)"
+    },
     "/(app)/klassen/$klassenId/": {
       "filePath": "(app)/klassen/$klassenId/index.tsx",
+      "parent": "/(app)"
+    },
+    "/(app)/schueler/$schuelerId/": {
+      "filePath": "(app)/schueler/$schuelerId/index.tsx",
       "parent": "/(app)"
     }
   }

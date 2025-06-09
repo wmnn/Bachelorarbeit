@@ -9,6 +9,7 @@ import { useRouter } from '@tanstack/react-router'
 import { SchuelerListItem } from '@/components/schueler/SchuelerListItem';
 import { Edit, MoveLeft } from 'lucide-react';
 import { AnwesenheitTyp } from '@thesis/anwesenheiten';
+import { KlasseNav } from '@/layout/KlasseNav';
 
 export const Route = createFileRoute('/(app)/klassen/$klassenId/')({
   component: RouteComponent,
@@ -44,9 +45,9 @@ function RouteComponent() {
     return <p>{BackButton} Ein Fehler ist aufgetreten</p>
   }
 
-  return <div className='w-full p-8 flex flex-col gap-8'>
+  return <div className='w-full flex flex-col gap-8'>
 
-    <div className='flex justify-between'>
+    <div className='flex justify-between px-8 pt-8'>
       <div className='flex gap-2 items-center'>
         <button onClick={() => router.history.back()}>
           <MoveLeft />
@@ -63,36 +64,41 @@ function RouteComponent() {
         <Edit />
       </Link>
     </div>
-    
-    
-    <div>
-      <h2>Klassenlehrer</h2>
-      {
-        (klasse as Klasse).klassenlehrer?.map((lehrer) => {
-          return <p>{lehrer.vorname} {lehrer.nachname}</p>
-        })
-      }
-    </div>
 
-    { (klasse as Klasse).versionen?.map(version => {
-      return <List 
-        setIsCreateDialogShown={() => {}} 
-        createButonLabel='Schüler erstellen' 
-        key={`${version.klassenstufe}${version.zusatz}`}
-        leftHeader={<h2>{version.klassenstufe}{version.zusatz}</h2>}
-      >
-  
-        <>
-          {
-            version.schueler?.map(id => {
-              return <SchuelerListItem schuelerId={id} typ={AnwesenheitTyp.UNTERRICHT} />
-            
-            })
-          }
-        </>
-        
-      </List>
-    }) }   
+    <KlasseNav klassenId={klassenId} />
+    
+    <div className='px-2 xl:px-8'>
+      <div className='mb-8'>
+        <h2>Klassenlehrer</h2>
+        {
+          (klasse as Klasse).klassenlehrer?.map((lehrer) => {
+            return <p>{lehrer.vorname} {lehrer.nachname}</p>
+          })
+        }
+      </div>
+
+      { (klasse as Klasse).versionen?.map(version => {
+        return <List 
+          setIsCreateDialogShown={() => {}} 
+          createButonLabel='Schüler erstellen' 
+          key={`${version.klassenstufe}${version.zusatz}`}
+          leftHeader={<h2>{version.klassenstufe}{version.zusatz}</h2>}
+        >
+    
+          <>
+            {
+              version.schueler?.map(id => {
+                return <SchuelerListItem schuelerId={id} typ={AnwesenheitTyp.UNTERRICHT} />
+              
+              })
+            }
+          </>
+          
+        </List>
+      }) }   
+
+    </div>
+    
   
   
   </div>

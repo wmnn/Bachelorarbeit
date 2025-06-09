@@ -1,12 +1,13 @@
 import { SchuelerEditForm } from '@/components/schueler/SchuelerForm';
 import { SchuelerIcons } from '@/components/schueler/SchuelerIcons';
+import { SchuelerNav } from '@/layout/SchuelerNav';
 import { SCHUELER_QUERY_KEY } from '@/reactQueryKeys';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { getSchuelerComplete } from '@thesis/schueler';
 import { MoveLeft } from 'lucide-react';
 
-export const Route = createFileRoute('/(app)/schueler/$schuelerId')({
+export const Route = createFileRoute('/(app)/schueler/$schuelerId/')({
   component: RouteComponent,
 })
 
@@ -33,9 +34,9 @@ function RouteComponent() {
         return;
     }
     
-    return <div className='p-8 flex flex-col w-full'>
+    return <div className='flex flex-col w-full'>
 
-        <div className='flex gap-4 items-center'>
+        <div className='flex gap-4 items-center px-8 pt-8'>
             <button onClick={() => router.history.back()}>
                 <MoveLeft />
             </button>
@@ -45,13 +46,16 @@ function RouteComponent() {
             </div>
         </div>
 
-        <SchuelerEditForm 
-            onSubmit={(_) => {}} 
-            onAbort={() => router.history.back()} 
-            submitButtonText="Speichern"
-            initialSchueler={schueler}
-        />
-        
-       
+        <SchuelerNav schuelerId={schuelerId} />
+
+        <div className='px-8 flex flex-col'>
+
+            <SchuelerEditForm 
+                onSubmit={(_) => {}} 
+                onAbort={() => router.history.back()} 
+                submitButtonText="Speichern"
+                initialSchueler={schueler}
+            />
+        </div>
     </div>
 }

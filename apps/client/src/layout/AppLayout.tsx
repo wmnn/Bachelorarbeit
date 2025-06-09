@@ -108,7 +108,7 @@ export const AppLayout = () => {
         </header>
         
         
-        <div className="w-[2px]"/>
+        <div className=""/>
 
         <div className={`${isNavShown ? 'hidden xl:flex' : 'flex'} justify-center flex-col items-center w-full xl:ml-[20%] pt-[80px] md:pt-0`}>
             <Outlet />
