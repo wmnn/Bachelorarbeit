@@ -3,3 +3,4 @@ export * from "./register"
 export * from "./users"
 export * from "./role"
 export * from "./logout"
+export * from './search'

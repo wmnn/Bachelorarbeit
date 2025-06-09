@@ -7,6 +7,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { KLASSEN_QUERY_KEY } from "@/reactQueryKeys";
 import { useSchuljahrStore } from "../schuljahr/SchuljahrStore";
 import { useEffect } from "react";
+import { KlassenlehrerSelectCtrl } from "./KlassenlehrerSelectCtrl";
 
 interface KlasseErstellenDialogProps {
   closeDialog: () => void,
@@ -17,7 +18,9 @@ export function KlasseErstellenDialog({ closeDialog, setResponseMessage }: Klass
     const schuljahr = useSchuljahrStore(state => state.ausgewaeltesSchuljahr)
     const halbjahr = useSchuljahrStore(state => state.ausgewaeltesHalbjahr)
     const klassen = useKlassenStore(state => state.neueKlassen)
-    const setKlassen = useKlassenStore(state => state.setNeueKlassen)
+    const setKlassen = useKlassenStore(state => state.setNeueKlassen);
+    
+    const klassenlehrer = useKlassenStore(store => store.klassenlehrer)
 
     useEffect(() => {
         setKlassen((_) => [{
@@ -42,7 +45,7 @@ export function KlasseErstellenDialog({ closeDialog, setResponseMessage }: Klass
     const queryClient = useQueryClient();
 
     async function handleSubmit() {
-        const res = await createKlasse(klassen);
+        const res = await createKlasse(klassen, klassenlehrer);
         setResponseMessage(res.message)
         queryClient.invalidateQueries({
             queryKey: [KLASSEN_QUERY_KEY]
@@ -50,26 +53,31 @@ export function KlasseErstellenDialog({ closeDialog, setResponseMessage }: Klass
         // closeDialog();
     }
     return <DialogWithButtons onSubmit={() => handleSubmit()} closeDialog={() => closeDialog()} submitButtonText="Erstellen">
-        <h1>Klasse hinzufügen</h1>
+        <div className="h-[60vh]">
+            <h1>Klasse hinzufügen</h1>
 
-        {
-            klassen.map((klasse) => {
-                return <KlasseErstellenDialogKlasse klasse={klasse} setKlasse={(updatedKlasse: KlassenVersion) => {
-                    setKlassen((prev) => {
-                        return prev.map(o => {
-                            if (o !== klasse) {
-                                return o;
-                            }
-                            return updatedKlasse
+            <KlassenlehrerSelectCtrl />
+
+            {
+                klassen.map((klasse) => {
+                    return <KlasseErstellenDialogKlasse klasse={klasse} setKlasse={(updatedKlasse: KlassenVersion) => {
+                        setKlassen((prev) => {
+                            return prev.map(o => {
+                                if (o !== klasse) {
+                                    return o;
+                                }
+                                return updatedKlasse
+                            })
                         })
-                    })
-                }}/>
-            })
-        }
+                    }}/>
+                })
+            }
 
-        <ButtonLight onClick={() => klasseHinzufügen()}>
-            Unterklasse hinzufügen
-        </ButtonLight>
+            <ButtonLight onClick={() => klasseHinzufügen()}>
+                Unterklasse hinzufügen
+            </ButtonLight>
+        </div>
+        
         
     </DialogWithButtons>
 }

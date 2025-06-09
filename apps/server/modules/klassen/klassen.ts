@@ -27,7 +27,8 @@ router.get('/:klassenId', async (req, res) => {
 
 
 router.post('/', async (req: Request<{}, {}, CreateClassRequestBody>, res: Response<CreateClassResponseBody>) => {
-    const msg = await getDB().createClass(req.body)
+    const { versionen, klassenlehrer } = req.body
+    const msg = await getDB().createClass(versionen, klassenlehrer)
     res.status(msg.success ? 200 : 400).json(msg);
 });
 

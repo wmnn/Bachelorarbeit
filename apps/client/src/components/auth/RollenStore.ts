@@ -3,7 +3,7 @@ import { create } from 'zustand'
 
 type RollenStoreData = {
 	rollen: Rolle[] | undefined,
-    setRollen: (fn: (prev: Rolle[] | undefined) => Rolle[]) => void
+  setRollen: (fn: (prev: Rolle[] | undefined) => Rolle[]) => void
 }
 export const useRollenStore = create<RollenStoreData>((set) => ({
   rollen: undefined,

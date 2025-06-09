@@ -764,12 +764,36 @@ export class DefaultStore implements AuthStore {
             return [];
         }
 
-        return rows.reduce((prev: Klasse[], current) => {
+        const [lehrer] = await this.connection.execute<any[]>(
+            `SELECT id, vorname, nachname, klassen_id FROM klassenversion_klassenlehrer k 
+            LEFT JOIN users u ON k.user_id = u.id
+            WHERE schuljahr = ? AND halbjahr = ?`,
+            [schuljahr, halbjahr]
+        );
+        const reducedLehrer = lehrer.reduce((prev: Klasse[], current) => {
             let klasse = prev.find(k => k.id === current.klassen_id);
 
             if (!klasse) {
-            klasse = { id: current.klassen_id, versionen: [] };
-            prev.push(klasse);
+                klasse = { id: current.klassen_id, versionen: [], klassenlehrer: [] };
+                prev.push(klasse);
+            }
+
+            klasse.klassenlehrer?.push(current)
+            return prev
+
+        }, [] as Klasse[])
+
+        let klasse = rows.reduce((prev: Klasse[], current) => {
+            let klasse = prev.find(k => k.id === current.klassen_id);
+
+            if (!klasse) {
+                const lehrer = reducedLehrer.find((o) => o.id === current.klassen_id)
+                klasse = { 
+                    id: current.klassen_id, 
+                    versionen: [],
+                    klassenlehrer: lehrer ? lehrer.klassenlehrer ?? [] : []
+                };
+                prev.push(klasse);
             }
 
             klasse.versionen.push({
@@ -779,10 +803,12 @@ export class DefaultStore implements AuthStore {
 
             return prev;
         }, []) as Klasse[];
+
+        return klasse
     }
 
 
-    async createClass(klassen: KlassenVersion[]): Promise<DatabaseMessage> {
+    async createClass(klassen: KlassenVersion[], klassenlehrer: User[]): Promise<DatabaseMessage> {
         if (!this.connection) {
             return STANDARD_FEHLER
         }
@@ -798,7 +824,22 @@ export class DefaultStore implements AuthStore {
 
             const id = result.insertId;
 
+            let schuljahr: undefined | string;
+            let halbjahr: undefined | string;
+
             for (const klasse of klassen) {
+                schuljahr = klasse.schuljahr
+                halbjahr = klasse. halbjahr
+                const { zusatz, klassenstufe } = klasse;
+
+                if (!zusatz || !klassenstufe || zusatz === '' || klassenstufe === '') {
+                    await conn.rollback()
+                    return {
+                        success: false,
+                        message: 'Eine Klasse muss eine Klassenstufe und einen Zusatz haben.'
+                    };
+                }
+
                 await conn.execute(`
                     INSERT INTO klassenversionen (klassen_id, schuljahr, halbjahr, klassenstufe, zusatz)
                     VALUES (?, ?, ?, ?, ?)
@@ -809,6 +850,14 @@ export class DefaultStore implements AuthStore {
                     klasse.klassenstufe,
                     klasse.zusatz
                 ]);
+
+                if (!klasse.schueler || klasse.schueler.length === 0) {
+                    await conn.rollback()
+                    return {
+                        success: false,
+                        message: 'Eine Klasse muss Schüler enthalten.'
+                    };
+                }
 
                 try {
                     for (const schuelerId of klasse.schueler || []) {
@@ -831,12 +880,35 @@ export class DefaultStore implements AuthStore {
                     };
                 }
             }
+
+            if (klassenlehrer.length === 0) {
+                await conn.rollback()
+                return {
+                    success: false,
+                    message: 'Eine Klasse muss Lehrer enthalten.'
+                };
+            }
+            if (schuljahr && halbjahr) {
+                for (const lehrer of klassenlehrer) {
+                    await conn.execute(`
+                        INSERT INTO klassenversion_klassenlehrer (user_id, klassen_id, schuljahr, halbjahr)
+                        VALUES (?, ?, ?, ?)
+                    `, [
+                        lehrer.id,
+                        id,
+                        schuljahr,
+                        halbjahr
+                    ]);
+                }
+            }
+
             await conn.commit();
             return {
                 success: true,
                 message: 'Die Klasse wurde erfolgreich erstellt.'
             };
         } catch (e) {
+            console.log(e)
             await conn.rollback()
             return {
                 success: false,

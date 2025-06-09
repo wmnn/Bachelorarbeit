@@ -142,12 +142,12 @@ CREATE TABLE klassenversion_schueler (
     PRIMARY KEY (schuljahr, halbjahr, schueler_id)
 );
 
-CREATE TABLE user_leitet_klassenversion (
-    user_id VARCHAR(36),
-    klassen_id VARCHAR(36),
-    schuljahr VARCHAR(255),
-    klassenstufe VARCHAR(255),
-    PRIMARY KEY (user_id, klassen_id, schuljahr, klassenstufe)
+CREATE TABLE klassenversion_klassenlehrer (
+    user_id INT,
+    klassen_id INT,
+    schuljahr VARCHAR(10),
+    halbjahr VARCHAR(12),
+    PRIMARY KEY (user_id, klassen_id, schuljahr, halbjahr)
 );
 
 CREATE TABLE user_fuehrt_ganztagsangebot (

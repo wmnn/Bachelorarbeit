@@ -22,6 +22,8 @@ import {
     RegisterRequestBody,
     RegisterResponseBody,
     ROLLE_ENDPOINT,
+    SearchUserRequestBody,
+    SearchUserResponseBody,
     UpdatePasswordRequestBody,
     UpdatePasswordResponseBody,
     UpdateRoleRequestBody,
@@ -35,6 +37,7 @@ import fs from 'fs';
 import path from 'path';
 import jwt from 'jsonwebtoken'
 import { sendActivateAccountEmail } from './smtp';
+import { searchUser } from './util';
 
 const cookieKey = fs.readFileSync(
     path.join(__dirname, '../../../../cookie_signing.key'),
@@ -317,6 +320,16 @@ router.get('/users', async (req, res: Response<UsersResponseBody>) => {
     res.status(200).json({
         users,
         rollen: roles,
+    });
+});
+
+router.post('/users/search', async (req: Request<{}, {}, SearchUserRequestBody<Berechtigung>>, res: Response<SearchUserResponseBody>) => {
+    const { query, berechtigung, berechtigungValue} = req.body 
+    const users = await searchUser(query, berechtigung, berechtigungValue);
+    res.status(200).json({
+        success: true,
+        message: 'Die Suche war erfolgreich.',
+        users: users ? users : []
     });
 });
 

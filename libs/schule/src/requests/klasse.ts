@@ -1,5 +1,6 @@
 import { KLASSEN_ENDPOINT } from '@thesis/config'
 import type { Halbjahr, KlassenVersion, Schuljahr } from '../models';
+import { User } from '../../../auth/src';
 
 export const getKlasse = async (schuljahr: Schuljahr, halbjahr: Halbjahr, klassenId: number) => {
     try {
@@ -42,20 +43,27 @@ export const getKlassen = async (schuljahr: Schuljahr, halbjahr: Halbjahr) => {
     }
 }
 
-export type CreateClassRequestBody = KlassenVersion[]
+export type CreateClassRequestBody = {
+    versionen: KlassenVersion[],
+    klassenlehrer: User[]
+}
+
 export interface CreateClassResponseBody {
     success: boolean;
     message: string;
 }
 
-export const createKlasse = async (klassen: KlassenVersion[]) => {
+export const createKlasse = async (klassen: KlassenVersion[], klassenlehrer: User[]) => {
     try {
         const res = await fetch(KLASSEN_ENDPOINT, {
             method: 'POST',
             headers: {
                 'content-type': 'application/json'
             },
-            body: JSON.stringify(klassen)
+            body: JSON.stringify({
+                versionen: klassen,
+                klassenlehrer
+            } as CreateClassRequestBody)
         })
 
         if (res.status === 403) {

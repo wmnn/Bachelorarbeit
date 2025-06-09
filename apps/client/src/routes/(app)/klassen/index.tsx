@@ -42,7 +42,7 @@ function RouteComponent() {
 
   useEffect(() => {
     if (schueler) {
-      setSchueler((_) => schueler ?? [])
+      setSchueler((_) => (schueler ?? []) as any[])
     }
 
   }, [schueler])
