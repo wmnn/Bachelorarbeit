@@ -1,4 +1,3 @@
-import { getTitle } from '@/components/klasse/util';
 import { List } from '@/components/List';
 import { useSchuljahrStore } from '@/components/schuljahr/SchuljahrStore';
 import { KLASSEN_QUERY_KEY } from '@/reactQueryKeys';
@@ -10,6 +9,7 @@ import { SchuelerListItem } from '@/components/schueler/SchuelerListItem';
 import { Edit, MoveLeft } from 'lucide-react';
 import { AnwesenheitTyp } from '@thesis/anwesenheiten';
 import { KlasseNav } from '@/layout/KlasseNav';
+import { getTitle } from '@thesis/schule'
 
 export const Route = createFileRoute('/(app)/klassen/$klassenId/')({
   component: RouteComponent,

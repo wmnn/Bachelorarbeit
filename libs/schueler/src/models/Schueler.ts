@@ -7,6 +7,7 @@ export interface SchuelerSimple {
     nachname: string,
     hatSonderpaedagogischeKraft?: boolean,
     verlaesstSchuleAllein?: boolean,
+    derzeitigeKlasse?: string
 }
 export type Schueler = {
     postleitzahl: string,

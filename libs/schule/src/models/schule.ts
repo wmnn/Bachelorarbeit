@@ -1,16 +1,6 @@
+import { Klasse } from "./klasse";
+
 export type Halbjahr = "1. Halbjahr" | "2. Halbjahr"
-
-export function getSchuljahr(date: Date): Schuljahr {
-  const jahr = date.getFullYear();
-  const monat = date.getMonth();
-
-  const startJahr = monat >= 7 ? jahr : jahr - 1;
-  const endJahr = startJahr + 1;
-
-  const format = (n: number) => String(n % 100).padStart(2, '0');
-
-  return `${format(startJahr)}/${format(endJahr)}` as Schuljahr
-}
 
 export type Schuljahr =
   | "00/01"

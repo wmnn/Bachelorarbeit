@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import mysql, { Connection, QueryResult, ResultSetHeader, RowDataPacket } from 'mysql2/promise'
 import { SessionData } from './modules/auth/auth';
 import { Schueler, SchuelerSimple } from '@thesis/schueler';
-import { Halbjahr, Klasse, KlassenVersion, Schuljahr } from '@thesis/schule';
+import { getHalbjahr, getSchuljahr, getTitle, Halbjahr, Klasse, KlassenVersion, Schuljahr } from '@thesis/schule';
 import { Anwesenheiten, AnwesenheitTyp } from '@thesis/anwesenheiten';
 
 interface DatabaseMessage {
@@ -475,6 +475,39 @@ export class DefaultStore implements AuthStore {
         return crypto.createHash('sha256').update(stringToBeHashed).digest('hex')
     }
 
+    private async addCurrentClassToSchueler(rows: Schueler[]): Promise<Schueler[]> {
+        if (!this.connection) {
+            throw new Error('Keine Datenbankverbindung');
+        }
+
+        const currentSchuljahr = getSchuljahr(new Date());
+        const currentHalbjahr = getHalbjahr(new Date());
+
+        const [klassenUndSchueler] = await this.connection.execute<RowDataPacket[]>(`
+            SELECT klassen_id as klassenId, schueler_id as schuelerId FROM klassenversion_schueler WHERE schuljahr = ? AND halbjahr = ?
+        `, [currentSchuljahr, currentHalbjahr]);
+
+        const [klassenversionen] = await this.connection.execute<RowDataPacket[]>(`
+            SELECT * FROM klassenversionen WHERE schuljahr = ? AND halbjahr = ?
+        `, [currentSchuljahr, currentHalbjahr]);
+
+        const klassenMitKlassenversionen = this.reduceKlassenversionenToKlassen(klassenversionen)
+
+        return rows.map((schueler) => {
+            const tmp = klassenUndSchueler.find(o => o.schuelerId === schueler.id)
+            if (!tmp) {
+                return schueler;
+            }
+            const klassenId = tmp.klassenId
+            const klasse = klassenMitKlassenversionen.find(o => o.id === klassenId)
+            if (!klasse) {
+                return schueler;
+            }
+            schueler.derzeitigeKlasse = getTitle(klasse);
+            return schueler;
+        })  
+    }
+
     async getSchueler(): Promise<SchuelerSimple[]> {
         if (!this.connection) {
             throw new Error('Keine Datenbankverbindung');
@@ -490,6 +523,9 @@ export class DefaultStore implements AuthStore {
             return [];
         }
 
+        rows = await this.addCurrentClassToSchueler(rows as Schueler[]) as any
+
+        // Anwesenheiten werden dem Schüler hinzugefügt
         const [anwesenheiten] = await conn.execute<RowDataPacket[]>(`
             SELECT schueler_id, typ, status FROM anwesenheitsstatus a WHERE a.datum = CURDATE()
         `);
@@ -702,19 +738,19 @@ export class DefaultStore implements AuthStore {
             };
         }
 
-        let klasse = this.reduceKlassenversionenToKlasse(rows)
+        let klasse = this.reduceKlassenversionenToKlassen(rows)[0]
         const [ returnedKlasse ] = await this.addLehrerToClasses([klasse], schuljahr, halbjahr);
         return returnedKlasse;
     }
 
 
-    private reduceKlassenversionenToKlasse(rows: any[]) {
-        let klasse = rows.reduce((prev: Klasse[], current) => {
-            const { klassenstufe, zusatz, schuljahr, halbjahr, klassen_id: klassenId } = current
+    private reduceKlassenversionenToKlassen(rows: any[]): Klasse[] {
+        const klassen = rows.reduce((prev: Klasse[], current) => {
+            const { klassenstufe, zusatz, schuljahr, halbjahr, klassen_id: klassenId } = current;
             let klasse = prev.find(k => k.id === klassenId);
 
             if (!klasse) {
-                klasse = { id: current.klassen_id, versionen: [] };
+                klasse = { id: klassenId, versionen: [] };
                 prev.push(klasse);
             }
 
@@ -723,30 +759,31 @@ export class DefaultStore implements AuthStore {
                     klassenId,
                     klassenstufe,
                     zusatz,
-                    schuljahr, 
+                    schuljahr,
                     halbjahr
                 } as KlassenVersion);
             }
 
             return prev;
-        }, [])[0];
+        }, []);
 
-        // Adding schueler to class
+        // Add schueler to each version of each class
         for (const row of rows) {
-            const { klassenstufe, zusatz, vorname, nachname } = row;
-            klasse.versionen.map((version) => {
-                if (version.klassenstufe !== klassenstufe || version.zusatz !== zusatz) {
-                    return version
+            const { klassen_id: klassenId, klassenstufe, zusatz, schueler_id } = row;
+            const klasse = klassen.find(k => k.id === klassenId);
+            if (!klasse) continue;
+
+            klasse.versionen.forEach(version => {
+                if (version.klassenstufe === klassenstufe && version.zusatz === zusatz) {
+                    if (!version.schueler) version.schueler = [];
+                    version.schueler.push(schueler_id);
                 }
-                if (!version.schueler) {
-                    version.schueler = []
-                }
-                version.schueler.push(row.schueler_id)
-                return version
-            })
+            });
         }
-        return klasse;
+
+        return klassen;
     }
+
     private async addLehrerToClasses(klassen: Klasse[], schuljahr: Schuljahr, halbjahr: Halbjahr) {
         if (!this.connection) {
             return [];

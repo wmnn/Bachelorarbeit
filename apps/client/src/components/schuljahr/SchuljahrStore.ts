@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { type Schuljahr, type Halbjahr, getSchuljahr} from '@thesis/schule'
+import { type Schuljahr, type Halbjahr, getSchuljahr, getHalbjahr} from '@thesis/schule'
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 type KlassenStoreData = {
@@ -13,7 +13,7 @@ export const useSchuljahrStore = create<KlassenStoreData>()(
   persist(
     (set) => ({
       ausgewaeltesSchuljahr: getSchuljahr(new Date()),
-      ausgewaeltesHalbjahr: '1. Halbjahr',
+      ausgewaeltesHalbjahr: getHalbjahr(new Date()),
       updateSchuljahr: (schuljahr) => set({ ausgewaeltesSchuljahr: schuljahr }),
       updateHalbjahr: (halbjahr) => set({ ausgewaeltesHalbjahr: halbjahr }),
     }),

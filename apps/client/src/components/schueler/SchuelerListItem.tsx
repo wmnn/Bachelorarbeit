@@ -26,19 +26,29 @@ export function SchuelerListItem({ schuelerId, typ }: { schuelerId: number, typ:
         {
             isDeleteDialogShown && <SchuelerLoeschenDialog schuelerId={schueler.id ?? -1} closeDialog={() => setIsDeleteDialogShown(false)}/>
         }
-        <Link 
-            to="/schueler/$schuelerId"
-            params={{
-                schuelerId: `${schueler.id ?? -1}`
-            }}
-        >
-            <div className="flex gap-2">
-                <p>{schueler.vorname}</p> 
-                <p>{schueler.nachname}</p>
-                <SchuelerIcons schueler={schueler} />
-            </div>
-           
-        </Link>
+       
+            <Link 
+                to="/schueler/$schuelerId"
+                params={{
+                    schuelerId: `${schueler.id ?? -1}`
+                }}
+                className="basis-0 grow-1"
+            >
+                <div className="flex gap-2 items-center">
+                    <p>{schueler.vorname}</p> 
+                    <p>{schueler.nachname}</p>
+                    <SchuelerIcons schueler={schueler} />
+
+                    {
+                        schueler.derzeitigeKlasse && <p className="ml-16">{schueler.derzeitigeKlasse}</p>
+                    }
+                </div>
+            
+            </Link>
+        
+        
+
+        
         
         <div className='flex gap-6'>
             <GeprüftCheckbox schuelerId={schuelerId} typ={typ} />

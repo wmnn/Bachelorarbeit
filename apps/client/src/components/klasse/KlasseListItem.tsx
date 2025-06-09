@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { KlasseLoeschenDialog } from "./KlasseLoeschenDialog";
 import { DeleteIcon } from "../icons/DeleteIcon";
-import type { Klasse } from "@thesis/schule";
-import { getTitle } from "./util";
+import { getTitle, type Klasse } from "@thesis/schule";
 import { Link } from "@tanstack/react-router";
 import type { User } from "@thesis/auth";
 
