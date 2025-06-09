@@ -8,7 +8,7 @@ import { useSchuelerStore } from "./SchuelerStore";
 import { AnwesenheitTyp } from "@thesis/anwesenheiten";
 import { GeprüftCheckbox } from "../anwesenheitsstatus/GeprüftCheckbox";
 
-export function SchuelerListItem({ schuelerId, typ }: { schuelerId: number, typ: AnwesenheitTyp }) {
+export function SchuelerListItem({ schuelerId, typ, showDerzeitigeKlasse = false }: { schuelerId: number, typ: AnwesenheitTyp, showDerzeitigeKlasse?: boolean }) {
 
     const [isDeleteDialogShown, setIsDeleteDialogShown] = useState(false)
     let schuelers = useSchuelerStore(store => store.schueler)
@@ -40,7 +40,7 @@ export function SchuelerListItem({ schuelerId, typ }: { schuelerId: number, typ:
                     <SchuelerIcons schueler={schueler} />
 
                     {
-                        schueler.derzeitigeKlasse && <p className="ml-16">{schueler.derzeitigeKlasse}</p>
+                        (schueler.derzeitigeKlasse && showDerzeitigeKlasse) && <p className="ml-16">{schueler.derzeitigeKlasse}</p>
                     }
                 </div>
             

@@ -43,7 +43,7 @@ function RouteComponent() {
     { isCreateDialogShown && <SchuelerErstellenDialog closeDialog={() => setIsCreateDialogShown(false)}/>}
     {
       schuelerArr.map(schueler => {
-        return <SchuelerListItem schuelerId={schueler.id ?? -1} typ={AnwesenheitTyp.UNTERRICHT}/>
+        return <SchuelerListItem schuelerId={schueler.id ?? -1} typ={AnwesenheitTyp.UNTERRICHT} showDerzeitigeKlasse/>
       })
     }
   </List>
