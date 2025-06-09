@@ -1,6 +1,7 @@
 import { ANWESENHEITEN, AnwesenheitTyp, deleteStatus, updateStatus } from "@thesis/anwesenheiten";
 import { useSchuelerStore } from "../schueler/SchuelerStore";
 import type { Schueler } from "@thesis/schueler";
+import { Tooltip } from "../Tooltip";
 
 export function GeprüftCheckbox ({ schuelerId, typ }: { schuelerId: number, typ: AnwesenheitTyp }) {
 
@@ -52,6 +53,8 @@ export function GeprüftCheckbox ({ schuelerId, typ }: { schuelerId: number, typ
         }
     }
     
-    return <input type='checkbox' className="w-[25px]" checked={getChecked()} onChange={() => handleChange()} />
+    return <Tooltip content={getChecked() ? 'Bei einem Klick wird der heutige Anwesenheitsstatus gelöscht.' : 'Bei einem Klick wird der heutige Anwesenheitsstatus auf anwesend gesetzt.'}>
+        <input type='checkbox' className="w-[25px] h-full" checked={getChecked()} onChange={() => handleChange()} />
+    </Tooltip>
     
 }
