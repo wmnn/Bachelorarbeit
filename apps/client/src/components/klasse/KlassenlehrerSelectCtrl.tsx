@@ -129,7 +129,7 @@ function KlassenlehrerSelectMenu({ idx, setIsInputShown }: { idx: number, setIsI
         setIsInputShown(false)
     }
 
-    return <div className="w-full max-w-[360px] bg-white overflow-auto max-h-[480px] absolute top-[42px] left-0 border-[1px] rounded-lg border-gray-100">
+    return <div className="w-full max-w-[360px] bg-white overflow-auto max-h-[480px] absolute top-[42px] left-0 border-[1px] rounded-lg border-gray-100 z-100">
         <ul>
             {
                 response.users.map((user) => {

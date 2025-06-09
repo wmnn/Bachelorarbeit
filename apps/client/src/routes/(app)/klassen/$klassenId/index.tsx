@@ -3,14 +3,14 @@ import { List } from '@/components/List';
 import { useSchuljahrStore } from '@/components/schuljahr/SchuljahrStore';
 import { KLASSEN_QUERY_KEY } from '@/reactQueryKeys';
 import { useQuery } from '@tanstack/react-query';
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { getKlasse, type Halbjahr, type Klasse, type Schuljahr } from '@thesis/schule';
 import { useRouter } from '@tanstack/react-router'
 import { SchuelerListItem } from '@/components/schueler/SchuelerListItem';
-import { MoveLeft } from 'lucide-react';
+import { Edit, MoveLeft } from 'lucide-react';
 import { AnwesenheitTyp } from '@thesis/anwesenheiten';
 
-export const Route = createFileRoute('/(app)/klassen/$klassenId')({
+export const Route = createFileRoute('/(app)/klassen/$klassenId/')({
   component: RouteComponent,
 })
 
@@ -39,20 +39,40 @@ function RouteComponent() {
   const BackButton = <button onClick={() => router.history.back()}>
     <MoveLeft />
   </button>
+
   if (!klasse.versionen) {
     return <p>{BackButton} Ein Fehler ist aufgetreten</p>
   }
 
   return <div className='w-full p-8 flex flex-col gap-8'>
 
-    <div className='flex gap-2 items-center'>
-      <button onClick={() => router.history.back()}>
-        <MoveLeft />
-      </button>
-      <h1>{getTitle(klasse)}</h1>
+    <div className='flex justify-between'>
+      <div className='flex gap-2 items-center'>
+        <button onClick={() => router.history.back()}>
+          <MoveLeft />
+        </button>
+        <h1>{getTitle(klasse)}</h1>
+      </div>
+
+      <Link
+        to='/klassen/$klassenId/edit'
+        params={{
+          klassenId
+        }}
+      >
+        <Edit />
+      </Link>
     </div>
     
     
+    <div>
+      <h2>Klassenlehrer</h2>
+      {
+        (klasse as Klasse).klassenlehrer?.map((lehrer) => {
+          return <p>{lehrer.vorname} {lehrer.nachname}</p>
+        })
+      }
+    </div>
 
     { (klasse as Klasse).versionen?.map(version => {
       return <List 

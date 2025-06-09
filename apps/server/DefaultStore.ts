@@ -695,15 +695,6 @@ export class DefaultStore implements AuthStore {
             [schuljahr, halbjahr, klassenId]
         );
 
-        
-        // const [rows] = await this.connection.execute<any[]>(
-        //     `SELECT * FROM klassenversionen
-        //     NATURAL JOIN klassenversion_schueler
-        //     JOIN schueler ON schueler_id = schueler.id
-        //     WHERE schuljahr = ? AND halbjahr = ? AND klassen_id = ?;`,
-        //     [schuljahr, halbjahr, klassenId]
-        // );
-
         if (!Array.isArray(rows)) {
             return {
                 id: klassenId,
@@ -711,6 +702,13 @@ export class DefaultStore implements AuthStore {
             };
         }
 
+        let klasse = this.reduceKlassenversionenToKlasse(rows)
+        const [ returnedKlasse ] = await this.addLehrerToClasses([klasse], schuljahr, halbjahr);
+        return returnedKlasse;
+    }
+
+
+    private reduceKlassenversionenToKlasse(rows: any[]) {
         let klasse = rows.reduce((prev: Klasse[], current) => {
             const { klassenstufe, zusatz, schuljahr, halbjahr, klassen_id: klassenId } = current
             let klasse = prev.find(k => k.id === klassenId);
@@ -749,18 +747,8 @@ export class DefaultStore implements AuthStore {
         }
         return klasse;
     }
-
-    async getClasses(schuljahr: Schuljahr, halbjahr: Halbjahr): Promise<Klasse[]> {
+    private async addLehrerToClasses(klassen: Klasse[], schuljahr: Schuljahr, halbjahr: Halbjahr) {
         if (!this.connection) {
-            return [];
-        }
-
-        const [rows] = await this.connection.execute<any[]>(
-            'SELECT * FROM `klassenversionen` WHERE schuljahr = ? AND halbjahr = ?',
-            [schuljahr, halbjahr]
-        );
-
-        if (!Array.isArray(rows)) {
             return [];
         }
 
@@ -783,15 +771,40 @@ export class DefaultStore implements AuthStore {
 
         }, [] as Klasse[])
 
+        return klassen.map((klasse) => {
+            const lehrer = reducedLehrer.find(o => o.id === klasse.id)
+            if (!lehrer) {
+                return klasse
+            }
+            return {
+                ...klasse,
+                klassenlehrer: lehrer.klassenlehrer ?? [] 
+            }
+        })
+    }
+
+    async getClasses(schuljahr: Schuljahr, halbjahr: Halbjahr): Promise<Klasse[]> {
+        if (!this.connection) {
+            return [];
+        }
+
+        const [rows] = await this.connection.execute<any[]>(
+            'SELECT * FROM `klassenversionen` WHERE schuljahr = ? AND halbjahr = ?',
+            [schuljahr, halbjahr]
+        );
+
+        if (!Array.isArray(rows)) {
+            return [];
+        }
+
         let klasse = rows.reduce((prev: Klasse[], current) => {
             let klasse = prev.find(k => k.id === current.klassen_id);
 
             if (!klasse) {
-                const lehrer = reducedLehrer.find((o) => o.id === current.klassen_id)
                 klasse = { 
                     id: current.klassen_id, 
                     versionen: [],
-                    klassenlehrer: lehrer ? lehrer.klassenlehrer ?? [] : []
+                    klassenlehrer: []
                 };
                 prev.push(klasse);
             }
@@ -804,7 +817,7 @@ export class DefaultStore implements AuthStore {
             return prev;
         }, []) as Klasse[];
 
-        return klasse
+        return await this.addLehrerToClasses(klasse, schuljahr, halbjahr)
     }
 
 
@@ -938,6 +951,11 @@ export class DefaultStore implements AuthStore {
 
             await conn.execute(
                 `DELETE FROM klassen WHERE id = ?`,
+                [klassenId]
+            );
+
+            await conn.execute(
+                `DELETE FROM klassenversion_klassenlehrer WHERE klassen_id = ?`,
                 [klassenId]
             );
 
