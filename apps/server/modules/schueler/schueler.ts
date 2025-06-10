@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import { getDB } from '../../singleton';
-import { CreateSchuelerRequestBody, DeleteSchuelerRequestBody, DeleteSchuelerResponseBody } from '@thesis/schueler';
+import { CreateSchuelerRequestBody, DeleteSchuelerRequestBody, DeleteSchuelerResponseBody, EditSchuelerRequestBody } from '@thesis/schueler';
 
 let router = express.Router();
 
@@ -14,6 +14,14 @@ router.post('/', async (req: Request<{}, {}, CreateSchuelerRequestBody>, res) =>
 router.get('/', async (req, res) => {
     const msg = await getDB().getSchueler()
     res.status(200).json(msg);
+});
+
+router.put('/:schuelerId', async (req: Request<{ schuelerId: string }, {}, EditSchuelerRequestBody>, res) => {
+    const schueler = req.body
+    const { schuelerId } = req.params
+    schueler.id = parseInt(schuelerId);
+    const msg  = await getDB().editSchueler(schueler)
+    res.status(msg.success ? 200 : 400).json(msg);
 });
 
 router.get('/:schuelerId', async (req, res) => {
