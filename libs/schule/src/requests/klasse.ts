@@ -80,6 +80,34 @@ export const createKlasse = async (klassen: KlassenVersion[], klassenlehrer: Use
     }
 }
 
+export const editKlasse = async (klassen: KlassenVersion[], klassenlehrer: User[], klassenId: string, schuljahr: Schuljahr, halbjahr: Halbjahr) => {
+    try {
+        // console.log(schuljahr, halbjahr)
+        const res = await fetch(KLASSEN_ENDPOINT + `/${klassenId}?schuljahr=${schuljahr}&halbjahr=${halbjahr}`, {
+            method: 'PUT',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                versionen: klassen,
+                klassenlehrer
+            } as CreateClassRequestBody)
+        })
+
+        if (res.status === 403) {
+            window.location.href = '/login'
+        }
+    
+        return await res.json() as CreateClassResponseBody;
+        
+    } catch (e) {
+        return {
+            success: false,
+            message: 'Ein Fehler ist aufgetreten.'
+        };
+    }
+}
+
 export interface DeleteKlasseRequestBody {
    klassenId: number
 }

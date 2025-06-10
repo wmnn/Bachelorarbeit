@@ -25,6 +25,16 @@ router.get('/:klassenId', async (req, res) => {
     res.status(klasse ? 200 : 500).json(klasse);
 });
 
+router.put('/:klassenId', async (req, res) => {
+
+    const { klassenId } = req.params
+    const { schuljahr, halbjahr } = req.query;
+    const { versionen, klassenlehrer } = req.body
+
+    const msg = await getDB().editClass(parseInt(klassenId), versionen, klassenlehrer, schuljahr as Schuljahr, halbjahr as Halbjahr)
+    res.status(200).json(msg);
+});
+
 
 router.post('/', async (req: Request<{}, {}, CreateClassRequestBody>, res: Response<CreateClassResponseBody>) => {
     const { versionen, klassenlehrer } = req.body

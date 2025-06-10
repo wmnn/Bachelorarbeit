@@ -1,9 +1,10 @@
 import { KlasseForm } from '@/components/klasse/KlasseForm';
+import { useKlassenStore } from '@/components/klasse/KlassenStore';
 import { useSchuljahrStore } from '@/components/schuljahr/SchuljahrStore';
 import { KLASSEN_QUERY_KEY } from '@/reactQueryKeys';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { getKlasse, type Halbjahr, type Schuljahr } from '@thesis/schule';
+import { editKlasse, getKlasse, type Halbjahr, type Schuljahr } from '@thesis/schule';
 
 export const Route = createFileRoute('/(app)/klassen/$klassenId/edit')({
   component: RouteComponent,
@@ -16,6 +17,8 @@ function RouteComponent() {
 
   const schuljahr = useSchuljahrStore(state => state.ausgewaeltesSchuljahr)
   const halbjahr = useSchuljahrStore(state => state.ausgewaeltesHalbjahr)
+  const klassen = useKlassenStore(state => state.neueKlassen)
+  const klassenlehrer = useKlassenStore(store => store.klassenlehrer)
 
   const { isPending, data: klasse } = useQuery({
     queryKey: [KLASSEN_QUERY_KEY, schuljahr, halbjahr, klassenId],
@@ -25,14 +28,14 @@ function RouteComponent() {
     },
     initialData: undefined,
   });
- 
 
   if (isPending) {
     return <p>Loading...</p>
   }
-
-  function onSubmit() {
-
+ 
+  async function onSubmit() {
+    const res = await editKlasse(klassen, klassenlehrer, klassenId, schuljahr, halbjahr);
+    console.log(res)
   }
   return <div className='pt-8'>
     <KlasseForm 

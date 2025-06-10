@@ -1059,6 +1059,113 @@ export class DefaultStore implements AuthStore {
             };
         }  
     }
+
+    async editClass(
+        klassenId: number,
+        klassen: KlassenVersion[],
+        klassenlehrer: User[],
+        schuljahr: Schuljahr,
+        halbjahr: Halbjahr
+    ): Promise<DatabaseMessage> {
+        if (!this.connection) {
+            return STANDARD_FEHLER;
+        }
+
+        const conn = this.connection;
+      
+        try {
+            await conn.beginTransaction();
+
+            if (klassen.length === 0) {
+                await conn.rollback();
+                return { success: false, message: 'Klassen-Versionen dürfen nicht leer sein.' };
+            }
+
+            await conn.execute(`DELETE FROM klassenversion_klassenlehrer WHERE klassen_id = ? AND schuljahr = ? AND halbjahr = ?`, [klassenId, schuljahr, halbjahr]);
+            await conn.execute(`DELETE FROM klassenversion_schueler WHERE klassen_id = ? AND schuljahr = ? AND halbjahr = ?`, [klassenId, schuljahr, halbjahr]);
+            await conn.execute(`DELETE FROM klassenversionen WHERE klassen_id = ? AND schuljahr = ? AND halbjahr = ?`, [klassenId, schuljahr, halbjahr]);
+
+            for (const klasse of klassen) {
+                const { zusatz, klassenstufe } = klasse;
+
+                if (!zusatz || !klassenstufe || zusatz === '' || klassenstufe === '') {
+                    await conn.rollback();
+                    return {
+                      success: false,
+                        message: 'Eine Klasse muss eine Klassenstufe und einen Zusatz haben.',
+                    };
+                }
+
+                const [versionResult] = await conn.execute<ResultSetHeader>(
+                    `
+                    INSERT INTO klassenversionen (klassen_id, schuljahr, halbjahr, klassenstufe, zusatz)
+                    VALUES (?, ?, ?, ?, ?)
+                    `,
+                    [klassenId, schuljahr, halbjahr, klassenstufe, zusatz]
+                );
+
+                if (!klasse.schueler || klasse.schueler.length === 0) {
+                    await conn.rollback();
+                    return {
+                        success: false,
+                        message: 'Eine Klasse muss Schüler enthalten.',
+                    };
+                }
+    
+                try {
+                    for (const schuelerId of klasse.schueler) {
+                        console.log(klassenId, schuljahr, halbjahr, klassenstufe, schuelerId)
+                        await conn.execute(
+                            `
+                            INSERT INTO klassenversion_schueler (klassen_id, schuljahr, halbjahr, klassenstufe, schueler_id)
+                            VALUES (?, ?, ?, ?, ?)
+                            `,
+                            [klassenId, schuljahr, halbjahr, klassenstufe, schuelerId]
+                        );
+                    }
+                } catch (_) {
+                    await conn.rollback();
+                    return {
+                        success: false,
+                        message: 'Ein Schüler kann nur in einer Klasse sein.',
+                    };
+                }
+            }
+
+            if (klassenlehrer.length === 0) {
+                await conn.rollback();
+                return {
+                    success: false,
+                    message: 'Eine Klasse muss Lehrer enthalten.',
+                };
+            }
+
+            if (schuljahr && halbjahr) {
+                for (const lehrer of klassenlehrer) {
+                    await conn.execute(`
+                        INSERT INTO klassenversion_klassenlehrer (user_id, klassen_id, schuljahr, halbjahr)
+                        VALUES (?, ?, ?, ?)
+                    `, [lehrer.id, klassenId, schuljahr, halbjahr]);
+                }
+            }
+
+            await conn.commit();
+
+            return {
+                success: true,
+                message: 'Die Klasse wurde erfolgreich bearbeitet.',
+            };
+        } catch (e) {
+            console.log(e);
+            await conn.rollback();
+            return {
+                success: false,
+                message: 'Beim Bearbeiten der Klasse ist ein Fehler aufgetreten.',
+            };
+        }
+    }
+
+
     async deleteClass(klassenId: number) {
         if (!this.connection) {
             return STANDARD_FEHLER

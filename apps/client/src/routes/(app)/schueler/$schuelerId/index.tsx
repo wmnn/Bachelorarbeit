@@ -9,7 +9,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { editSchueler, getSchuelerComplete, type Schueler } from '@thesis/schueler';
 import { MoveLeft } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 export const Route = createFileRoute('/(app)/schueler/$schuelerId/')({
   component: RouteComponent,
