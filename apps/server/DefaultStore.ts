@@ -818,7 +818,9 @@ export class DefaultStore implements AuthStore {
 
         const [rows] = await this.connection.execute<any[]>(
             `SELECT * FROM klassenversionen kv
-            LEFT JOIN klassenversion_schueler ks ON kv.klassen_id = ks.klassen_id AND kv.schuljahr = ks.schuljahr AND kv.halbjahr = ks.halbjahr
+            LEFT JOIN klassenversion_schueler ks ON kv.klassen_id = ks.klassen_id 
+            AND kv.schuljahr = ks.schuljahr AND kv.halbjahr = ks.halbjahr 
+            AND kv.klassenstufe = ks.klassenstufe
             LEFT JOIN schueler ON schueler_id = schueler.id
             WHERE kv.schuljahr = ? AND kv.halbjahr = ? AND kv.klassen_id = ?;`,
             [schuljahr, halbjahr, klassenId]
@@ -830,7 +832,6 @@ export class DefaultStore implements AuthStore {
                 versionen: []
             };
         }
-
         let klasse = this.reduceKlassenversionenToKlassen(rows)[0]
         const [ returnedKlasse ] = await this.addLehrerToClasses([klasse], schuljahr, halbjahr);
         return returnedKlasse;
@@ -956,6 +957,8 @@ export class DefaultStore implements AuthStore {
             return STANDARD_FEHLER
         }
 
+        console.log(klassen)
+
         const conn = this.connection;
 
         try {
@@ -1003,6 +1006,7 @@ export class DefaultStore implements AuthStore {
                 }
 
                 try {
+                    console.log(klasse.schueler)
                     for (const schuelerId of klasse.schueler || []) {
                         await conn.execute(`
                             INSERT INTO klassenversion_schueler (klassen_id, schuljahr, halbjahr, klassenstufe, schueler_id)
@@ -1014,6 +1018,7 @@ export class DefaultStore implements AuthStore {
                             klasse.klassenstufe,
                             schuelerId
                         ]);
+                        console.log(schuelerId)
                     }
                 } catch(_) {
                     await conn.rollback()

@@ -77,25 +77,29 @@ function RouteComponent() {
         }
       </div>
 
-      { (klasse as Klasse).versionen?.map(version => {
-        return <List 
-          setIsCreateDialogShown={() => {}} 
-          createButonLabel='Schüler erstellen' 
-          key={`${version.klassenstufe}${version.zusatz}`}
-          leftHeader={<h2>{version.klassenstufe}{version.zusatz}</h2>}
-        >
-    
-          <>
-            {
-              version.schueler?.map(id => {
-                return <SchuelerListItem schuelerId={id} typ={AnwesenheitTyp.UNTERRICHT} />
-              
-              })
-            }
-          </>
-          
-        </List>
-      }) }   
+      <div className='flex flex-col gap-8'>
+        { (klasse as Klasse).versionen?.map(version => {
+          return <List 
+            setIsCreateDialogShown={() => {}} 
+            createButonLabel='Schüler erstellen' 
+            key={`${version.klassenstufe}${version.zusatz}`}
+            leftHeader={<h2>{version.klassenstufe}{version.zusatz}</h2>}
+          >
+      
+            <>
+              {
+                version.schueler?.map(id => {
+                  return <SchuelerListItem schuelerId={id} typ={AnwesenheitTyp.UNTERRICHT} />
+                
+                })
+              }
+            </>
+            
+          </List>
+        }) }   
+
+      </div>
+      
 
     </div>
     
