@@ -1,4 +1,4 @@
-import { updateRole, type Rolle } from "@thesis/auth";
+import { updateRole, type Rolle } from "@thesis/rollen";
 import { AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
 import { BerechtigungenSelect } from "./BerechtigungenSelect";
 import { useRollenStore } from "./RollenStore";

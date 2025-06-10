@@ -1,5 +1,6 @@
-import { Berechtigung, Berechtigungen, User } from "@thesis/auth";
+import { User } from "@thesis/auth";
 import { getDB } from "../../singleton";
+import { Berechtigung, Berechtigungen } from "@thesis/rollen";
 
 export async function searchUser<T extends Berechtigung>(query: string, berechtigung: T, berechtigungValue: Berechtigungen[T][]): Promise<User[] | undefined> {
     let users = await getDB().getUsers();

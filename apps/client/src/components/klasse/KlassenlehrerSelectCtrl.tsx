@@ -4,7 +4,8 @@ import { use, useEffect, useRef, useState } from "react";
 import { userContext } from "@/context/UserContext";
 import { useKlassenStore } from "./KlassenStore";
 import { Input } from "../Input";
-import { Berechtigung, searchUser, type Berechtigungen, type User } from "@thesis/auth";
+import { Berechtigung, type Berechtigungen } from "@thesis/rollen";
+import { searchUser, type User } from "@thesis/auth";
 import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from 'use-debounce';
 

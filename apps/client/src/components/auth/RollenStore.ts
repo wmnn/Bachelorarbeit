@@ -1,4 +1,4 @@
-import type { Rolle } from '@thesis/auth'
+import type { Rolle } from '@thesis/rollen'
 import { create } from 'zustand'
 
 type RollenStoreData = {

@@ -1,6 +1,6 @@
 import { useImmer } from "use-immer";
 import { BerechtigungenSelect } from "./BerechtigungenSelect";
-import { Berechtigung, createRole, type Rolle } from "@thesis/auth";
+import { Berechtigung, createRole, type Rolle } from "@thesis/rollen";
 import { DialogWithButtons } from "../dialog/DialogWithButtons";
 import { useRollenStore } from "./RollenStore";
 import { useState } from "react";

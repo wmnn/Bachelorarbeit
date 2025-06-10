@@ -6,12 +6,25 @@ import { router as authRouter, authMiddleware } from "./modules/auth/auth"
 import { router as schuelerRouter } from "./modules/schueler/schueler"
 import { router as klassenRouter } from "./modules/klassen/klassen"
 import { router as anwesenheitenRouter } from "./modules/anwesenheiten/anwesenheiten"
+import { router as rollenRouter } from './modules/rollen/rollen'
 import { ANWESENHEITEN_ENDPOINT, AUTH_API_ENDPOINT, KLASSEN_ENDPOINT, SCHUELER_ENDPOINT } from "@thesis/config"
 import { getDB } from './singleton';
 import cookieParser from "cookie-parser"
 import https from 'https';
 import fs from 'fs'
-import { Berechtigung } from '@thesis/auth';
+import { Berechtigung, Berechtigungen, ROLLE_ENDPOINT } from '@thesis/rollen';
+import { rolleMiddleware } from './modules/rollen/util';
+
+declare global {
+    namespace Express {
+        interface Request {
+            sessionId?: string,
+            userId?: number,
+            permissions?: Berechtigungen, // Die Berechtigungen des aktuellen Nutzers
+            rolle?: string // Die Rolle des aktuellen Nutzers
+        }
+    }
+}
 
 // setTimeout(() => {
 //     getDB().createRole({
@@ -55,10 +68,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.json());
 app.use(authMiddleware)
+app.use(rolleMiddleware as any)
 app.use(AUTH_API_ENDPOINT, authRouter);
 app.use(SCHUELER_ENDPOINT, schuelerRouter);
 app.use(KLASSEN_ENDPOINT, klassenRouter);
 app.use(ANWESENHEITEN_ENDPOINT, anwesenheitenRouter);
+app.use(ROLLE_ENDPOINT, rollenRouter);
 app.use(express.static('../client/dist'))
 
 app.get('/{*splat}', (req, res) => {

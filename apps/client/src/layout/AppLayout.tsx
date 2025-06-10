@@ -1,7 +1,8 @@
 import Button, { type ButtonProps } from "@/components/Button"
 import { userContext } from "@/context/UserContext"
 import { Link, Outlet, useNavigate } from "@tanstack/react-router"
-import { Berechtigung, logout } from "@thesis/auth"
+import { logout } from "@thesis/auth"
+import { Berechtigung } from "@thesis/rollen"
 import { useContext, useEffect, useState, type FC } from "react"
 
 const LayoutButton: FC<ButtonProps> = (props) => {

@@ -1,7 +1,6 @@
-import { AUTH_API_ENDPOINT } from "@thesis/config"
-import type { Rolle } from "../models";
+import { Rolle } from "../models/role"
 
-export const ROLLE_ENDPOINT = '/role'
+export const ROLLE_ENDPOINT = '/api/role'
 export type CreateRoleRequestBody = Rolle
 export interface CreateRoleResponseBody {
     success: boolean,
@@ -11,7 +10,7 @@ export interface CreateRoleResponseBody {
 export const createRole = async (rolle: Rolle) => {
     
     try {
-        const res = await fetch(AUTH_API_ENDPOINT + ROLLE_ENDPOINT, {
+        const res = await fetch(ROLLE_ENDPOINT, {
             method: 'POST',
             body: JSON.stringify(rolle),
             headers: {
@@ -44,7 +43,7 @@ export type DeleteRoleResponseBody = CreateRoleResponseBody;
 export const deleteRole = async (rolle: string) => {
 
     try {
-        const res = await fetch(AUTH_API_ENDPOINT + ROLLE_ENDPOINT, {
+        const res = await fetch(ROLLE_ENDPOINT, {
             method: 'DELETE',
             body: JSON.stringify({
                 rolle
@@ -84,7 +83,7 @@ export type UpdateRoleResponseBody = CreateRoleResponseBody
 export const updateRole = async (rollenbezeichnung: string, updated: Rolle) => {
 
     try {
-        const res = await fetch(AUTH_API_ENDPOINT + ROLLE_ENDPOINT, {
+        const res = await fetch(ROLLE_ENDPOINT, {
             method: 'PATCH',
             body: JSON.stringify({
                 rollenbezeichnung,

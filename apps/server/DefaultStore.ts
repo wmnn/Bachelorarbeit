@@ -1,10 +1,11 @@
-import { AuthStore, User, Rolle } from '@thesis/auth';
+import { User } from '@thesis/auth';
 import crypto from 'crypto';
-import mysql, { Connection, QueryResult, ResultSetHeader, RowDataPacket } from 'mysql2/promise'
+import mysql, { Connection, ResultSetHeader, RowDataPacket } from 'mysql2/promise'
 import { SessionData } from './modules/auth/auth';
 import { Schueler, SchuelerSimple } from '@thesis/schueler';
 import { getHalbjahr, getSchuljahr, getTitle, Halbjahr, Klasse, KlassenVersion, Schuljahr } from '@thesis/schule';
 import { Anwesenheiten, AnwesenheitTyp } from '@thesis/anwesenheiten';
+import { Rolle } from '@thesis/rollen';
 
 interface DatabaseMessage {
     success: boolean,
@@ -23,7 +24,7 @@ function handleSchuelerRow(schueler: any): Schueler {
     delete schueler.hat_sonderpaedagogische_kraft
     return schueler
 }
-export class DefaultStore implements AuthStore {
+export class DefaultStore {
 
     private connection: undefined | Connection
 
@@ -255,6 +256,7 @@ export class DefaultStore implements AuthStore {
                 message: 'Die Rolle konnte nicht erstellt werden.'
         };
         if (!this.connection) {
+            console.log('No connection')
             return defaultErrorMessage
         }
   
@@ -265,6 +267,7 @@ export class DefaultStore implements AuthStore {
             `, [role.rolle , JSON.stringify(role.berechtigungen)]);
 
             if (result.affectedRows !== 1) {
+                console.log('Affected rows: ', result.affectedRows)
                 return defaultErrorMessage
             }
         } catch (e: any) {

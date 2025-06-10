@@ -82,7 +82,6 @@ export const createKlasse = async (klassen: KlassenVersion[], klassenlehrer: Use
 
 export const editKlasse = async (klassen: KlassenVersion[], klassenlehrer: User[], klassenId: string, schuljahr: Schuljahr, halbjahr: Halbjahr) => {
     try {
-        // console.log(schuljahr, halbjahr)
         const res = await fetch(KLASSEN_ENDPOINT + `/${klassenId}?schuljahr=${schuljahr}&halbjahr=${halbjahr}`, {
             method: 'PUT',
             headers: {

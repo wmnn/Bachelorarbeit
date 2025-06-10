@@ -10,23 +10,15 @@ import {
     SESSION_COOKIE_NAME,
 } from '@thesis/config';
 import {
-    Berechtigung,
-    Berechtigungen,
-    CreateRoleRequestBody,
-    CreateRoleResponseBody,
-    DeleteRoleRequestBody,
-    DeleteRoleResponseBody,
     DeleteUserRequestBody,
     LoginRequestBody,
     LoginResponseBody,
     RegisterRequestBody,
     RegisterResponseBody,
-    ROLLE_ENDPOINT,
     SearchUserRequestBody,
     SearchUserResponseBody,
     UpdatePasswordRequestBody,
     UpdatePasswordResponseBody,
-    UpdateRoleRequestBody,
     UpdateUserRequestBody,
     UpdateUserResponseBody,
     User,
@@ -38,6 +30,8 @@ import path from 'path';
 import jwt from 'jsonwebtoken'
 import { sendActivateAccountEmail } from './smtp';
 import { searchUser } from './util';
+import { addRoleDataToUser } from '../rollen/util';
+import { Berechtigung } from '@thesis/rollen';
 
 const cookieKey = fs.readFileSync(
     path.join(__dirname, '../../../../cookie_signing.key'),
@@ -55,16 +49,6 @@ export type SessionData = {
     createdAt: Date;
     expiresAt: Date;
 };
-
-declare global {
-    namespace Express {
-        interface Request {
-            sessionId?: string
-            userId?: number
-            permissions?: Berechtigungen
-        }
-    }
-}
 
 async function createSession(res: Response, user: User): Promise<Response> {
     const sessionId = randomUUID();
@@ -144,41 +128,15 @@ export const authMiddleware = async (
         });
         return;
     }
-    const userWithPermissions = await addRoleDataToUser(user)
-    const rolle = userWithPermissions.rolle;
-    if (!rolle || typeof rolle === 'string') {
-        next();
-        return;
-    }
+    
     req.userId = user.id
-    req.permissions = rolle.berechtigungen;
+    if (typeof user.rolle === 'string') {
+        req.rolle = user.rolle
+    }
+
     next();
 };
 
-const addRoleDataToUser = async (user: User) => {
-    if (!user.rolle) {
-        return user;
-    }
-
-    if (typeof user.rolle !== 'string') {
-        return user;
-    }
-
-    const roles = await getDB().getRoles();
-
-    if (!roles) {
-        return user;
-    }
-
-    for (const role of roles) {
-        if (role.rolle === user.rolle) {
-            user.rolle = role;
-            break;
-        }
-    }
-
-    return user;
-};
 
 router.get(LOGOUT_ENDOINT, async (req, res) => {
     res.clearCookie(SESSION_COOKIE_NAME, { path: '/' });
@@ -466,56 +424,5 @@ router.patch('/password', async (req: Request<{}, {}, UpdatePasswordRequestBody>
     }
 );
 
-router.post(
-    ROLLE_ENDPOINT,
-    async (
-        req: Request<{}, {}, CreateRoleRequestBody>,
-        res: Response<CreateRoleResponseBody>
-    ) => {
-        const { rolle, berechtigungen } = req.body;
-
-        if (rolle == '') {
-            res.status(400).json({
-                success: false,
-                message: 'Die Rollenbezeichnung darf nicht leer sein.',
-            });
-            return;
-        }
-        // Verifying format
-        let legitRole: any = {
-            rolle,
-            berechtigungen: {},
-        };
-        for (const [key] of Object.entries(Berechtigung)) {
-            if (isNaN(Number(key))) continue;
-            //@ts-ignore
-            legitRole['berechtigungen'][key] = berechtigungen[key];
-        }
-
-        const dbMessage = await getDB().createRole(legitRole);
-        res.status(200).json(dbMessage);
-    }
-);
-
-router.patch(
-    ROLLE_ENDPOINT,
-    async (req: Request<{}, {}, UpdateRoleRequestBody>, res) => {
-        const { rollenbezeichnung, updated } = req.body;
-        const dbMessage = await getDB().updateRole(rollenbezeichnung, updated);
-        res.status(200).json(dbMessage);
-    }
-);
-router.delete(ROLLE_ENDPOINT, async (req: Request<{}, {}, DeleteRoleRequestBody>, res: Response<DeleteRoleResponseBody>) => {
-    if (!req.permissions?.[Berechtigung.RollenVerwalten]) {
-        res.status(401).json({
-            success: false,
-            message: 'Du hast nicht die notwendigen Berechtigungen.'
-        });
-        return;
-    }
-    const { rolle } = req.body;
-    const dbMessage = await getDB().deleteRole(rolle);
-    res.status(200).json(dbMessage);
-});
 
 export { router };

@@ -1,5 +1,6 @@
 import { AUTH_API_ENDPOINT } from "@thesis/config"
-import { Berechtigung, Berechtigungen, User } from "../models"
+import { Berechtigung, Berechtigungen } from "@thesis/rollen"
+import { User } from "../models"
 
 export interface SearchUserRequestBody <T extends Berechtigung>{
     berechtigung: T,

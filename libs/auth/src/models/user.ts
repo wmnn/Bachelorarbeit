@@ -1,4 +1,4 @@
-import type { Rolle } from "./role"
+import type { Rolle } from "../../../rollen/src/models/role"
 
 export type User = {
     id?: number,

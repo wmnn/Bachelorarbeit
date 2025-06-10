@@ -1,0 +1,62 @@
+import express from 'express';
+import { getDB } from '../../singleton';
+import { Request, Response } from 'express';
+import {
+    CreateRoleRequestBody,
+    CreateRoleResponseBody,
+    DeleteRoleRequestBody,
+    DeleteRoleResponseBody,
+    ROLLE_ENDPOINT,
+    UpdateRoleRequestBody,
+} from '@thesis/auth';
+import { Berechtigung } from '@thesis/rollen';
+
+let router = express.Router();
+
+router.post('/',async (
+    req: Request<{}, {}, CreateRoleRequestBody>,
+    res: Response<CreateRoleResponseBody>
+) => {
+    const { rolle, berechtigungen } = req.body;
+
+    if (rolle == '') {
+        res.status(400).json({
+            success: false,
+            message: 'Die Rollenbezeichnung darf nicht leer sein.',
+        });
+        return;
+    }
+    // Verifying format
+    let legitRole: any = {
+        rolle,
+        berechtigungen: {},
+    };
+    for (const [key] of Object.entries(Berechtigung)) {
+        if (isNaN(Number(key))) continue;
+        //@ts-ignore
+        legitRole['berechtigungen'][key] = berechtigungen[key];
+    }
+
+    const dbMessage = await getDB().createRole(legitRole);
+    res.status(200).json(dbMessage);
+});
+
+router.patch('/', async (req: Request<{}, {}, UpdateRoleRequestBody>, res) => {
+    const { rollenbezeichnung, updated } = req.body;
+    const dbMessage = await getDB().updateRole(rollenbezeichnung, updated);
+    res.status(200).json(dbMessage);
+});
+router.delete('/', async (req: Request<{}, {}, DeleteRoleRequestBody>, res: Response<DeleteRoleResponseBody>) => {
+    if (!req.permissions?.[Berechtigung.RollenVerwalten]) {
+        res.status(401).json({
+            success: false,
+            message: 'Du hast nicht die notwendigen Berechtigungen.'
+        });
+        return;
+    }
+    const { rolle } = req.body;
+    const dbMessage = await getDB().deleteRole(rolle);
+    res.status(200).json(dbMessage);
+});
+
+export { router };
