@@ -1,6 +1,3 @@
-import { useState } from "react";
-import { SchuelerLoeschenDialog } from "./SchuelerLoeschenDialog";
-import { DeleteIcon } from "../icons/DeleteIcon";
 import { Link } from "@tanstack/react-router";
 import { SchuelerIcons } from "./SchuelerIcons";
 import { AnwesenheitsstatusSelect } from "../anwesenheitsstatus/AnwesenheitsstatusSelect";
@@ -9,8 +6,6 @@ import { AnwesenheitTyp } from "@thesis/anwesenheiten";
 import { GeprüftCheckbox } from "../anwesenheitsstatus/GeprüftCheckbox";
 
 export function SchuelerListItem({ schuelerId, typ, showDerzeitigeKlasse = false }: { schuelerId: number, typ: AnwesenheitTyp, showDerzeitigeKlasse?: boolean }) {
-
-    const [isDeleteDialogShown, setIsDeleteDialogShown] = useState(false)
     let schuelers = useSchuelerStore(store => store.schueler)
 
     if (!schuelers) {
@@ -22,10 +17,6 @@ export function SchuelerListItem({ schuelerId, typ, showDerzeitigeKlasse = false
     }
 
     return <li className='py-2 px-8 flex justify-between w-[100%]'>
-
-        {
-            isDeleteDialogShown && <SchuelerLoeschenDialog schuelerId={schueler.id ?? -1} closeDialog={() => setIsDeleteDialogShown(false)}/>
-        }
        
             <Link 
                 to="/schueler/$schuelerId"
@@ -53,10 +44,6 @@ export function SchuelerListItem({ schuelerId, typ, showDerzeitigeKlasse = false
         <div className='flex gap-6'>
             <GeprüftCheckbox schuelerId={schuelerId} typ={typ} />
             <AnwesenheitsstatusSelect typ={AnwesenheitTyp.UNTERRICHT} schuelerId={schuelerId} />
-            
-            <button onClick={() => setIsDeleteDialogShown(true)}>
-                <DeleteIcon />
-            </button>
         </div>
     
     </li>

@@ -1,6 +1,8 @@
 import { ErrorDialog } from '@/components/dialog/MessageDialog';
+import { DeleteIcon } from '@/components/icons/DeleteIcon';
 import { SchuelerEditForm } from '@/components/schueler/SchuelerForm';
 import { SchuelerIcons } from '@/components/schueler/SchuelerIcons';
+import { SchuelerLoeschenDialog } from '@/components/schueler/SchuelerLoeschenDialog';
 import { SchuelerNav } from '@/layout/SchuelerNav';
 import { SCHUELER_QUERY_KEY } from '@/reactQueryKeys';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -30,6 +32,7 @@ function RouteComponent() {
     });
 
     const [responseMessage, setResponseMessage] = useState('')
+    const [isDeleteDialogShown, setIsDeleteDialogShown] = useState(false)
 
     if (isPending) {
         return <p>Loading...</p>;
@@ -49,14 +52,25 @@ function RouteComponent() {
 
         {(responseMessage !== '') && <ErrorDialog message={responseMessage} closeDialog={() => setResponseMessage('')}/>}
 
-        <div className='flex gap-4 items-center px-8 pt-8'>
-            <button onClick={() => router.history.back()}>
-                <MoveLeft />
-            </button>
-            <h1>{schueler.vorname} {schueler.nachname}</h1>
-            <div className='pt-2'>
-                <SchuelerIcons schueler={schueler} />
+            {
+                isDeleteDialogShown && <SchuelerLoeschenDialog schuelerId={schueler.id ?? -1} closeDialog={() => setIsDeleteDialogShown(false)}/>
+            }
+
+        <div className='flex justify-between items-center px-8'>
+            <div className='flex gap-4 items-center pt-8'>
+                <button onClick={() => router.history.back()}>
+                    <MoveLeft />
+                </button>
+                <h1>{schueler.vorname} {schueler.nachname}</h1>
+                <div className='pt-2'>
+                    <SchuelerIcons schueler={schueler} />
+                </div>
             </div>
+
+            <button onClick={() => setIsDeleteDialogShown(true)}>
+                <DeleteIcon />
+            </button>
+
         </div>
 
         <SchuelerNav schuelerId={schuelerId} />
