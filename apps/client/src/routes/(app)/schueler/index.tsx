@@ -13,6 +13,7 @@ export const Route = createFileRoute('/(app)/schueler/')({
 
 function RouteComponent() {
 
+  const schueler = useSchuelerStore(store => store.schueler);
   const setSchueler = useSchuelerStore(store => store.setSchueler);
   const { isPending, data: schuelerArr } = useQuery<Schueler[]>({
     queryKey: [SCHUELER_QUERY_KEY],
@@ -24,10 +25,11 @@ function RouteComponent() {
   }
 
   useEffect(() => {
+    console.log(schuelerArr)
     if (schuelerArr) {
       setSchueler((_) => schuelerArr ?? [])
     }
   }, [schuelerArr])
 
-  return <SchuelerList schueler={schuelerArr} className='p-8'/>
+  return <SchuelerList schueler={schueler} className='p-8'/>
 }

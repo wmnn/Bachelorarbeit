@@ -51,13 +51,17 @@ function RouteComponent() {
     return <p>Loading...</p>
   }
 
-  const LeftHeader = <h1>
-    Klassen
-  </h1>
-
   const RightHeader = <div className='flex gap-2'>
     <SchuljahrSelect />
     <HalbjahrSelect />
+  </div>
+  
+  const header = <div className='flex justify-between mb-8'>
+        <h1>Klassen</h1>
+
+        <div>
+          {RightHeader}
+        </div>
   </div>
 
   return <div className='w-full'>
@@ -68,8 +72,7 @@ function RouteComponent() {
     <List 
       setIsCreateDialogShown={setIsCreateDialogShown} 
       createButonLabel='Klasse erstellen'
-      leftHeader={LeftHeader}
-      rightHeader={RightHeader}
+      header={header}
       className='p-8'
     >
       {
