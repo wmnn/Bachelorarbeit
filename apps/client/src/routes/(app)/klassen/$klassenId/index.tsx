@@ -1,15 +1,14 @@
-import { List } from '@/components/List';
 import { useSchuljahrStore } from '@/components/schuljahr/SchuljahrStore';
 import { KLASSEN_QUERY_KEY } from '@/reactQueryKeys';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { getKlasse, type Halbjahr, type Klasse, type Schuljahr } from '@thesis/schule';
 import { useRouter } from '@tanstack/react-router'
-import { SchuelerListItem } from '@/components/schueler/SchuelerListItem';
 import { Edit, MoveLeft } from 'lucide-react';
-import { AnwesenheitTyp } from '@thesis/anwesenheiten';
 import { KlasseNav } from '@/layout/KlasseNav';
 import { getTitle } from '@thesis/schule'
+import { SchuelerList } from '@/components/schueler/SchuelerList/SchuelerList';
+import type { Schueler } from '@thesis/schueler';
 
 export const Route = createFileRoute('/(app)/klassen/$klassenId/')({
   component: RouteComponent,
@@ -79,23 +78,11 @@ function RouteComponent() {
 
       <div className='flex flex-col gap-8'>
         { (klasse as Klasse).versionen?.map(version => {
-          return <List 
-            setIsCreateDialogShown={() => {}} 
-            createButonLabel='Schüler erstellen' 
-            key={`${version.klassenstufe}${version.zusatz}`}
+          return <SchuelerList 
             leftHeader={<h2>{version.klassenstufe}{version.zusatz}</h2>}
-          >
-      
-            <>
-              {
-                version.schueler?.map(id => {
-                  return <SchuelerListItem schuelerId={id} typ={AnwesenheitTyp.UNTERRICHT} />
-                
-                })
-              }
-            </>
-            
-          </List>
+            schueler={version.schueler ?? [] as Schueler[]}
+            showDerzeitigeKlasse={false}
+          />
         }) }   
 
       </div>

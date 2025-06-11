@@ -1,14 +1,11 @@
-import { List } from '@/components/List'
-import { SchuelerErstellenDialog } from '@/components/schueler/SchuelerErstellenDialog'
-import { SchuelerListItem } from '@/components/schueler/SchuelerListItem'
+import { SchuelerList } from '@/components/schueler/SchuelerList/SchuelerList'
 import { useSchuelerStore } from '@/components/schueler/SchuelerStore'
 import { SCHUELER_QUERY_KEY } from '@/reactQueryKeys'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { AnwesenheitTyp } from '@thesis/anwesenheiten'
 import { type Schueler } from '@thesis/schueler';
 import { getSchueler } from '@thesis/schueler'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 
 export const Route = createFileRoute('/(app)/schueler/')({
   component: RouteComponent,
@@ -16,7 +13,6 @@ export const Route = createFileRoute('/(app)/schueler/')({
 
 function RouteComponent() {
 
-  const [isCreateDialogShown, setIsCreateDialogShown] = useState(false)
   const setSchueler = useSchuelerStore(store => store.setSchueler);
   const { isPending, data: schuelerArr } = useQuery<Schueler[]>({
     queryKey: [SCHUELER_QUERY_KEY],
@@ -33,18 +29,5 @@ function RouteComponent() {
     }
   }, [schuelerArr])
 
-  return <List 
-    setIsCreateDialogShown={setIsCreateDialogShown} 
-    createButonLabel='Schüler erstellen'
-    leftHeader={<h1>Schüler</h1>}
-    className='p-8'
-    
-  >
-    { isCreateDialogShown && <SchuelerErstellenDialog closeDialog={() => setIsCreateDialogShown(false)}/>}
-    {
-      schuelerArr.map(schueler => {
-        return <SchuelerListItem schuelerId={schueler.id ?? -1} typ={AnwesenheitTyp.UNTERRICHT} showDerzeitigeKlasse/>
-      })
-    }
-  </List>
+  return <SchuelerList schueler={schuelerArr} className='p-8'/>
 }

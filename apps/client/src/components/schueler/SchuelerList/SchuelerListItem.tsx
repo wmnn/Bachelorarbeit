@@ -1,9 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { SchuelerIcons } from "./SchuelerIcons";
-import { AnwesenheitsstatusSelect } from "../anwesenheitsstatus/AnwesenheitsstatusSelect";
-import { useSchuelerStore } from "./SchuelerStore";
+import { SchuelerIcons } from "../SchuelerIcons";
+import { AnwesenheitsstatusSelect } from "../../anwesenheitsstatus/AnwesenheitsstatusSelect";
+import { useSchuelerStore } from "../SchuelerStore";
 import { AnwesenheitTyp } from "@thesis/anwesenheiten";
-import { GeprüftCheckbox } from "../anwesenheitsstatus/GeprüftCheckbox";
+import { GeprüftCheckbox } from "../../anwesenheitsstatus/GeprüftCheckbox";
 
 export function SchuelerListItem({ schuelerId, typ, showDerzeitigeKlasse = false }: { schuelerId: number, typ: AnwesenheitTyp, showDerzeitigeKlasse?: boolean }) {
     let schuelers = useSchuelerStore(store => store.schueler)
