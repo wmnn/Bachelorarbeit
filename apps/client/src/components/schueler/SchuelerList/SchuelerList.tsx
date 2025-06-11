@@ -70,8 +70,8 @@ export const SchuelerList = (props: SchuelerListProps ) => {
     };
 
 
-    const rightHeader = <div className="flex gap-2">
-      <Input placeholder="Suche" onChange={({ target }) => search(target.value)}></Input>
+    const rightHeader = <div className="flex gap-2 items-center">
+      <Input placeholder="Suche" onChange={({ target }) => search(target.value)} className="max-h-[36px]"></Input>
       <Select 
         value={selectedSortItem}
         onValueChange={handleSortChange}
@@ -89,7 +89,7 @@ export const SchuelerList = (props: SchuelerListProps ) => {
       </Select>  
 
       <DropdownMenu>
-        <DropdownMenuTrigger className="border-[1px] px-2 rounded-lg">Filtern</DropdownMenuTrigger>
+        <DropdownMenuTrigger className="border-[1px] px-2 rounded-lg py-[6px]">Filtern</DropdownMenuTrigger>
         <DropdownMenuContent>
           { props.schueler.map(schueler => {
             return <DropdownMenuItem className="cursor-pointer" onClick={() => {
@@ -115,9 +115,10 @@ export const SchuelerList = (props: SchuelerListProps ) => {
     </div>
 
     const header = <>
-      <div className='flex justify-between mb-8'>
+      <div className='flex justify-between mb-8 items-center'>
         <h1>Schüler</h1>
-          { rightHeader }
+        { rightHeader }
+          
       </div>
       <SchuelerListHeader/>
     </>
