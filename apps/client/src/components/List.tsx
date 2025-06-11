@@ -6,29 +6,13 @@ interface ListProps {
     children: ReactNode,
     createButonLabel: string,
     title?: string,
-    leftHeader?: ReactNode,
     header?: ReactNode
-    rightHeader?: ReactNode,
     className?: string
-    sort?: () => void
-    filter?: () => void
 }
 export function List(props: ListProps ) {
-    const { setIsCreateDialogShown, children, createButonLabel, leftHeader, rightHeader, className, header } = props;
+    const { setIsCreateDialogShown, children, createButonLabel, className, header } = props;
     
     return <div className={`flex flex-col w-full ${className}`}>
-        <div className='flex justify-between mb-8'>
-            { leftHeader }
-            <div className='flex gap-2'>
-                 { rightHeader }
-                <ButtonLight className="text-sm" onClick={() => props.sort ? props.sort() : null}>
-                    Sortieren
-                </ButtonLight>
-                <ButtonLight onClick={() => props.filter ? props.filter() : null}>
-                    Filtern
-                </ButtonLight>
-            </div>
-        </div>
 
         { header }
 

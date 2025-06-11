@@ -1,4 +1,5 @@
-import { updateUser, type Rolle, type User } from "@thesis/auth"
+import { updateUser, type User } from "@thesis/auth"
+import { type Rolle } from '@thesis/rollen'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
