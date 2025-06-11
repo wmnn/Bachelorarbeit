@@ -6,13 +6,8 @@ import { useState, type ReactNode } from "react"
 import type { Schueler } from "@thesis/schueler"
 import { SchuelerListHeader } from "./SchuelerListHeader"
 import { Input } from "@/components/Input"
-import { ButtonLight } from "@/components/ButtonLight"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select"
-
-interface Action {
-    title: string,
-    onClick: () => void
-}
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
 interface SchuelerListProps {
     schueler: Schueler[],
@@ -30,7 +25,12 @@ export const SchuelerList = (props: SchuelerListProps ) => {
     const { showDerzeitigeKlasse = true, ...rest } = props; 
 
     const [schueler, setSchueler] = useState(props.schueler)
-    const [selectedValue, setSelectedValue] = useState('');
+    const [selectedSortItem, setSelectedSortItem] = useState('');
+    // Wenn ein Wert in filteredShown wahr ist, dann wird er angezeigt, sonst versteckt.
+    const [filteredShown, setFilteredShown] = useState<Record<number, boolean>>(props.schueler.reduce((prev, current) => {
+      prev[current.id ?? -1] = true
+      return prev;
+    }, {} as Record<number, boolean>));
  
     function search(query: string) {
       setSchueler((_) => {
@@ -40,42 +40,40 @@ export const SchuelerList = (props: SchuelerListProps ) => {
       })
     }
 
-    const sortSelect: Action[] = [
+    const sortSelect = [
       {
         title: 'Nachname aufsteigend',
-        onClick: () => {
-          setSchueler(_ => {
-            const sorted = [...props.schueler].sort((a, b) => {
-              return a.nachname.localeCompare(b.nachname); // ASCENDING
-            });
-            return sorted;
-          });
-        }
       },
       {
         title: 'Nachname absteigend',
-        onClick: () => {
-          setSchueler(_ => {
-            const sorted = [...props.schueler].sort((a, b) => {
-              return b.nachname.localeCompare(a.nachname); // DESCENDING
-            });
-            return sorted;
-          });
-        }
       }
     ];
 
+    const sort = (selectedSortItem: string, schueler: Schueler[]) => {
+      if (selectedSortItem == 'Nachname aufsteigend') {
+        return schueler.sort((a, b) => {
+          return a.nachname.localeCompare(b.nachname);
+        });
+        
+
+      } else {
+        return schueler.sort((a, b) => {
+          return b.nachname.localeCompare(a.nachname);
+        });
+
+      }
+    }
+
     const handleSortChange = (value: string) => {
-        setSelectedValue(value);
-        const selectedItem = sortSelect.find(item => item.title === value);
-        selectedItem?.onClick?.();
+        setSelectedSortItem(value);
+        setSchueler(prev => sort(value, prev))
     };
 
 
     const rightHeader = <div className="flex gap-2">
       <Input placeholder="Suche" onChange={({ target }) => search(target.value)}></Input>
       <Select 
-        value={selectedValue}
+        value={selectedSortItem}
         onValueChange={handleSortChange}
     >
         <SelectTrigger className="xl:w-[180px] w-min">
@@ -89,11 +87,32 @@ export const SchuelerList = (props: SchuelerListProps ) => {
             }
         </SelectContent>
       </Select>  
-      
-      <ButtonLight>
-        Filtern
-      </ButtonLight>
-      </div>
+
+      <DropdownMenu>
+        <DropdownMenuTrigger className="border-[1px] px-2 rounded-lg">Filtern</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          { props.schueler.map(schueler => {
+            return <DropdownMenuItem className="cursor-pointer" onClick={() => {
+
+              let newValue = !filteredShown[schueler.id ?? -1]     
+              setFilteredShown(prev => ({
+                ...prev,
+                [schueler.id ?? -1]: newValue
+              }))
+
+              if (newValue) {
+                setSchueler(prev => sort(selectedSortItem, [...prev, schueler]))
+              } else {
+                setSchueler(prev => sort(selectedSortItem, prev.filter(item => item.id !== schueler.id)))
+              }
+            }}>
+              <input type="checkbox" checked={filteredShown[schueler.id ?? -1] === true} />
+              {schueler.vorname} {schueler.nachname}
+            </DropdownMenuItem>
+          }) }
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
 
     const header = <>
       <div className='flex justify-between mb-8'>
