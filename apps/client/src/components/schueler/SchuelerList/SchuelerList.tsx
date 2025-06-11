@@ -5,9 +5,10 @@ import { AnwesenheitTyp } from "@thesis/anwesenheiten"
 import { useState, type ReactNode } from "react"
 import type { Schueler } from "@thesis/schueler"
 import { SchuelerListHeader } from "./SchuelerListHeader"
+import { Input } from "@/components/Input"
 
 interface SchuelerListProps {
-    schueler: Schueler[] | number[],
+    schueler: Schueler[],
     title?: string,
     leftHeader?: ReactNode,
     header?: ReactNode
@@ -18,7 +19,28 @@ interface SchuelerListProps {
 export const SchuelerList = (props: SchuelerListProps ) => {
 
     const [isCreateDialogShown, setIsCreateDialogShown] = useState(false)
-    const { schueler, showDerzeitigeKlasse = true, ...rest } = props; 
+    const { showDerzeitigeKlasse = true, ...rest } = props; 
+
+    const [schueler, setSchueler] = useState(props.schueler)
+ 
+    function search(query: string) {
+      setSchueler((_) => {
+        return props.schueler.filter((schueler) => {
+          return `${schueler.vorname} ${schueler.nachname}`.includes(query)
+        })
+      })
+    }
+    function sort() {
+
+    }
+
+    function filter() {
+
+    }
+
+    const rightHeader = <Input placeholder="Suche" onChange={({ target }) => search(target.value)}>
+
+    </Input>
     
     return <div className="w-full">
     
@@ -26,13 +48,14 @@ export const SchuelerList = (props: SchuelerListProps ) => {
         leftHeader={<h1>Schüler</h1>}
         setIsCreateDialogShown={setIsCreateDialogShown} 
         createButonLabel='Schüler erstellen'
+        rightHeader={rightHeader}
         header={<SchuelerListHeader/>}
         {...rest}
       >
         { isCreateDialogShown && <SchuelerErstellenDialog closeDialog={() => setIsCreateDialogShown(false)}/>}
         {
           schueler.map(schueler => {
-            return <SchuelerListItem schuelerId={typeof schueler === 'number' ? schueler : schueler.id ?? -1} typ={AnwesenheitTyp.UNTERRICHT} showDerzeitigeKlasse={showDerzeitigeKlasse} />
+            return <SchuelerListItem schueler={schueler} typ={AnwesenheitTyp.UNTERRICHT} showDerzeitigeKlasse={showDerzeitigeKlasse} />
           })
         }
       </List>   

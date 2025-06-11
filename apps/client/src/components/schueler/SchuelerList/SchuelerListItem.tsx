@@ -1,49 +1,36 @@
 import { Link } from "@tanstack/react-router";
 import { SchuelerIcons } from "../SchuelerIcons";
 import { AnwesenheitsstatusSelect } from "../../anwesenheitsstatus/AnwesenheitsstatusSelect";
-import { useSchuelerStore } from "../SchuelerStore";
 import { AnwesenheitTyp } from "@thesis/anwesenheiten";
 import { GeprüftCheckbox } from "../../anwesenheitsstatus/GeprüftCheckbox";
+import type { Schueler } from "@thesis/schueler";
 
-export function SchuelerListItem({ schuelerId, typ, showDerzeitigeKlasse = false }: { schuelerId: number, typ: AnwesenheitTyp, showDerzeitigeKlasse?: boolean }) {
-    let schuelers = useSchuelerStore(store => store.schueler)
-
-    if (!schuelers) {
-        return <p>Ein Fehler ist aufgetreten.</p>
-    }
-    const schueler = schuelers.find(schueler => schueler.id === schuelerId)
-    if (!schueler) {
-        return <p>Ein Fehler ist aufgetreten.</p>
-    }
-
+export function SchuelerListItem({ schueler, typ, showDerzeitigeKlasse = false }: { schueler: Schueler, typ: AnwesenheitTyp, showDerzeitigeKlasse?: boolean }) {
+   
     return <li className='py-2 px-8 flex justify-between w-[100%]'>
        
-            <Link 
-                to="/schueler/$schuelerId"
-                params={{
-                    schuelerId: `${schueler.id ?? -1}`
-                }}
-                className="basis-0 grow-1"
-            >
-                <div className="flex gap-2 items-center">
-                    <p>{schueler.vorname}</p> 
-                    <p>{schueler.nachname}</p>
-                    <SchuelerIcons schueler={schueler} />
+        <Link 
+            to="/schueler/$schuelerId"
+            params={{
+                schuelerId: `${schueler.id ?? -1}`
+            }}
+            className="basis-0 grow-1"
+        >
+            <div className="flex gap-2 items-center">
+                <p>{schueler.vorname}</p> 
+                <p>{schueler.nachname}</p>
+                <SchuelerIcons schueler={schueler} />
 
-                    {
-                        (schueler.derzeitigeKlasse && showDerzeitigeKlasse) && <p className="ml-16">{schueler.derzeitigeKlasse}</p>
-                    }
-                </div>
-            
-            </Link>
+                {
+                    (schueler.derzeitigeKlasse && showDerzeitigeKlasse) && <p className="ml-16">{schueler.derzeitigeKlasse}</p>
+                }
+            </div>
         
-        
-
-        
+        </Link>
         
         <div className='flex gap-6'>
-            <GeprüftCheckbox schuelerId={schuelerId} typ={typ} />
-            <AnwesenheitsstatusSelect typ={AnwesenheitTyp.UNTERRICHT} schuelerId={schuelerId} />
+            <GeprüftCheckbox schuelerId={schueler.id ?? -1} typ={typ} />
+            <AnwesenheitsstatusSelect typ={AnwesenheitTyp.UNTERRICHT} schuelerId={schueler.id ?? -1} />
         </div>
     
     </li>

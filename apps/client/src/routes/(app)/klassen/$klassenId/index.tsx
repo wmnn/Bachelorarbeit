@@ -8,7 +8,7 @@ import { Edit, MoveLeft } from 'lucide-react';
 import { KlasseNav } from '@/layout/KlasseNav';
 import { getTitle } from '@thesis/schule'
 import { SchuelerList } from '@/components/schueler/SchuelerList/SchuelerList';
-import type { Schueler } from '@thesis/schueler';
+import { useSchuelerStore } from '@/components/schueler/SchuelerStore';
 
 export const Route = createFileRoute('/(app)/klassen/$klassenId/')({
   component: RouteComponent,
@@ -20,6 +20,7 @@ function RouteComponent() {
   const { klassenId } = Route.useParams();
   
   const schuljahr = useSchuljahrStore(state => state.ausgewaeltesSchuljahr)
+  const schueler = useSchuelerStore(state => state.schueler)
   const halbjahr = useSchuljahrStore(state => state.ausgewaeltesHalbjahr)
 
   const { isPending, data: klasse } = useQuery({
@@ -80,7 +81,7 @@ function RouteComponent() {
         { (klasse as Klasse).versionen?.map(version => {
           return <SchuelerList 
             leftHeader={<h2>{version.klassenstufe}{version.zusatz}</h2>}
-            schueler={version.schueler ?? [] as Schueler[]}
+            schueler={schueler.filter((item) => version.schueler?.includes(item.id ?? -1))}
             showDerzeitigeKlasse={false}
           />
         }) }   
