@@ -24,6 +24,7 @@ import { Route as appGanztagsangeboteIndexImport } from './routes/(app)/ganztags
 import { Route as appDashboardIndexImport } from './routes/(app)/dashboard/index'
 import { Route as appSchuelerSchuelerIdIndexImport } from './routes/(app)/schueler/$schuelerId/index'
 import { Route as appKlassenKlassenIdIndexImport } from './routes/(app)/klassen/$klassenId/index'
+import { Route as appGanztagsangeboteGanztagsangebotIdIndexImport } from './routes/(app)/ganztagsangebote/$ganztagsangebotId/index'
 import { Route as appSchuelerSchuelerIdMonitoringImport } from './routes/(app)/schueler/$schuelerId/monitoring'
 import { Route as appSchuelerSchuelerIdHistorieImport } from './routes/(app)/schueler/$schuelerId/historie'
 import { Route as appSchuelerSchuelerIdBrettImport } from './routes/(app)/schueler/$schuelerId/brett'
@@ -112,6 +113,13 @@ const appKlassenKlassenIdIndexRoute = appKlassenKlassenIdIndexImport.update({
   path: '/klassen/$klassenId/',
   getParentRoute: () => appRouteRoute,
 } as any)
+
+const appGanztagsangeboteGanztagsangebotIdIndexRoute =
+  appGanztagsangeboteGanztagsangebotIdIndexImport.update({
+    id: '/ganztagsangebote/$ganztagsangebotId/',
+    path: '/ganztagsangebote/$ganztagsangebotId/',
+    getParentRoute: () => appRouteRoute,
+  } as any)
 
 const appSchuelerSchuelerIdMonitoringRoute =
   appSchuelerSchuelerIdMonitoringImport.update({
@@ -290,6 +298,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appSchuelerSchuelerIdMonitoringImport
       parentRoute: typeof appRouteImport
     }
+    '/(app)/ganztagsangebote/$ganztagsangebotId/': {
+      id: '/(app)/ganztagsangebote/$ganztagsangebotId/'
+      path: '/ganztagsangebote/$ganztagsangebotId'
+      fullPath: '/ganztagsangebote/$ganztagsangebotId'
+      preLoaderRoute: typeof appGanztagsangeboteGanztagsangebotIdIndexImport
+      parentRoute: typeof appRouteImport
+    }
     '/(app)/klassen/$klassenId/': {
       id: '/(app)/klassen/$klassenId/'
       path: '/klassen/$klassenId'
@@ -324,6 +339,7 @@ interface appRouteRouteChildren {
   appSchuelerSchuelerIdBrettRoute: typeof appSchuelerSchuelerIdBrettRoute
   appSchuelerSchuelerIdHistorieRoute: typeof appSchuelerSchuelerIdHistorieRoute
   appSchuelerSchuelerIdMonitoringRoute: typeof appSchuelerSchuelerIdMonitoringRoute
+  appGanztagsangeboteGanztagsangebotIdIndexRoute: typeof appGanztagsangeboteGanztagsangebotIdIndexRoute
   appKlassenKlassenIdIndexRoute: typeof appKlassenKlassenIdIndexRoute
   appSchuelerSchuelerIdIndexRoute: typeof appSchuelerSchuelerIdIndexRoute
 }
@@ -344,6 +360,8 @@ const appRouteRouteChildren: appRouteRouteChildren = {
   appSchuelerSchuelerIdBrettRoute: appSchuelerSchuelerIdBrettRoute,
   appSchuelerSchuelerIdHistorieRoute: appSchuelerSchuelerIdHistorieRoute,
   appSchuelerSchuelerIdMonitoringRoute: appSchuelerSchuelerIdMonitoringRoute,
+  appGanztagsangeboteGanztagsangebotIdIndexRoute:
+    appGanztagsangeboteGanztagsangebotIdIndexRoute,
   appKlassenKlassenIdIndexRoute: appKlassenKlassenIdIndexRoute,
   appSchuelerSchuelerIdIndexRoute: appSchuelerSchuelerIdIndexRoute,
 }
@@ -370,6 +388,7 @@ export interface FileRoutesByFullPath {
   '/schueler/$schuelerId/brett': typeof appSchuelerSchuelerIdBrettRoute
   '/schueler/$schuelerId/historie': typeof appSchuelerSchuelerIdHistorieRoute
   '/schueler/$schuelerId/monitoring': typeof appSchuelerSchuelerIdMonitoringRoute
+  '/ganztagsangebote/$ganztagsangebotId': typeof appGanztagsangeboteGanztagsangebotIdIndexRoute
   '/klassen/$klassenId': typeof appKlassenKlassenIdIndexRoute
   '/schueler/$schuelerId': typeof appSchuelerSchuelerIdIndexRoute
 }
@@ -392,6 +411,7 @@ export interface FileRoutesByTo {
   '/schueler/$schuelerId/brett': typeof appSchuelerSchuelerIdBrettRoute
   '/schueler/$schuelerId/historie': typeof appSchuelerSchuelerIdHistorieRoute
   '/schueler/$schuelerId/monitoring': typeof appSchuelerSchuelerIdMonitoringRoute
+  '/ganztagsangebote/$ganztagsangebotId': typeof appGanztagsangeboteGanztagsangebotIdIndexRoute
   '/klassen/$klassenId': typeof appKlassenKlassenIdIndexRoute
   '/schueler/$schuelerId': typeof appSchuelerSchuelerIdIndexRoute
 }
@@ -416,6 +436,7 @@ export interface FileRoutesById {
   '/(app)/schueler/$schuelerId/brett': typeof appSchuelerSchuelerIdBrettRoute
   '/(app)/schueler/$schuelerId/historie': typeof appSchuelerSchuelerIdHistorieRoute
   '/(app)/schueler/$schuelerId/monitoring': typeof appSchuelerSchuelerIdMonitoringRoute
+  '/(app)/ganztagsangebote/$ganztagsangebotId/': typeof appGanztagsangeboteGanztagsangebotIdIndexRoute
   '/(app)/klassen/$klassenId/': typeof appKlassenKlassenIdIndexRoute
   '/(app)/schueler/$schuelerId/': typeof appSchuelerSchuelerIdIndexRoute
 }
@@ -440,6 +461,7 @@ export interface FileRouteTypes {
     | '/schueler/$schuelerId/brett'
     | '/schueler/$schuelerId/historie'
     | '/schueler/$schuelerId/monitoring'
+    | '/ganztagsangebote/$ganztagsangebotId'
     | '/klassen/$klassenId'
     | '/schueler/$schuelerId'
   fileRoutesByTo: FileRoutesByTo
@@ -461,6 +483,7 @@ export interface FileRouteTypes {
     | '/schueler/$schuelerId/brett'
     | '/schueler/$schuelerId/historie'
     | '/schueler/$schuelerId/monitoring'
+    | '/ganztagsangebote/$ganztagsangebotId'
     | '/klassen/$klassenId'
     | '/schueler/$schuelerId'
   id:
@@ -483,6 +506,7 @@ export interface FileRouteTypes {
     | '/(app)/schueler/$schuelerId/brett'
     | '/(app)/schueler/$schuelerId/historie'
     | '/(app)/schueler/$schuelerId/monitoring'
+    | '/(app)/ganztagsangebote/$ganztagsangebotId/'
     | '/(app)/klassen/$klassenId/'
     | '/(app)/schueler/$schuelerId/'
   fileRoutesById: FileRoutesById
@@ -538,6 +562,7 @@ export const routeTree = rootRoute
         "/(app)/schueler/$schuelerId/brett",
         "/(app)/schueler/$schuelerId/historie",
         "/(app)/schueler/$schuelerId/monitoring",
+        "/(app)/ganztagsangebote/$ganztagsangebotId/",
         "/(app)/klassen/$klassenId/",
         "/(app)/schueler/$schuelerId/"
       ]
@@ -602,6 +627,10 @@ export const routeTree = rootRoute
     },
     "/(app)/schueler/$schuelerId/monitoring": {
       "filePath": "(app)/schueler/$schuelerId/monitoring.tsx",
+      "parent": "/(app)"
+    },
+    "/(app)/ganztagsangebote/$ganztagsangebotId/": {
+      "filePath": "(app)/ganztagsangebote/$ganztagsangebotId/index.tsx",
       "parent": "/(app)"
     },
     "/(app)/klassen/$klassenId/": {

@@ -1,5 +1,27 @@
 import { GANZTAGSANGEBOT_ENDPOINT } from '@thesis/config'
 import { type Ganztagsangebot } from '../models/ganztagsangebot';
+import type { Halbjahr, Schuljahr } from '../models';
+
+
+export const getGanztagsangebote = async (schuljahr: Schuljahr, halbjahr: Halbjahr) => {
+    try {
+        const res = await fetch(GANZTAGSANGEBOT_ENDPOINT + `?schuljahr=${schuljahr}&halbjahr=${halbjahr}`, {
+            method: 'GET',
+            headers: {
+                'content-type': 'application/json'
+            }
+        })
+
+        if (res.status === 403) {
+            window.location.href = '/login'
+        }
+    
+        return await res.json() as Ganztagsangebot[];
+        
+    } catch (e) {
+        return []
+    }
+}
 
 export type CreateGanztagsangebotRequestBody = Ganztagsangebot
 
@@ -7,6 +29,7 @@ export interface CreateGanztagsangebotResponseBody {
     success: boolean;
     message: string;
 }
+
 
 export const createGanztagsangebot = async (ganztagsangebot: Ganztagsangebot) => {
     try {

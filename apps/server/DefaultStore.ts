@@ -1341,6 +1341,77 @@ export class DefaultStore {
             };
         }  
     }
+    async getGanztagsangebote(schuljahr: Schuljahr, halbjahr: Halbjahr): Promise<Ganztagsangebot[]> {
+        if (!this.connection) {
+            return []
+        }
+
+        interface GetGanztagsangeboteSQL {
+            id: number,
+            schuelerId: number,
+            schuljahr: Schuljahr,
+            halbjahr: Halbjahr,
+            name: string,
+            betreuerId: number
+        }
+        const [data] = await this.connection.execute<any[]>(
+            `SELECT g.id as id, gs.schueler_id as schuelerId, schuljahr, halbjahr, name, gb.user_id as betreuerId FROM ganztagsangebote g 
+            LEFT JOIN ganztagsangebot_schueler gs ON g.id = gs.ganztagsangebot_id 
+            LEFT JOIN ganztagsangebot_betreuer gb ON g.id = gb.ganztagsangebot_id
+            WHERE schuljahr = ? AND halbjahr = ?
+        `,
+            [schuljahr, halbjahr]
+        );
+
+        if (!Array.isArray(data)) {
+            return []
+        }
+
+        const ganztagsangebote = data.reduce((prev: Ganztagsangebot[], current: GetGanztagsangeboteSQL) => {
+            const { id, name } = current
+            console.log(prev)
+            const isGanztagsangebotInside = prev.find(g => g.id === id)
+            if (!isGanztagsangebotInside) {
+                prev.push({
+                    id,
+                    name,
+                    halbjahr,
+                    schuljahr,
+                })
+            }
+            const isSchuelerInside = prev.find(g => g.schueler?.includes(current.schuelerId))
+            if (!isSchuelerInside) {
+                prev.map(item => {
+                    if (item.id !== current.id) {
+                        return item;
+                    }
+                    if (!item.schueler) {
+                        item.schueler = [current.schuelerId]
+                    } else {
+                        item.schueler = [...item.schueler, current.schuelerId]
+                    }
+                    return item;
+                })
+            }
+            const isBetreuerInside = prev.find(g => g.betreuer?.includes(current.betreuerId))
+            if (!isBetreuerInside) {
+                prev.map(item => {
+                    if (item.id !== current.id) {
+                        return item;
+                    }
+                    if (!item.betreuer) {
+                        item.betreuer = [current.betreuerId]
+                    } else {
+                        item.betreuer = [...item.betreuer, current.betreuerId]
+                    }
+                    return item;
+                })
+            }
+            return prev
+        }, [] as Ganztagsangebot[]) as Ganztagsangebot[]
+        console.log(ganztagsangebote)
+        return ganztagsangebote
+    }
 
 
 }
