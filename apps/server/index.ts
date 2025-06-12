@@ -7,7 +7,8 @@ import { router as schuelerRouter } from "./modules/schueler/schueler"
 import { router as klassenRouter } from "./modules/klassen/klassen"
 import { router as anwesenheitenRouter } from "./modules/anwesenheiten/anwesenheiten"
 import { router as rollenRouter } from './modules/rollen/rollen'
-import { ANWESENHEITEN_ENDPOINT, AUTH_API_ENDPOINT, KLASSEN_ENDPOINT, SCHUELER_ENDPOINT } from "@thesis/config"
+import { router as ganztagsangebotRouter } from './modules/ganztagsangebot/ganztagsangebot'
+import { ANWESENHEITEN_ENDPOINT, AUTH_API_ENDPOINT, GANZTAGSANGEBOT_ENDPOINT, KLASSEN_ENDPOINT, SCHUELER_ENDPOINT } from "@thesis/config"
 import { getDB } from './singleton';
 import cookieParser from "cookie-parser"
 import https from 'https';
@@ -73,6 +74,7 @@ app.use(AUTH_API_ENDPOINT, authRouter);
 app.use(SCHUELER_ENDPOINT, schuelerRouter);
 app.use(KLASSEN_ENDPOINT, klassenRouter);
 app.use(ANWESENHEITEN_ENDPOINT, anwesenheitenRouter);
+app.use(GANZTAGSANGEBOT_ENDPOINT, ganztagsangebotRouter);
 app.use(ROLLE_ENDPOINT, rollenRouter);
 app.use(express.static('../client/dist'))
 

@@ -1,6 +1,6 @@
 import { KLASSEN_ENDPOINT } from '@thesis/config'
 import type { Halbjahr, KlassenVersion, Schuljahr } from '../models';
-import { User } from '../../../auth/src';
+import type { User } from '@thesis/auth'
 
 export const getKlasse = async (schuljahr: Schuljahr, halbjahr: Halbjahr, klassenId: number) => {
     try {

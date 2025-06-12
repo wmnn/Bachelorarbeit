@@ -1,14 +1,12 @@
 import type { KlassenVersion } from "@thesis/schule";
 import { Input } from "../Input";
 import type { SchuelerSimple } from "@thesis/schueler";
-import { useSchuelerStore } from "../schueler/SchuelerStore";
+import { SchuelerSelectionList } from "../schueler/SchuelerSelectionList";
 
 export function KlasseErstellenDialogKlasse({ klasse, setKlasse }: { 
     klasse: KlassenVersion, 
     setKlasse: (updatedKlasse: KlassenVersion) => void
 }) {
-
-    const schueler = useSchuelerStore((state) => state.schueler)
 
     function setZusatz(val: string) {
         setKlasse({
@@ -53,27 +51,7 @@ export function KlasseErstellenDialogKlasse({ klasse, setKlasse }: {
             </div>
         </div>
     
-    
-        <label>Schüler</label>
-        <ul className="flex flex-col">
-            {
-                schueler.map((element) => <>
-                
-                <li>
-                    <input
-                        type="checkbox"
-                        checked={klasse.schueler?.find(id => id === (element.id ?? -1)) ? true : false}
-                    />
 
-                    <button onClick={() => handleSchuelerSelection(element)}>
-                        {JSON.stringify(element)}
-                    </button>
-
-                </li>
-                </>
-                
-                )
-            }
-        </ul>       
+        <SchuelerSelectionList handleSelection={handleSchuelerSelection} selectedIds={klasse.schueler ?? []}/>     
     </>
 }

@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import mysql, { Connection, ResultSetHeader, RowDataPacket } from 'mysql2/promise'
 import { SessionData } from './modules/auth/auth';
 import { Schueler, SchuelerSimple } from '@thesis/schueler';
-import { getHalbjahr, getSchuljahr, getTitle, Halbjahr, Klasse, KlassenVersion, Schuljahr } from '@thesis/schule';
+import { Ganztagsangebot, getHalbjahr, getSchuljahr, getTitle, Halbjahr, Klasse, KlassenVersion, Schuljahr } from '@thesis/schule';
 import { Anwesenheiten, AnwesenheitTyp } from '@thesis/anwesenheiten';
 import { Rolle } from '@thesis/rollen';
 
@@ -1297,6 +1297,49 @@ export class DefaultStore {
                 message: 'Ein Fehler ist beim Löschen aufgetreten.',
             };
         }
+    }
+
+    async createGanztagsangebot(ganztagsangebot: Ganztagsangebot) {
+        if (!this.connection) {
+            return STANDARD_FEHLER
+        }
+
+        const conn = this.connection;
+
+        try {
+            await conn.beginTransaction();
+
+            const [result] = await conn.execute<ResultSetHeader>(`
+                INSERT INTO ganztagsangebote (schuljahr, halbjahr, name) VALUES (?, ?, ?)
+            `, [ganztagsangebot.schuljahr, ganztagsangebot.halbjahr, ganztagsangebot.name]);
+
+            const id = result.insertId;
+
+            for (const schuelerId of ganztagsangebot.schueler ?? []) {
+                await conn.execute<ResultSetHeader>(`
+                    INSERT INTO ganztagsangebot_schueler (ganztagsangebot_id, schueler_id) VALUES (?, ?)
+                `, [id, schuelerId]);
+            }
+
+            for (const betreuerId of ganztagsangebot.betreuer ?? []) {
+                await conn.execute<ResultSetHeader>(`
+                    INSERT INTO ganztagsangebot_betreuer (ganztagsangebot_id, user_id) VALUES (?, ?)
+                `, [id, betreuerId]);
+            }
+            
+            await conn.commit();
+            return {
+                success: true,
+                message: 'Das Ganztagsangebot wurde erfolgreich erstellt.'
+            };
+        } catch (e) {
+            console.log(e)
+            await conn.rollback()
+            return {
+                success: false,
+                message: 'Beim Erstellen des Ganztagsangebotes ist ein Fehler aufgetreten.'
+            };
+        }  
     }
 
 

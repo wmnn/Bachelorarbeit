@@ -2,38 +2,45 @@ import { DeleteIcon } from "../icons/DeleteIcon";
 import { ButtonLight } from "../ButtonLight";
 import { use, useEffect, useRef, useState } from "react";
 import { userContext } from "@/context/UserContext";
-import { useKlassenStore } from "./KlassenStore";
+import { useSelectedUserStore } from "./SelectedUserStore";
 import { Input } from "../Input";
 import { Berechtigung, type Berechtigungen } from "@thesis/rollen";
 import { searchUser, type User } from "@thesis/auth";
 import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from 'use-debounce';
 
-export function KlassenlehrerSelectCtrl() {
+interface SelectedUserCtrlProps <T extends Berechtigung>{
+    berechtigung: T,
+    berechtigungValue: Berechtigungen[T][],
+    label: string,
+    placeholder: string,
+}
+
+export function SelectedUserCtrl<T extends Berechtigung>(props: SelectedUserCtrlProps<T>) {
     
-    const setKlassenlehrer = useKlassenStore(store => store.setKlassenlehrer)
-    const klassenlehrer = useKlassenStore(store => store.klassenlehrer)
+    const { label, ...rest } = props
+    const setSelectedUser = useSelectedUserStore(store => store.setSelectedUser)
+    const selectedUser = useSelectedUserStore(store => store.selectedUser)
     
     const { user } = use(userContext);
-    if (user && klassenlehrer.length == 0) {
-        setKlassenlehrer(() => [user])
+    if (user && selectedUser.length == 0) {
+        setSelectedUser(() => [user])
     }
 
     function deleteLehrer(idx: number) {
-        setKlassenlehrer(prev => {
+        setSelectedUser(prev => {
             return prev.filter((_, i) => i !== idx)
         })
     }
         
     return <div>
-        <label>Klassenlehrer</label>
+        <label>{label}</label>
         
         <div className="flex flex-col gap-2">
             {
-                klassenlehrer.map((_, idx) => {
+                selectedUser.map((_, idx) => {
                     return <div className="flex gap-2">
-                        <KlassenlehrerAutocomplete idx={idx}
-                        />
+                        <Autocomplete idx={idx} {...rest} />
                         <button onClick={() => deleteLehrer(idx)}>
                             <DeleteIcon />
                         </button>
@@ -42,22 +49,26 @@ export function KlassenlehrerSelectCtrl() {
             }
         </div>
         
-        
-
         <ButtonLight className="py-2 px-4 text-sm! mt-4 mb-8" onClick={() => {
             if (user) {
-                setKlassenlehrer(prev => [...prev, user])
+                setSelectedUser(prev => [...prev, user])
             }
         }}> 
-            weiteren Lehrer hinzufügen
+            weiteren {label} hinzufügen
         </ButtonLight>
     </div>
 }
-function KlassenlehrerAutocomplete({ idx }: { idx: number }) {
 
-    const query = useKlassenStore(store => store.klassenlehrerSelectInput)
-    const setQuery = useKlassenStore(store => store.setKlassenlehrerSelectInput)
-    const klassenlehrer = useKlassenStore(store => store.klassenlehrer.find((_, i) => i=== idx))
+type AutocompleteProps<T extends Berechtigung> = {
+    idx: number
+} & Omit<SelectedUserCtrlProps<T>, 'label'>
+
+function Autocomplete<T extends Berechtigung>(props: AutocompleteProps<T>) {
+
+    const { idx,  placeholder, ...rest } = props;
+    const query = useSelectedUserStore(store => store.query)
+    const setQuery = useSelectedUserStore(store => store.setQuery)
+    const klassenlehrer = useSelectedUserStore(store => store.selectedUser.find((_, i) => i=== idx))
     const [isInputShown, setIsInputShown] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -69,38 +80,43 @@ function KlassenlehrerAutocomplete({ idx }: { idx: number }) {
 
 
     return <div className="flex flex-col max-w-[360px] w-full relative">
-            { 
-                isInputShown ? 
-                    <Input 
-                        ref={inputRef} 
-                        value={query} 
-                        onChange={(e) => setQuery(e.target.value)} 
-                        className="w-full! h-[40px]" 
-                        placeholder="Lehrernamen eingeben"
-                        onClick={() => setIsInputShown(false)}
-                    />
-                    : <button 
-                    className="border-[1px] border-gray-100 h-[40px]"
-                    onClick={() => {
-                        setIsInputShown(true)
-                    }}
-                >{!klassenlehrer ? 'Kein Lehrer ausgewählt' : `${klassenlehrer.vorname} ${klassenlehrer.nachname}`}</button>
-            }
-        
+        { 
+            isInputShown ? 
+                <Input 
+                    ref={inputRef} 
+                    value={query} 
+                    onChange={(e) => setQuery(e.target.value)} 
+                    className="w-full! h-[40px]" 
+                    placeholder={placeholder}
+                    onClick={() => setIsInputShown(false)}
+                />
+                : <button 
+                className="border-[1px] border-gray-100 h-[40px]"
+                onClick={() => {
+                    setIsInputShown(true)
+                }}
+            >{!klassenlehrer ? 'Keine Person ausgewählt' : `${klassenlehrer.vorname} ${klassenlehrer.nachname}`}</button>
+        }
         
         {
-            isInputShown && <KlassenlehrerSelectMenu idx={idx} setIsInputShown={setIsInputShown} />
+            isInputShown && <UserSelectMenu idx={idx} setIsInputShown={setIsInputShown} {...rest} />
         }
     </div>
 }
-function KlassenlehrerSelectMenu({ idx, setIsInputShown }: { idx: number, setIsInputShown: (val: boolean) => void } ) {
 
-    const query = useKlassenStore(store => store.klassenlehrerSelectInput)
-    const setKlassenlehrer = useKlassenStore(store => store.setKlassenlehrer)
+type UserSelectMenuProps<T extends Berechtigung> = {
+    idx: number, setIsInputShown: (val: boolean) => void 
+} & Omit<SelectedUserCtrlProps<T>, 'label' | 'placeholder'>
+
+function UserSelectMenu<T extends Berechtigung>(props: UserSelectMenuProps<T>) {
+
+    const { 
+        idx, setIsInputShown, berechtigung, berechtigungValue
+    } = props;
+    const query = useSelectedUserStore(store => store.query)
+    const setSelectedUser = useSelectedUserStore(store => store.setSelectedUser)
     const [debouncedQuery] = useDebounce(query, 400);
 
-    const berechtigung = Berechtigung.KlasseRead as Berechtigung;
-    const berechtigungValue: Berechtigungen[typeof berechtigung][] = ["alle", "eigene"]
     const { isPending, data: response } = useQuery({
         queryKey: ['users', berechtigung, berechtigungValue, debouncedQuery],
         queryFn: ({ queryKey }) => {
@@ -115,11 +131,11 @@ function KlassenlehrerSelectMenu({ idx, setIsInputShown }: { idx: number, setIsI
     }
 
     if (!response) {
-        return <p>Ein Fehler beim Laden der Lehrer ist aufgetreten.</p>;
+        return <p>Ein Fehler beim Laden ist aufgetreten.</p>;
     }
 
     function handleClick(user: User) {
-        setKlassenlehrer((prev) => {
+        setSelectedUser((prev) => {
             return prev.map((item, i) => {
                 if (i !== idx) {
                     return item;

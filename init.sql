@@ -48,8 +48,9 @@ CREATE TABLE diagnostikverfahren (
 
 CREATE TABLE ganztagsangebote (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    schuljahr VARCHAR(255),
-    name VARCHAR(255)
+    schuljahr VARCHAR(10),
+    halbjahr VARCHAR(12),
+    name VARCHAR(128)
 );
 
 CREATE TABLE klassen (
@@ -128,8 +129,8 @@ CREATE TABLE schueler_tests (
 );
 
 CREATE TABLE ganztagsangebot_schueler (
-    ganztagsangebot_id VARCHAR(36),
-    schueler_id VARCHAR(36),
+    ganztagsangebot_id INT,
+    schueler_id INT,
     PRIMARY KEY (ganztagsangebot_id, schueler_id)
 );
 
@@ -150,9 +151,9 @@ CREATE TABLE klassenversion_klassenlehrer (
     PRIMARY KEY (user_id, klassen_id, schuljahr, halbjahr)
 );
 
-CREATE TABLE user_fuehrt_ganztagsangebot (
-    user_id VARCHAR(36),
-    ganztagsangebot_id VARCHAR(36),
+CREATE TABLE ganztagsangebot_betreuer (
+    user_id INT,
+    ganztagsangebot_id INT,
     PRIMARY KEY (user_id, ganztagsangebot_id)
 );
 

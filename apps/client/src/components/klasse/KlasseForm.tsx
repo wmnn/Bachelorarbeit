@@ -1,10 +1,12 @@
-import { KlassenlehrerSelectCtrl } from "./KlassenlehrerSelectCtrl";
 import { KlasseErstellenDialogKlasse } from "./KlasseFormKlassenversion";
 import { useKlassenStore } from "./KlassenStore";
 import type { Klasse, KlassenVersion } from "@thesis/schule";
 import { ButtonLight } from "../ButtonLight";
 import { useEffect } from "react";
 import { useSchuljahrStore } from "../schuljahr/SchuljahrStore";
+import { SelectedUserCtrl } from "../shared/SelectedUserCtrl";
+import { Berechtigung } from "@thesis/rollen";
+import { useSelectedUserStore } from "../shared/SelectedUserStore";
 
 interface KlasseFormProps {
   onAbort: () => void,
@@ -32,7 +34,7 @@ export const KlasseForm = (props: KlasseFormProps) => {
     const setKlassen = useKlassenStore(state => state.setNeueKlassen);    
     const schuljahr = useSchuljahrStore(state => state.ausgewaeltesSchuljahr)
     const halbjahr = useSchuljahrStore(state => state.ausgewaeltesHalbjahr)
-    const setKlassenlehrer = useKlassenStore(state => state.setKlassenlehrer)
+    const setSelectedUser = useSelectedUserStore(state => state.setSelectedUser)
 
     useEffect(() => {
         if (initialKlasse?.versionen) {
@@ -42,7 +44,7 @@ export const KlasseForm = (props: KlasseFormProps) => {
         }
 
         if (initialKlasse?.klassenlehrer) {
-            setKlassenlehrer(() => [...(initialKlasse?.klassenlehrer ?? [])])
+            setSelectedUser(() => [...(initialKlasse?.klassenlehrer ?? [])])
         }
     }, [])
 
@@ -59,7 +61,12 @@ export const KlasseForm = (props: KlasseFormProps) => {
     return <div className="h-[60vh]">
         <h1>{title ? title : 'Klasse hinzufügen'}</h1>
 
-        <KlassenlehrerSelectCtrl />
+        <SelectedUserCtrl 
+            berechtigung={Berechtigung.KlasseCreate as Berechtigung} 
+            berechtigungValue={["alle", "eigene"]} 
+            placeholder="Lehrernamen eingeben"
+            label="Klassenlehrer"
+        />
 
         {
             klassen.map((klasse) => {

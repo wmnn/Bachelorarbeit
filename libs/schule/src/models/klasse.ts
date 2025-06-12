@@ -1,4 +1,4 @@
-import { User } from "../../../auth/src"
+import type { User } from "../../../auth/src"
 import type { Halbjahr, Schuljahr } from "./schule"
 import { type SchuelerSimple } from '@thesis/schueler'
 
