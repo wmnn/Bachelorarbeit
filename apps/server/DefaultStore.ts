@@ -1341,19 +1341,13 @@ export class DefaultStore {
             };
         }  
     }
+    
     async getGanztagsangebote(schuljahr: Schuljahr, halbjahr: Halbjahr): Promise<Ganztagsangebot[]> {
         if (!this.connection) {
             return []
         }
 
-        interface GetGanztagsangeboteSQL {
-            id: number,
-            schuelerId: number,
-            schuljahr: Schuljahr,
-            halbjahr: Halbjahr,
-            name: string,
-            betreuerId: number
-        }
+        
         const [data] = await this.connection.execute<any[]>(
             `SELECT g.id as id, gs.schueler_id as schuelerId, schuljahr, halbjahr, name, gb.user_id as betreuerId FROM ganztagsangebote g 
             LEFT JOIN ganztagsangebot_schueler gs ON g.id = gs.ganztagsangebot_id 
@@ -1367,8 +1361,11 @@ export class DefaultStore {
             return []
         }
 
+        return this.reduceGanztagsangebotDataToGanztagsangebote(data)
+    }
+    private reduceGanztagsangebotDataToGanztagsangebote(data: GetGanztagsangeboteSQL[]) {
         const ganztagsangebote = data.reduce((prev: Ganztagsangebot[], current: GetGanztagsangeboteSQL) => {
-            const { id, name } = current
+            const { id, name, halbjahr, schuljahr } = current
             console.log(prev)
             const isGanztagsangebotInside = prev.find(g => g.id === id)
             if (!isGanztagsangebotInside) {
@@ -1409,9 +1406,38 @@ export class DefaultStore {
             }
             return prev
         }, [] as Ganztagsangebot[]) as Ganztagsangebot[]
-        console.log(ganztagsangebote)
         return ganztagsangebote
     }
 
+    async getGanztagsangebot(schuljahr: Schuljahr, halbjahr: Halbjahr, ganztagsangebotId: number): Promise<Ganztagsangebot | undefined> {
+        if (!this.connection) {
+            return undefined;
+        }
 
+        console.log('a')
+        const [data] = await this.connection.execute<any[]>(
+            `SELECT g.id as id, gs.schueler_id as schuelerId, schuljahr, halbjahr, name, gb.user_id as betreuerId FROM ganztagsangebote g 
+            LEFT JOIN ganztagsangebot_schueler gs ON g.id = gs.ganztagsangebot_id 
+            LEFT JOIN ganztagsangebot_betreuer gb ON g.id = gb.ganztagsangebot_id
+            WHERE schuljahr = ? AND halbjahr = ? AND id = ?
+        `,
+            [schuljahr, halbjahr, ganztagsangebotId]
+        );
+
+        if (!Array.isArray(data)) {
+            return undefined
+        }
+
+        return this.reduceGanztagsangebotDataToGanztagsangebote(data)[0]
+    }
+
+
+}
+interface GetGanztagsangeboteSQL {
+    id: number,
+    schuelerId: number,
+    schuljahr: Schuljahr,
+    halbjahr: Halbjahr,
+    name: string,
+    betreuerId: number
 }

@@ -24,12 +24,13 @@ router.post('/', async (req: Request<{}, {}, CreateGanztagsangebotRequestBody>, 
     res.status(msg.success ? 200 : 400).json(msg);
 });
 
-// router.get('/:klassenId', async (req, res) => {
-//     const { klassenId } = req.params
-//     const { schuljahr, halbjahr } = req.query;
-//     const klasse = await getDB().getClass(schuljahr as Schuljahr, halbjahr as Halbjahr, parseInt(klassenId))
-//     res.status(klasse ? 200 : 500).json(klasse);
-// });
+router.get('/:ganztagsangebotId', async (req, res) => {
+    const { ganztagsangebotId } = req.params
+    const { schuljahr, halbjahr } = req.query;
+    console.log(req.params, req.query)
+    const klasse = await getDB().getGanztagsangebot(schuljahr as Schuljahr, halbjahr as Halbjahr, parseInt(ganztagsangebotId))
+    res.status(klasse ? 200 : 500).json(klasse);
+});
 
 // router.put('/:klassenId', async (req, res) => {
 
