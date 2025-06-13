@@ -98,3 +98,40 @@ export const editGanztagsangebot = async (ganztagsangebot: Ganztagsangebot, schu
         };
     }
 }
+
+export interface DeleteGanztagsangebotRequestBody {
+   ganztagsangebotId: number
+}
+
+export interface DeleteGanztagsangebotResponseBody {
+    success: boolean;
+    message: string;
+}
+
+export const deleteGanztagsangebot = async (ganztagsangebotId: number) => {
+
+    try {
+        const res = await fetch(GANZTAGSANGEBOT_ENDPOINT, {
+            method: 'DELETE',
+            body: JSON.stringify({
+                ganztagsangebotId
+            } as DeleteGanztagsangebotRequestBody),
+            headers: {
+                'content-type': 'application/json'
+            },
+        })
+
+        if (res.status === 403) {
+            window.location.href = '/login'
+        }
+    
+        return await res.json() as DeleteGanztagsangebotResponseBody;
+        
+    } catch (e) {
+        return {
+            success: false,
+            message: 'Ein Fehler ist aufgetreten.'
+        };
+    }
+
+}

@@ -1,5 +1,7 @@
 import { useRollenStore } from '@/components/auth/RollenStore'
 import { useUserStore } from '@/components/auth/UserStore'
+import { GanztagsangebotLoeschenDialog } from '@/components/ganztagsangebot/GanztagsangebotLoeschenDialog'
+import { DeleteIcon } from '@/components/icons/DeleteIcon'
 import { SchuelerList } from '@/components/schueler/SchuelerList/SchuelerList'
 import { useSchuelerStore } from '@/components/schueler/SchuelerStore'
 import { useSchuljahrStore } from '@/components/schuljahr/SchuljahrStore'
@@ -9,6 +11,7 @@ import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
 import { getUsers, getUsersQueryKey, type UsersResponseBody } from '@thesis/auth'
 import { getGanztagsangebot, type Halbjahr, type Schuljahr } from '@thesis/schule'
 import { Edit, MoveLeft } from 'lucide-react'
+import { useState } from 'react'
 
 export const Route = createFileRoute(
   '/(app)/ganztagsangebote/$ganztagsangebotId/',
@@ -25,6 +28,7 @@ function RouteComponent() {
   const users = useUserStore(state => state.users)
   const setUsers = useUserStore(state => state.setUsers)
   const halbjahr = useSchuljahrStore(state => state.ausgewaeltesHalbjahr)
+  const [isDeleteDialogShown, setIsDeleteDialogShown] = useState(false)
 
   const { isPending, data: ganztagsangebot } = useQuery({
     queryKey: [GANZTAGSANGEBOT_QUERY_KEY, schuljahr, halbjahr, ganztagsangebotId],
@@ -60,6 +64,14 @@ function RouteComponent() {
   
   return <div className='w-full'>
 
+        {
+            isDeleteDialogShown && <GanztagsangebotLoeschenDialog 
+              id={ganztagsangebot?.id ?? -1} 
+              closeDialog={() => setIsDeleteDialogShown(false)}
+            />
+        }
+          
+
     <div className='flex justify-between items-center px-8'>
       <div className='flex gap-4 items-center pt-8'>
           <button onClick={() => router.history.back()}>
@@ -69,14 +81,20 @@ function RouteComponent() {
         
       </div>
 
-      <Link
-        to='/ganztagsangebote/$ganztagsangebotId/edit'
-        params={{
-          ganztagsangebotId
-        }}
-      >
-        <Edit />
-      </Link>
+      <div className='flex gap-8 items-center'>
+        <Link
+          to='/ganztagsangebote/$ganztagsangebotId/edit'
+          params={{
+            ganztagsangebotId
+          }}
+        >
+          <Edit />
+        </Link>
+        <button onClick={() => setIsDeleteDialogShown(true)} className=''>
+                          <DeleteIcon />
+        </button>
+      </div>
+      
     </div>
 
     <div className='px-2 xl:px-8'>

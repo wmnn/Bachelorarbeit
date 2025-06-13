@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import { getDB } from '../../singleton';
-import { Halbjahr, Schuljahr } from '@thesis/schule';
+import { DeleteGanztagsangebotRequestBody, DeleteGanztagsangebotResponseBody, Halbjahr, Schuljahr } from '@thesis/schule';
 import { CreateGanztagsangebotRequestBody, CreateGanztagsangebotResponseBody } from '@thesis/schule'
 
 let router = express.Router();
@@ -39,11 +39,10 @@ router.put('/:ganztagsangebotId', async (req, res) => {
     res.status(msg.success ? 200 : 500).json(msg);
 });
 
-
-// router.delete('/', async (req: Request<{}, {}, DeleteKlasseRequestBody>, res: Response<DeleteKlasseResponseBody>) => {
-//     const klassenId = req.body.klassenId
-//     const msg = await getDB().deleteClass(klassenId)
-//     res.status(200).json(msg as DeleteSchuelerResponseBody);
-// });
+router.delete('/', async (req: Request<{}, {}, DeleteGanztagsangebotRequestBody>, res: Response<DeleteGanztagsangebotResponseBody>) => {
+    const ganztagsangebotId = req.body.ganztagsangebotId
+    const msg = await getDB().deleteGanztagsangebot(ganztagsangebotId)
+    res.status(200).json(msg as DeleteGanztagsangebotResponseBody);
+});
 
 export { router };

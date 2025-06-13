@@ -5,6 +5,7 @@ import { useSchuljahrStore } from "../schuljahr/SchuljahrStore";
 import { useState } from "react";
 import { createGanztagsangebot } from "@thesis/schule";
 import { useSelectedUserStore } from "../shared/SelectedUserStore";
+import { GANZTAGSANGEBOT_QUERY_KEY } from "@/reactQueryKeys";
 
 interface KlasseErstellenDialogProps {
   closeDialog: () => void,
@@ -29,6 +30,7 @@ export function GanztagsangebotErstellenDialog({ closeDialog, setResponseMessage
         });
         setResponseMessage(res.message)
         closeDialog()
+        queryClient.invalidateQueries({ queryKey: [GANZTAGSANGEBOT_QUERY_KEY] })
     }
     return <Dialog className="p-8 overflow-auto!">
         <GanztagsangebotForm 
