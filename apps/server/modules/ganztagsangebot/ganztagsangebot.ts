@@ -27,21 +27,17 @@ router.post('/', async (req: Request<{}, {}, CreateGanztagsangebotRequestBody>, 
 router.get('/:ganztagsangebotId', async (req, res) => {
     const { ganztagsangebotId } = req.params
     const { schuljahr, halbjahr } = req.query;
-    console.log(req.params, req.query)
-    const klasse = await getDB().getGanztagsangebot(schuljahr as Schuljahr, halbjahr as Halbjahr, parseInt(ganztagsangebotId))
-    res.status(klasse ? 200 : 500).json(klasse);
+    const ganztagsangebot = await getDB().getGanztagsangebot(schuljahr as Schuljahr, halbjahr as Halbjahr, parseInt(ganztagsangebotId))
+    res.status(ganztagsangebot ? 200 : 500).json(ganztagsangebot);
 });
 
-// router.put('/:klassenId', async (req, res) => {
-
-//     const { klassenId } = req.params
-//     const { schuljahr, halbjahr } = req.query;
-//     const { versionen, klassenlehrer } = req.body
-
-//     const msg = await getDB().editClass(parseInt(klassenId), versionen, klassenlehrer, schuljahr as Schuljahr, halbjahr as Halbjahr)
-//     res.status(200).json(msg);
-// });
-
+router.put('/:ganztagsangebotId', async (req, res) => {
+    const { schuljahr, halbjahr } = req.query;
+    const ganztagsangebot = req.body
+    
+    const msg = await getDB().editGanztagsangebot(schuljahr as Schuljahr, halbjahr as Halbjahr, ganztagsangebot)
+    res.status(msg.success ? 200 : 500).json(msg);
+});
 
 
 // router.delete('/', async (req: Request<{}, {}, DeleteKlasseRequestBody>, res: Response<DeleteKlasseResponseBody>) => {

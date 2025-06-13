@@ -1431,8 +1431,109 @@ export class DefaultStore {
         return this.reduceGanztagsangebotDataToGanztagsangebote(data)[0]
     }
 
+    async editGanztagsangebot(schuljahr: Schuljahr, halbjahr: Halbjahr, ganztagsangebot: Ganztagsangebot) {
+        if (!this.connection) {
+            return {
+                success: false,
+                message: 'Keine Datenbankverbindung.'
+            };
+        }
+
+        const conn = this.connection;
+
+        try {
+            await conn.beginTransaction();
+
+            await conn.execute(`
+                UPDATE ganztagsangebote 
+                SET name = ?, schuljahr = ?, halbjahr = ?
+                WHERE id = ?
+            `, [ganztagsangebot.name, schuljahr, halbjahr, ganztagsangebot.id]);
+
+            await conn.execute(`
+                DELETE FROM ganztagsangebot_schueler WHERE ganztagsangebot_id = ?
+            `, [ganztagsangebot.id]);
+
+            for (const schuelerId of ganztagsangebot.schueler ?? []) {
+                await conn.execute(`
+                    INSERT INTO ganztagsangebot_schueler (ganztagsangebot_id, schueler_id)
+                    VALUES (?, ?)
+                `, [ganztagsangebot.id, schuelerId]);
+            }
+
+            await conn.execute(`
+                DELETE FROM ganztagsangebot_betreuer WHERE ganztagsangebot_id = ?
+            `, [ganztagsangebot.id]);
+
+
+            for (const betreuerId of ganztagsangebot.betreuer ?? []) {
+                await conn.execute(`
+                    INSERT INTO ganztagsangebot_betreuer (ganztagsangebot_id, user_id)
+                    VALUES (?, ?)
+                `, [ganztagsangebot.id, betreuerId]);
+            }
+
+            await conn.commit();
+
+            return {
+                success: true,
+                message: 'Das Ganztagsangebot wurde erfolgreich aktualisiert.'
+            };
+
+        } catch (e) {
+            console.error(e);
+            await conn.rollback();
+            return {
+                success: false,
+                message: 'Beim Aktualisieren des Ganztagsangebotes ist ein Fehler aufgetreten.'
+            };
+        }
+    }
+    async deleteGanztagsangebot(ganztagsangebotId: number): Promise<DatabaseMessage> {
+        if (!this.connection) {
+            return {
+                success: false,
+                message: 'Keine Datenbankverbindung.'
+            };
+        }
+
+        const conn = this.connection;
+
+        try {
+            await conn.beginTransaction();
+
+            await conn.execute(`
+                DELETE FROM ganztagsangebot_schueler WHERE ganztagsangebot_id = ?
+            `, [ganztagsangebotId]);
+
+            await conn.execute(`
+                DELETE FROM ganztagsangebot_betreuer WHERE ganztagsangebot_id = ?
+            `, [ganztagsangebotId]);
+
+            await conn.execute(`
+                DELETE FROM ganztagsangebote WHERE id = ?
+            `, [ganztagsangebotId]);
+
+            await conn.commit();
+
+            return {
+                success: true,
+                message: 'Das Ganztagsangebot wurde erfolgreich gelöscht.'
+            };
+        } catch (e) {
+            console.error(e);
+            await conn.rollback();
+            return {
+                success: false,
+                message: 'Beim Löschen des Ganztagsangebotes ist ein Fehler aufgetreten.'
+            };
+        }
+    }
+
 
 }
+
+
 interface GetGanztagsangeboteSQL {
     id: number,
     schuelerId: number,

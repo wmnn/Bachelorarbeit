@@ -5,10 +5,10 @@ import { useSchuelerStore } from '@/components/schueler/SchuelerStore'
 import { useSchuljahrStore } from '@/components/schuljahr/SchuljahrStore'
 import { GANZTAGSANGEBOT_QUERY_KEY } from '@/reactQueryKeys'
 import { useQuery } from '@tanstack/react-query'
-import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
 import { getUsers, getUsersQueryKey, type UsersResponseBody } from '@thesis/auth'
-import { getGanztagsangebot, getGanztagsangebote, type Halbjahr, type Schuljahr } from '@thesis/schule'
-import { MoveLeft } from 'lucide-react'
+import { getGanztagsangebot, type Halbjahr, type Schuljahr } from '@thesis/schule'
+import { Edit, MoveLeft } from 'lucide-react'
 
 export const Route = createFileRoute(
   '/(app)/ganztagsangebote/$ganztagsangebotId/',
@@ -60,14 +60,23 @@ function RouteComponent() {
   
   return <div className='w-full'>
 
-    <div className='flex justify-start items-center px-8'>
-            <div className='flex gap-4 items-center pt-8'>
-                <button onClick={() => router.history.back()}>
-                    <MoveLeft />
-                </button>
-                <h1>{ganztagsangebot?.name}</h1>
-              
-            </div>
+    <div className='flex justify-between items-center px-8'>
+      <div className='flex gap-4 items-center pt-8'>
+          <button onClick={() => router.history.back()}>
+              <MoveLeft />
+          </button>
+          <h1>{ganztagsangebot?.name}</h1>
+        
+      </div>
+
+      <Link
+        to='/ganztagsangebote/$ganztagsangebotId/edit'
+        params={{
+          ganztagsangebotId
+        }}
+      >
+        <Edit />
+      </Link>
     </div>
 
     <div className='px-2 xl:px-8'>

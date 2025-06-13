@@ -74,3 +74,27 @@ export const createGanztagsangebot = async (ganztagsangebot: Ganztagsangebot) =>
         };
     }
 }
+
+export const editGanztagsangebot = async (ganztagsangebot: Ganztagsangebot, schuljahr: Schuljahr, halbjahr: Halbjahr) => {
+    try {
+        const res = await fetch(GANZTAGSANGEBOT_ENDPOINT + `/${ganztagsangebot.id ?? -1}?schuljahr=${schuljahr}&halbjahr=${halbjahr}`, {
+            method: 'PUT',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(ganztagsangebot)
+        })
+
+        if (res.status === 403) {
+            window.location.href = '/login'
+        }
+    
+        return await res.json();
+        
+    } catch (e) {
+        return {
+            success: false,
+            message: 'Ein Fehler ist aufgetreten.'
+        };
+    }
+}

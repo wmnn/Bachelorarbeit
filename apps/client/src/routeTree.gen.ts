@@ -32,6 +32,7 @@ import { Route as appSchuelerSchuelerIdAnwesenheitenImport } from './routes/(app
 import { Route as appKlassenKlassenIdTestsImport } from './routes/(app)/klassen/$klassenId/tests'
 import { Route as appKlassenKlassenIdEditImport } from './routes/(app)/klassen/$klassenId/edit'
 import { Route as appKlassenKlassenIdBrettImport } from './routes/(app)/klassen/$klassenId/brett'
+import { Route as appGanztagsangeboteGanztagsangebotIdEditImport } from './routes/(app)/ganztagsangebote/$ganztagsangebotId/edit'
 
 // Create/Update Routes
 
@@ -168,6 +169,13 @@ const appKlassenKlassenIdBrettRoute = appKlassenKlassenIdBrettImport.update({
   getParentRoute: () => appRouteRoute,
 } as any)
 
+const appGanztagsangeboteGanztagsangebotIdEditRoute =
+  appGanztagsangeboteGanztagsangebotIdEditImport.update({
+    id: '/ganztagsangebote/$ganztagsangebotId/edit',
+    path: '/ganztagsangebote/$ganztagsangebotId/edit',
+    getParentRoute: () => appRouteRoute,
+  } as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -248,6 +256,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/register'
       preLoaderRoute: typeof authRegisterIndexImport
       parentRoute: typeof rootRoute
+    }
+    '/(app)/ganztagsangebote/$ganztagsangebotId/edit': {
+      id: '/(app)/ganztagsangebote/$ganztagsangebotId/edit'
+      path: '/ganztagsangebote/$ganztagsangebotId/edit'
+      fullPath: '/ganztagsangebote/$ganztagsangebotId/edit'
+      preLoaderRoute: typeof appGanztagsangeboteGanztagsangebotIdEditImport
+      parentRoute: typeof appRouteImport
     }
     '/(app)/klassen/$klassenId/brett': {
       id: '/(app)/klassen/$klassenId/brett'
@@ -332,6 +347,7 @@ interface appRouteRouteChildren {
   appRollenmanagementIndexRoute: typeof appRollenmanagementIndexRoute
   appSchuelerIndexRoute: typeof appSchuelerIndexRoute
   appSettingsIndexRoute: typeof appSettingsIndexRoute
+  appGanztagsangeboteGanztagsangebotIdEditRoute: typeof appGanztagsangeboteGanztagsangebotIdEditRoute
   appKlassenKlassenIdBrettRoute: typeof appKlassenKlassenIdBrettRoute
   appKlassenKlassenIdEditRoute: typeof appKlassenKlassenIdEditRoute
   appKlassenKlassenIdTestsRoute: typeof appKlassenKlassenIdTestsRoute
@@ -352,6 +368,8 @@ const appRouteRouteChildren: appRouteRouteChildren = {
   appRollenmanagementIndexRoute: appRollenmanagementIndexRoute,
   appSchuelerIndexRoute: appSchuelerIndexRoute,
   appSettingsIndexRoute: appSettingsIndexRoute,
+  appGanztagsangeboteGanztagsangebotIdEditRoute:
+    appGanztagsangeboteGanztagsangebotIdEditRoute,
   appKlassenKlassenIdBrettRoute: appKlassenKlassenIdBrettRoute,
   appKlassenKlassenIdEditRoute: appKlassenKlassenIdEditRoute,
   appKlassenKlassenIdTestsRoute: appKlassenKlassenIdTestsRoute,
@@ -381,6 +399,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof appSettingsIndexRoute
   '/login': typeof authLoginIndexRoute
   '/register': typeof authRegisterIndexRoute
+  '/ganztagsangebote/$ganztagsangebotId/edit': typeof appGanztagsangeboteGanztagsangebotIdEditRoute
   '/klassen/$klassenId/brett': typeof appKlassenKlassenIdBrettRoute
   '/klassen/$klassenId/edit': typeof appKlassenKlassenIdEditRoute
   '/klassen/$klassenId/tests': typeof appKlassenKlassenIdTestsRoute
@@ -404,6 +423,7 @@ export interface FileRoutesByTo {
   '/settings': typeof appSettingsIndexRoute
   '/login': typeof authLoginIndexRoute
   '/register': typeof authRegisterIndexRoute
+  '/ganztagsangebote/$ganztagsangebotId/edit': typeof appGanztagsangeboteGanztagsangebotIdEditRoute
   '/klassen/$klassenId/brett': typeof appKlassenKlassenIdBrettRoute
   '/klassen/$klassenId/edit': typeof appKlassenKlassenIdEditRoute
   '/klassen/$klassenId/tests': typeof appKlassenKlassenIdTestsRoute
@@ -429,6 +449,7 @@ export interface FileRoutesById {
   '/(app)/settings/': typeof appSettingsIndexRoute
   '/(auth)/login/': typeof authLoginIndexRoute
   '/(auth)/register/': typeof authRegisterIndexRoute
+  '/(app)/ganztagsangebote/$ganztagsangebotId/edit': typeof appGanztagsangeboteGanztagsangebotIdEditRoute
   '/(app)/klassen/$klassenId/brett': typeof appKlassenKlassenIdBrettRoute
   '/(app)/klassen/$klassenId/edit': typeof appKlassenKlassenIdEditRoute
   '/(app)/klassen/$klassenId/tests': typeof appKlassenKlassenIdTestsRoute
@@ -454,6 +475,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/login'
     | '/register'
+    | '/ganztagsangebote/$ganztagsangebotId/edit'
     | '/klassen/$klassenId/brett'
     | '/klassen/$klassenId/edit'
     | '/klassen/$klassenId/tests'
@@ -476,6 +498,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/login'
     | '/register'
+    | '/ganztagsangebote/$ganztagsangebotId/edit'
     | '/klassen/$klassenId/brett'
     | '/klassen/$klassenId/edit'
     | '/klassen/$klassenId/tests'
@@ -499,6 +522,7 @@ export interface FileRouteTypes {
     | '/(app)/settings/'
     | '/(auth)/login/'
     | '/(auth)/register/'
+    | '/(app)/ganztagsangebote/$ganztagsangebotId/edit'
     | '/(app)/klassen/$klassenId/brett'
     | '/(app)/klassen/$klassenId/edit'
     | '/(app)/klassen/$klassenId/tests'
@@ -555,6 +579,7 @@ export const routeTree = rootRoute
         "/(app)/rollenmanagement/",
         "/(app)/schueler/",
         "/(app)/settings/",
+        "/(app)/ganztagsangebote/$ganztagsangebotId/edit",
         "/(app)/klassen/$klassenId/brett",
         "/(app)/klassen/$klassenId/edit",
         "/(app)/klassen/$klassenId/tests",
@@ -600,6 +625,10 @@ export const routeTree = rootRoute
     },
     "/(auth)/register/": {
       "filePath": "(auth)/register/index.tsx"
+    },
+    "/(app)/ganztagsangebote/$ganztagsangebotId/edit": {
+      "filePath": "(app)/ganztagsangebote/$ganztagsangebotId/edit.tsx",
+      "parent": "/(app)"
     },
     "/(app)/klassen/$klassenId/brett": {
       "filePath": "(app)/klassen/$klassenId/brett.tsx",
