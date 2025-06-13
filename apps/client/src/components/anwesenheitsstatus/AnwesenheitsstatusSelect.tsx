@@ -24,6 +24,25 @@ export function AnwesenheitsstatusSelect ({ schuelerId, typ }: { schuelerId: num
         setSelected(getInitialAnwesenheit())
     }, [schueler?.heutigerGanztagAnwesenheitsstatus, schueler?.heutigerSchultagAnwesenheitsstatus])
     
+    function styleAnwesenheit(val: Anwesenheiten) {
+        let color = ''
+        if (val === Anwesenheiten.ANWESEND) {
+            color = "bg-green-600"
+        } else if (val === Anwesenheiten.FEHLT_ENTSCHULDIGT) {
+            color = "bg-yellow-300"
+        } else if (val === Anwesenheiten.FEHLT_UNENTSCHULDIGT) {
+            color = "bg-red-600"
+        } else {
+            color = "bg-orange-400"
+        }
+
+        return <div className="flex justify-between w-full gap-8 items-center">
+            <div className={`h-[8px] w-[8px] rounded-4xl ${color}`}/> 
+            <div>
+                {AnwesenheitenLabels[val]}
+            </div>
+        </div>
+    }
     return <Select 
             value={`${selected}`}
             onValueChange={async (val) => {
@@ -57,7 +76,9 @@ export function AnwesenheitsstatusSelect ({ schuelerId, typ }: { schuelerId: num
                 {
                     ANWESENHEITEN.map((val) => {
                         return <SelectItem key={val} value={`${val}`}>
-                            {AnwesenheitenLabels[val]}
+                            {styleAnwesenheit(val)}
+            
+                            
                         </SelectItem>                 
                     })
                 }

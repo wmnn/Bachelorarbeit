@@ -7,8 +7,8 @@ export enum Anwesenheiten {
 
 export const ANWESENHEITEN = [
     Anwesenheiten.ANWESEND,
-    Anwesenheiten.VERSPAETET,
     Anwesenheiten.FEHLT_ENTSCHULDIGT,
+    Anwesenheiten.VERSPAETET,
     Anwesenheiten.FEHLT_UNENTSCHULDIGT
 ]
 
