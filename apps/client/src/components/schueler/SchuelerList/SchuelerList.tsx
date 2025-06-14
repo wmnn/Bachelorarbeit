@@ -16,13 +16,14 @@ interface SchuelerListProps {
     header?: ReactNode
     rightHeader?: ReactNode,
     className?: string,
-    showDerzeitigeKlasse?: boolean
+    showDerzeitigeKlasse?: boolean,
+    typ: AnwesenheitTyp
 }
 
 export const SchuelerList = (props: SchuelerListProps ) => {
 
     const [isCreateDialogShown, setIsCreateDialogShown] = useState(false)
-    const { showDerzeitigeKlasse = true, ...rest } = props; 
+    const { showDerzeitigeKlasse = true, typ, ...rest } = props; 
 
     const [schueler, setSchueler] = useState(props.schueler)
     const [selectedSortItem, setSelectedSortItem] = useState('');
@@ -132,7 +133,7 @@ export const SchuelerList = (props: SchuelerListProps ) => {
         { isCreateDialogShown && <SchuelerErstellenDialog closeDialog={() => setIsCreateDialogShown(false)}/>}
         {
           schueler.map(schueler => {
-            return <SchuelerListItem schueler={schueler} typ={AnwesenheitTyp.UNTERRICHT} showDerzeitigeKlasse={showDerzeitigeKlasse} />
+            return <SchuelerListItem schueler={schueler} typ={typ} showDerzeitigeKlasse={showDerzeitigeKlasse} />
           })
         }
       </List>   

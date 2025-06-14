@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router";
 import { SchuelerIcons } from "../SchuelerIcons";
-import { AnwesenheitsstatusSelect } from "../../anwesenheitsstatus/AnwesenheitsstatusSelect";
 import { AnwesenheitTyp } from "@thesis/anwesenheiten";
 import { GeprüftCheckbox } from "../../anwesenheitsstatus/GeprüftCheckbox";
 import type { Schueler } from "@thesis/schueler";
@@ -32,7 +31,7 @@ export function SchuelerListItem({ schueler, typ, showDerzeitigeKlasse = false }
         <div className='flex gap-6'>
             <GeprüftCheckbox schuelerId={schueler.id ?? -1} typ={typ} />
             <AnwesenheitsstatusSchuelerListSelect 
-                typ={AnwesenheitTyp.UNTERRICHT} 
+                typ={typ} 
                 schuelerId={schueler.id ?? -1}
             />
         </div>

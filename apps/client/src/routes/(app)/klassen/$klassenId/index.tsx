@@ -9,6 +9,7 @@ import { KlasseNav } from '@/layout/KlasseNav';
 import { getTitle } from '@thesis/schule'
 import { SchuelerList } from '@/components/schueler/SchuelerList/SchuelerList';
 import { useSchuelerStore } from '@/components/schueler/SchuelerStore';
+import { AnwesenheitTyp } from '@thesis/anwesenheiten';
 
 export const Route = createFileRoute('/(app)/klassen/$klassenId/')({
   component: RouteComponent,
@@ -80,6 +81,7 @@ function RouteComponent() {
       <div className='flex flex-col gap-8'>
         { (klasse as Klasse).versionen?.map(version => {
           return <SchuelerList 
+            typ={AnwesenheitTyp.UNTERRICHT}
             leftHeader={<h2>{version.klassenstufe}{version.zusatz}</h2>}
             schueler={schueler.filter((item) => version.schueler?.includes(item.id ?? -1))}
             showDerzeitigeKlasse={false}
