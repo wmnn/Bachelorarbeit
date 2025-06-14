@@ -23,7 +23,7 @@ export function DialogWithButtons({ closeDialog, children, onSubmit, submitButto
             </button>
         </div>
 
-        <div className="overflow-auto">
+        <div className="overflow-auto h-full grow flex flex-col justify-between">
             
             <div className="px-8">
                 {children}

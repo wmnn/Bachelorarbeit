@@ -5,8 +5,8 @@ import { DeleteStatusReqBody, type UpdateStatusReqBody } from '@thesis/anwesenhe
 let router = express.Router();
 
 router.put('/', async (req: Request<{}, {}, UpdateStatusReqBody>, res) => {
-    const { status, typ, datum, schuelerId } = req.body
-    const msg = await getDB().updateAnwesenheitsstatus(parseInt(schuelerId), typ, status, datum)
+    const { status, typ, startDatum, endDatum, schuelerId } = req.body
+    const msg = await getDB().updateAnwesenheitsstatus(parseInt(schuelerId), typ, status, startDatum, endDatum)
     res.status(200).json(msg);
 });
 

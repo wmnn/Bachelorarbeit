@@ -1225,7 +1225,8 @@ export class DefaultStore {
         schuelerId: number,
         typ: AnwesenheitTyp,
         status: Anwesenheiten,
-        datum: string
+        startDatum: string,
+        endDatum: string
     ): Promise<DatabaseMessage> {
         if (!this.connection) {
             return STANDARD_FEHLER
@@ -1234,24 +1235,32 @@ export class DefaultStore {
         const conn = this.connection;
 
         try {
-            const [result] = await conn.execute<ResultSetHeader>(
-            `
-            INSERT INTO anwesenheitsstatus (schueler_id, datum, status, typ)
-            VALUES (?, ?, ?, ?)
-            ON DUPLICATE KEY UPDATE 
-                status = VALUES(status),
-                typ = VALUES(typ)
-            `,
-            [schuelerId, datum, status, typ]
-            );
+            const dates: string[] = [];
+            const current = new Date(startDatum);
+            const endDate = new Date(endDatum);
 
-            const affected = result.affectedRows;
+            while (current <= endDate) {
+                dates.push(current.toISOString().split('T')[0]);
+                current.setDate(current.getDate() + 1);
+            }
+
+            for (const datum of dates) {
+                const [result] = await conn.execute<ResultSetHeader>(
+                `
+                INSERT INTO anwesenheitsstatus (schueler_id, datum, status, typ)
+                VALUES (?, ?, ?, ?)
+                ON DUPLICATE KEY UPDATE 
+                    status = VALUES(status),
+                    typ = VALUES(typ)
+                `,
+                [schuelerId, datum, status, typ]
+                );
+            }
+            
 
             return {
-                success: affected > 0,
-                message: affected > 0
-                    ? 'Anwesenheitsstatus erfolgreich aktualisiert oder eingefügt.'
-                    : 'Kein Eintrag wurde geändert.',
+                success: true,
+                message: 'Anwesenheitsstatus erfolgreich gesetzt.'
             };
         } catch (e) {
             console.error('Fehler beim Aktualisieren:', e);

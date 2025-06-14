@@ -1,28 +1,13 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { Anwesenheiten, ANWESENHEITEN, AnwesenheitenLabels, AnwesenheitTyp, updateStatus } from '@thesis/anwesenheiten'
-import { useEffect, useState } from "react";
-import { useSchuelerStore } from "../schueler/SchuelerStore";
-import type { Schueler } from "@thesis/schueler";
+import { Anwesenheiten, ANWESENHEITEN, AnwesenheitenLabels } from '@thesis/anwesenheiten'
 
-export function AnwesenheitsstatusSelect ({ schuelerId, typ }: { schuelerId: number, typ: AnwesenheitTyp }) {
+interface AnwesenheitsstatusSelectProps { 
+    selected: Anwesenheiten,
+    onValueChange: (val: Anwesenheiten) => void,
+}
+export function AnwesenheitsstatusSelect (props: AnwesenheitsstatusSelectProps) {
 
-    const [_, setIsLoading] = useState(false);
- 
-    const schueler = useSchuelerStore(store => store.getSchueler(schuelerId))
-    const setSingleSchueler = useSchuelerStore(store => store.setSingleSchueler)
-    const [selected, setSelected] = useState(getInitialAnwesenheit());
-
-    function getInitialAnwesenheit() {
-        if (typ === AnwesenheitTyp.GANZTAG) {
-            return schueler?.heutigerGanztagAnwesenheitsstatus ?? ANWESENHEITEN[0]
-        } else {
-            return schueler?.heutigerSchultagAnwesenheitsstatus ?? ANWESENHEITEN[0]
-        }   
-    }
-
-    useEffect(() => {
-        setSelected(getInitialAnwesenheit())
-    }, [schueler?.heutigerGanztagAnwesenheitsstatus, schueler?.heutigerSchultagAnwesenheitsstatus])
+    const { onValueChange, selected } = props;
     
     function styleAnwesenheit(val: Anwesenheiten) {
         let color = ''
@@ -36,53 +21,35 @@ export function AnwesenheitsstatusSelect ({ schuelerId, typ }: { schuelerId: num
             color = "bg-orange-400"
         }
 
-        return <div className="flex justify-between w-full gap-8 items-center">
+        return <div className="flex justify-between w-full gap-4 items-center">
             <div className={`h-[8px] w-[8px] rounded-4xl ${color}`}/> 
-            <div>
+            <p>
                 {AnwesenheitenLabels[val]}
-            </div>
+            </p>
         </div>
     }
-    return <Select 
-            value={`${selected}`}
-            onValueChange={async (val) => {
-               
-                setSelected(parseInt(val))
-                const datum = new Date().toISOString().split('T')[0]
-                setIsLoading(true)
-                const res = await updateStatus(schuelerId, parseInt(val) as Anwesenheiten, typ, datum)
 
-                if (res?.success) {
-                    if (typ === AnwesenheitTyp.GANZTAG) {
-                        setSingleSchueler(schuelerId, {
-                            ...schueler,
-                            heutigerGanztagAnwesenheitsstatus: (parseInt(val) as Anwesenheiten)
-                        } as Schueler)
-                    } else {
-                        setSingleSchueler(schuelerId, {
-                            ...schueler,
-                            heutigerSchultagAnwesenheitsstatus: (parseInt(val) as Anwesenheiten)
-                        } as Schueler)
-                    }
-                }
-                
-                setIsLoading(false)
-            }}
-        >
-            <SelectTrigger className="xl:w-[180px] w-min">
-                <SelectValue placeholder="Keine Rolle"/>
-            </SelectTrigger>
-            <SelectContent>
-                {
-                    ANWESENHEITEN.map((val) => {
-                        return <SelectItem key={val} value={`${val}`}>
-                            {styleAnwesenheit(val)}
-            
-                            
-                        </SelectItem>                 
-                    })
-                }
-            </SelectContent>
-        </Select>    
+    return <Select 
+        value={`${selected}`}
+        onValueChange={async (val) => {
+            const status = parseInt(val) as Anwesenheiten
+            onValueChange(status)
+        }}
+    >
+        <SelectTrigger className="xl:w-[200px] w-min">
+            <SelectValue placeholder="Keine Rolle"/>
+        </SelectTrigger>
+        <SelectContent>
+            {
+                ANWESENHEITEN.map((val) => {
+                    return <SelectItem key={val} value={`${val}`}>
+                        {styleAnwesenheit(val)}
+        
+                        
+                    </SelectItem>                 
+                })
+            }
+        </SelectContent>
+    </Select>    
     
 }

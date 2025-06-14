@@ -4,8 +4,9 @@ import type { Anwesenheiten, AnwesenheitTyp } from "../models";
 export interface UpdateStatusReqBody {
     schuelerId: string,
     status: Anwesenheiten,
-    typ: AnwesenheitTyp,
-    datum: string
+    typ: AnwesenheitTyp, // Ganztag oder Unterricht
+    startDatum: string,
+    endDatum: string,
 }
 export interface UpdateStatusResBody {
     success: false,
@@ -16,7 +17,8 @@ export const updateStatus = async (
     schuelerId: number,
     status: Anwesenheiten,
     typ: AnwesenheitTyp,
-    datum: string,
+    startDatum: string,
+    endDatum: string,
 ) => {
     try {
         const res = await fetch(ANWESENHEITEN_ENDPOINT, {
@@ -24,7 +26,8 @@ export const updateStatus = async (
                 schuelerId,
                 status,
                 typ,
-                datum
+                startDatum, 
+                endDatum
             }),
             method: 'PUT',
             headers: {

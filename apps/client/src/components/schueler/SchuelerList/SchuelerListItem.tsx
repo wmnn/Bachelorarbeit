@@ -4,6 +4,7 @@ import { AnwesenheitsstatusSelect } from "../../anwesenheitsstatus/Anwesenheitss
 import { AnwesenheitTyp } from "@thesis/anwesenheiten";
 import { GeprüftCheckbox } from "../../anwesenheitsstatus/GeprüftCheckbox";
 import type { Schueler } from "@thesis/schueler";
+import { AnwesenheitsstatusSchuelerListSelect } from "@/components/anwesenheitsstatus/AnwesenheitsstatusSchuelerListSelect";
 
 export function SchuelerListItem({ schueler, typ, showDerzeitigeKlasse = false }: { schueler: Schueler, typ: AnwesenheitTyp, showDerzeitigeKlasse?: boolean }) {
    
@@ -30,7 +31,10 @@ export function SchuelerListItem({ schueler, typ, showDerzeitigeKlasse = false }
         
         <div className='flex gap-6'>
             <GeprüftCheckbox schuelerId={schueler.id ?? -1} typ={typ} />
-            <AnwesenheitsstatusSelect typ={AnwesenheitTyp.UNTERRICHT} schuelerId={schueler.id ?? -1} />
+            <AnwesenheitsstatusSchuelerListSelect 
+                typ={AnwesenheitTyp.UNTERRICHT} 
+                schuelerId={schueler.id ?? -1}
+            />
         </div>
     
     </li>
