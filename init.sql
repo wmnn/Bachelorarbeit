@@ -94,7 +94,7 @@ CREATE TABLE anwesenheitsstatus (
     datum DATE,
     status INT,
     typ INT,
-    PRIMARY KEY (schueler_id, datum)
+    PRIMARY KEY (schueler_id, datum, typ)
 );
 
 CREATE TABLE klassenversionen (
