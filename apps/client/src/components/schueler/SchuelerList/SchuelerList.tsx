@@ -8,6 +8,8 @@ import { SchuelerListHeader } from "./SchuelerListHeader"
 import { Input } from "@/components/Input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import Button from "@/components/Button"
+import { GeprüftDialog } from "@/components/anwesenheitsstatus/GeprüftDialog"
 
 interface SchuelerListProps {
     schueler: Schueler[],
@@ -23,6 +25,7 @@ interface SchuelerListProps {
 export const SchuelerList = (props: SchuelerListProps ) => {
 
     const [isCreateDialogShown, setIsCreateDialogShown] = useState(false)
+    const [isGeprüftDialogShown, setIsGeprüftDialogShown] = useState(false)
     const { showDerzeitigeKlasse = true, typ, ...rest } = props; 
 
     const [schueler, setSchueler] = useState(props.schueler)
@@ -72,6 +75,21 @@ export const SchuelerList = (props: SchuelerListProps ) => {
 
 
     const rightHeader = <div className="flex gap-2 items-center">
+      <div>
+        <Button className="border-[1px] max-h-[36px] flex justify-center items-center px-2 py-4 rounded-lg hover:bg-gray-200" onClick={() => setIsGeprüftDialogShown(true)}>
+          <p>Alle auf geprüft setzen</p>
+        </Button>
+      </div>
+
+      {
+        isGeprüftDialogShown && <GeprüftDialog 
+          closeDialog={() => setIsGeprüftDialogShown(false)} 
+          schuelerIds={schueler.map(schueler => schueler.id ?? -1)}
+          typ={typ}
+        />
+      }
+      
+
       <Input placeholder="Suche" onChange={({ target }) => search(target.value)} className="max-h-[36px]"></Input>
       <Select 
         value={selectedSortItem}
@@ -90,7 +108,7 @@ export const SchuelerList = (props: SchuelerListProps ) => {
       </Select>  
 
       <DropdownMenu>
-        <DropdownMenuTrigger className="border-[1px] px-2 rounded-lg py-[6px]">Filtern</DropdownMenuTrigger>
+        <DropdownMenuTrigger className="border-[1px] px-2 rounded-lg py-[6px] hover:bg-gray-200">Filtern</DropdownMenuTrigger>
         <DropdownMenuContent>
           { props.schueler.map(schueler => {
             return <DropdownMenuItem className="cursor-pointer" onClick={() => {

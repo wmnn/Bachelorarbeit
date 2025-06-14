@@ -36,7 +36,7 @@ export function GeprüftCheckbox ({ schuelerId, typ }: { schuelerId: number, typ
             }
         } else {
             const status = ANWESENHEITEN[0]
-            const res = await updateStatus(schuelerId, status, typ, date)
+            const res = await updateStatus(schuelerId, status, typ, date, date)
             if (res?.success) {
                 if (typ === AnwesenheitTyp.GANZTAG) {
                     setSingleSchueler(schuelerId, {

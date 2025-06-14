@@ -256,7 +256,6 @@ export class DefaultStore {
                 message: 'Die Rolle konnte nicht erstellt werden.'
         };
         if (!this.connection) {
-            console.log('No connection')
             return defaultErrorMessage
         }
   
@@ -267,7 +266,6 @@ export class DefaultStore {
             `, [role.rolle , JSON.stringify(role.berechtigungen)]);
 
             if (result.affectedRows !== 1) {
-                console.log('Affected rows: ', result.affectedRows)
                 return defaultErrorMessage
             }
         } catch (e: any) {
@@ -678,7 +676,6 @@ export class DefaultStore {
         try {
             await conn.beginTransaction();
 
-            console.log('Before updating: ', schueler)
             await conn.execute(
                 `UPDATE schueler 
                 SET vorname = ?, nachname = ?, familiensprache = ?, geburtsdatum = ?, strasse = ?, hausnummer = ?, ort = ?, hat_sonderpaedagogische_kraft = ?, verlaesst_schule_allein = ?, postleitzahl = ? 
@@ -960,8 +957,6 @@ export class DefaultStore {
             return STANDARD_FEHLER
         }
 
-        console.log(klassen)
-
         const conn = this.connection;
 
         try {
@@ -1009,7 +1004,6 @@ export class DefaultStore {
                 }
 
                 try {
-                    console.log(klasse.schueler)
                     for (const schuelerId of klasse.schueler || []) {
                         await conn.execute(`
                             INSERT INTO klassenversion_schueler (klassen_id, schuljahr, halbjahr, klassenstufe, schueler_id)
@@ -1021,7 +1015,6 @@ export class DefaultStore {
                             klasse.klassenstufe,
                             schuelerId
                         ]);
-                        console.log(schuelerId)
                     }
                 } catch(_) {
                     await conn.rollback()
@@ -1122,7 +1115,6 @@ export class DefaultStore {
     
                 try {
                     for (const schuelerId of klasse.schueler) {
-                        console.log(klassenId, schuljahr, halbjahr, klassenstufe, schuelerId)
                         await conn.execute(
                             `
                             INSERT INTO klassenversion_schueler (klassen_id, schuljahr, halbjahr, klassenstufe, schueler_id)
@@ -1375,7 +1367,6 @@ export class DefaultStore {
     private reduceGanztagsangebotDataToGanztagsangebote(data: GetGanztagsangeboteSQL[]) {
         const ganztagsangebote = data.reduce((prev: Ganztagsangebot[], current: GetGanztagsangeboteSQL) => {
             const { id, name, halbjahr, schuljahr } = current
-            console.log(prev)
             const isGanztagsangebotInside = prev.find(g => g.id === id)
             if (!isGanztagsangebotInside) {
                 prev.push({
@@ -1423,7 +1414,6 @@ export class DefaultStore {
             return undefined;
         }
 
-        console.log('a')
         const [data] = await this.connection.execute<any[]>(
             `SELECT g.id as id, gs.schueler_id as schuelerId, schuljahr, halbjahr, name, gb.user_id as betreuerId FROM ganztagsangebote g 
             LEFT JOIN ganztagsangebot_schueler gs ON g.id = gs.ganztagsangebot_id 

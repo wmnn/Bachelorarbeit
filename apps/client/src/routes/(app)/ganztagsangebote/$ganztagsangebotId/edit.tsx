@@ -48,7 +48,6 @@ function RouteComponent() {
       schuljahr,
       halbjahr
     }, schuljahr, halbjahr);
-    console.log(res)
   }
 
   useEffect(() => {

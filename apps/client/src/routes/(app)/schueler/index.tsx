@@ -3,6 +3,7 @@ import { useSchuelerStore } from '@/components/schueler/SchuelerStore'
 import { SCHUELER_QUERY_KEY } from '@/reactQueryKeys'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
+import { AnwesenheitTyp } from '@thesis/anwesenheiten'
 import { type Schueler } from '@thesis/schueler';
 import { getSchueler } from '@thesis/schueler'
 import { useEffect } from 'react'
@@ -25,11 +26,10 @@ function RouteComponent() {
   }
 
   useEffect(() => {
-    console.log(schuelerArr)
     if (schuelerArr) {
       setSchueler((_) => schuelerArr ?? [])
     }
   }, [schuelerArr])
 
-  return <SchuelerList schueler={schueler} className='p-8'/>
+  return <SchuelerList schueler={schueler} className='p-8' typ={AnwesenheitTyp.UNTERRICHT}/>
 }
