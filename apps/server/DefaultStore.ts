@@ -1166,7 +1166,7 @@ export class DefaultStore {
     }
 
 
-    async deleteClass(klassenId: number) {
+    async deleteClass(klassenId: number, schuljahr: Schuljahr, halbjahr: Halbjahr) {
         if (!this.connection) {
             return STANDARD_FEHLER
         }
@@ -1177,23 +1177,30 @@ export class DefaultStore {
             await conn.beginTransaction();
 
             await conn.execute(
-                `DELETE FROM klassenversion_schueler WHERE klassen_id = ?`,
-                [klassenId]
+                `DELETE FROM klassenversion_schueler 
+                WHERE klassen_id = ?
+                AND schuljahr = ? AND halbjahr = ?
+                `,
+                [klassenId, schuljahr, halbjahr]
             );
 
             await conn.execute(
-                `DELETE FROM klassenversionen WHERE klassen_id = ?`,
-                [klassenId]
+                `DELETE FROM klassenversionen WHERE klassen_id = ?
+                AND schuljahr = ? AND halbjahr = ?
+                `,
+                [klassenId, schuljahr, halbjahr]
             );
 
-            await conn.execute(
-                `DELETE FROM klassen WHERE id = ?`,
-                [klassenId]
-            );
+            // await conn.execute(
+            //     `DELETE FROM klassen WHERE id = ?`,
+            //     [klassenId]
+            // );
 
             await conn.execute(
-                `DELETE FROM klassenversion_klassenlehrer WHERE klassen_id = ?`,
-                [klassenId]
+                `DELETE FROM klassenversion_klassenlehrer WHERE klassen_id = ?
+                AND schuljahr = ? AND halbjahr = ?
+                `,
+                [klassenId, schuljahr, halbjahr]
             );
 
             await conn.commit();

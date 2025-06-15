@@ -43,8 +43,8 @@ router.post('/', async (req: Request<{}, {}, CreateClassRequestBody>, res: Respo
 });
 
 router.delete('/', async (req: Request<{}, {}, DeleteKlasseRequestBody>, res: Response<DeleteKlasseResponseBody>) => {
-    const klassenId = req.body.klassenId
-    const msg = await getDB().deleteClass(klassenId)
+    const { klassenId, schuljahr, halbjahr } = req.body
+    const msg = await getDB().deleteClass(klassenId, schuljahr, halbjahr)
     res.status(200).json(msg as DeleteSchuelerResponseBody);
 });
 

@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { RiskyActionDialog } from "../dialog/RiskyActionDialog";
 import { KLASSEN_QUERY_KEY } from "@/reactQueryKeys";
 import { deleteKlasse } from "@thesis/schule";
+import { useSchuljahrStore } from "../schuljahr/SchuljahrStore";
 
 interface KlasseLoeschenDialogProps {
     klasseId: number,
@@ -13,13 +14,15 @@ interface KlasseLoeschenDialogProps {
 
 export function KlasseLoeschenDialog({ klasseId, closeDialog, setDeleteMsg, setIsLoading, onSubmit }: KlasseLoeschenDialogProps) {
 
+    const schuljahr = useSchuljahrStore(store => store.ausgewaeltesSchuljahr)
+    const halbjahr = useSchuljahrStore(store => store.ausgewaeltesHalbjahr)
     const queryClient = useQueryClient()
 
     async function handleDelete() {
         if (setIsLoading) {
             setIsLoading(true);
         }
-        const res = await deleteKlasse(klasseId);
+        const res = await deleteKlasse(klasseId, schuljahr, halbjahr);
         queryClient.invalidateQueries({ queryKey: [KLASSEN_QUERY_KEY] })
         if (setDeleteMsg) {
             setDeleteMsg(res.message)

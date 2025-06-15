@@ -108,7 +108,9 @@ export const editKlasse = async (klassen: KlassenVersion[], klassenlehrer: User[
 }
 
 export interface DeleteKlasseRequestBody {
-   klassenId: number
+   klassenId: number,
+   schuljahr: Schuljahr,
+   halbjahr: Halbjahr
 }
 
 export interface DeleteKlasseResponseBody {
@@ -116,14 +118,16 @@ export interface DeleteKlasseResponseBody {
     message: string;
 }
 
-export const deleteKlasse = async (klassenId: number) => {
+export const deleteKlasse = async (klassenId: number, schuljahr: Schuljahr, halbjahr: Halbjahr) => {
 
     try {
         const res = await fetch(KLASSEN_ENDPOINT, {
             method: 'DELETE',
             body: JSON.stringify({
-                klassenId
-            } as DeleteKlasseRequestBody),
+                klassenId,
+                schuljahr,
+                halbjahr
+            } satisfies DeleteKlasseRequestBody),
             headers: {
                 'content-type': 'application/json'
             },
