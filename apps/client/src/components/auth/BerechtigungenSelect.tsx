@@ -35,7 +35,7 @@ const BerechtigungSelect = ({ berechtigung, rolle, setRolle }: { berechtigung: B
             <SelectContent>
                 {
                     BERECHTIGUNGEN_VALUES[berechtigung].map((val: any) => {
-                        return <SelectItem value={val}>{typeof val !== "string" ? val ? "ja" : "nein": val}</SelectItem>                                                            
+                        return <SelectItem value={val} key={val}>{typeof val !== "string" ? val ? "ja" : "nein": val}</SelectItem>                                                            
                     })
                 }
             </SelectContent>

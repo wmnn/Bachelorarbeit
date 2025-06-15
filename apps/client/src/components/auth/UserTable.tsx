@@ -32,7 +32,7 @@ export function UserTable({ users }: UserTableProps) {
         </TableHeader>
         <TableBody>
           {
-            users.map(user => <UserTableEntry user={user} rollen={rollen} />)
+            users.map(user => <UserTableEntry key={user.id} user={user} rollen={rollen} />)
           }
         
         </TableBody>

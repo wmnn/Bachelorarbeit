@@ -14,9 +14,9 @@ export const SchuelerSelectionList = ({
     return <ul className="flex flex-col">
         <label>Schüler</label>
         {
-            schueler.map((element) => <>
+            schueler.map((element) => 
             
-            <li>
+            <li key={element.id}>
                 <input
                     type="checkbox"
                     checked={selectedIds.find(id => id === (element.id ?? -1)) ? true : false}
@@ -27,7 +27,7 @@ export const SchuelerSelectionList = ({
                 </button>
 
             </li>
-            </>
+       
             
             )
         }

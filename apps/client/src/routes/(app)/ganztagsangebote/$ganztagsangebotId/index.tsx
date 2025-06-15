@@ -104,7 +104,7 @@ function RouteComponent() {
             {
               ganztagsangebot?.betreuer?.map((betreuerId) => {
                 const user = users.find(user => user?.id === betreuerId)
-                return <p>{user?.vorname} {user?.nachname}</p>
+                return <p key={user?.id}>{user?.vorname} {user?.nachname}</p>
               })
             }
           </div>

@@ -10,7 +10,7 @@ export function AbholberechtigtePersonen ({ personen, setPersonen }: Abholberech
     return <div className="mt-8">
         <label>Abholberechtigte Personen</label>
         {
-            personen.map((person, idx) => <div className="flex flex-col gap-2">
+            personen.map((person, idx) => <div className="flex flex-col gap-2" key={idx}>
 
                 <h2 className="mt-4">Person {idx + 1}</h2>
 

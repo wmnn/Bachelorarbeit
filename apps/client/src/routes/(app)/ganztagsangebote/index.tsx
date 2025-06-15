@@ -60,7 +60,7 @@ function RouteComponent() {
     >
       {
         ganztagsangebote.map((item) => {
-          return <GanztagsangebotListItem ganztagsangebot={item} />
+          return <GanztagsangebotListItem key={item.id} ganztagsangebot={item} />
         })
       }
 

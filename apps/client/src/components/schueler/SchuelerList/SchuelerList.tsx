@@ -111,7 +111,7 @@ export const SchuelerList = (props: SchuelerListProps ) => {
         <DropdownMenuTrigger className="border-[1px] px-2 rounded-lg py-[6px] hover:bg-gray-200">Filtern</DropdownMenuTrigger>
         <DropdownMenuContent>
           { props.schueler.map(schueler => {
-            return <DropdownMenuItem className="cursor-pointer" onClick={() => {
+            return <DropdownMenuItem key={schueler.id} className="cursor-pointer" onClick={() => {
 
               let newValue = !filteredShown[schueler.id ?? -1]     
               setFilteredShown(prev => ({
@@ -151,7 +151,7 @@ export const SchuelerList = (props: SchuelerListProps ) => {
         { isCreateDialogShown && <SchuelerErstellenDialog closeDialog={() => setIsCreateDialogShown(false)}/>}
         {
           schueler.map(schueler => {
-            return <SchuelerListItem schueler={schueler} typ={typ} showDerzeitigeKlasse={showDerzeitigeKlasse} />
+            return <SchuelerListItem key={schueler.id} schueler={schueler} typ={typ} showDerzeitigeKlasse={showDerzeitigeKlasse} />
           })
         }
       </List>   

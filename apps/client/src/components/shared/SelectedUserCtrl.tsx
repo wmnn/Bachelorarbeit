@@ -39,7 +39,7 @@ export function SelectedUserCtrl<T extends Berechtigung>(props: SelectedUserCtrl
         <div className="flex flex-col gap-2">
             {
                 selectedUser.map((_, idx) => {
-                    return <div className="flex gap-2">
+                    return <div key={idx} className="flex gap-2">
                         <Autocomplete idx={idx} {...rest} />
                         <button onClick={() => deleteLehrer(idx)}>
                             <DeleteIcon />
@@ -150,7 +150,7 @@ function UserSelectMenu<T extends Berechtigung>(props: UserSelectMenuProps<T>) {
         <ul>
             {
                 response.users.map((user) => {
-                    return <li onClick={() => handleClick(user)} className="py-2 px-4 hover:bg-gray-100 cursor-pointer">{user.vorname} {user.nachname}</li>
+                    return <li key={user.id} onClick={() => handleClick(user)} className="py-2 px-4 hover:bg-gray-100 cursor-pointer">{user.vorname} {user.nachname}</li>
                 })
             }
         </ul>

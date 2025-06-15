@@ -73,7 +73,7 @@ function RouteComponent() {
         <h2>Klassenlehrer</h2>
         {
           (klasse as Klasse).klassenlehrer?.map((lehrer) => {
-            return <p>{lehrer.vorname} {lehrer.nachname}</p>
+            return <p key={lehrer.id}>{lehrer.vorname} {lehrer.nachname}</p>
           })
         }
       </div>
@@ -81,6 +81,7 @@ function RouteComponent() {
       <div className='flex flex-col gap-8'>
         { (klasse as Klasse).versionen?.map(version => {
           return <SchuelerList 
+            key={version.klassenstufe}
             typ={AnwesenheitTyp.UNTERRICHT}
             leftHeader={<h2>{version.klassenstufe}{version.zusatz}</h2>}
             schueler={schueler.filter((item) => version.schueler?.includes(item.id ?? -1))}
