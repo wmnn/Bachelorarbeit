@@ -23,15 +23,18 @@ export function SelectedUserCtrl<T extends Berechtigung>(props: SelectedUserCtrl
     const selectedUser = useSelectedUserStore(store => store.selectedUser)
     
     const { user } = use(userContext);
-    if (user && selectedUser.length == 0) {
-        setSelectedUser(() => [user])
-    }
 
     function deleteLehrer(idx: number) {
         setSelectedUser(prev => {
             return prev.filter((_, i) => i !== idx)
         })
     }
+
+    useEffect(() => {
+        if (user && selectedUser.length == 0) {
+            setSelectedUser((_) => [user])
+        }
+    }, [])
         
     return <div>
         <label>{label}</label>

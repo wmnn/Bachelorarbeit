@@ -4,6 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { KLASSEN_QUERY_KEY } from "@/reactQueryKeys";
 import { KlasseForm } from "./KlasseForm";
 import { Dialog } from "../dialog/Dialog";
+import { useSelectedUserStore } from "../shared/SelectedUserStore";
 
 interface KlasseErstellenDialogProps {
   closeDialog: () => void,
@@ -12,7 +13,7 @@ interface KlasseErstellenDialogProps {
 export function KlasseErstellenDialog({ closeDialog, setResponseMessage }: KlasseErstellenDialogProps) {
 
     const klassen = useKlassenStore(state => state.neueKlassen)
-    const klassenlehrer = useKlassenStore(store => store.klassenlehrer)
+    const klassenlehrer = useSelectedUserStore(store => store.selectedUser)
 
     const queryClient = useQueryClient();
 

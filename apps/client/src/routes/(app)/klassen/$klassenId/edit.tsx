@@ -1,6 +1,7 @@
 import { KlasseForm } from '@/components/klasse/KlasseForm';
 import { useKlassenStore } from '@/components/klasse/KlassenStore';
 import { useSchuljahrStore } from '@/components/schuljahr/SchuljahrStore';
+import { useSelectedUserStore } from '@/components/shared/SelectedUserStore';
 import { KLASSEN_QUERY_KEY } from '@/reactQueryKeys';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, useRouter } from '@tanstack/react-router'
@@ -18,7 +19,7 @@ function RouteComponent() {
   const schuljahr = useSchuljahrStore(state => state.ausgewaeltesSchuljahr)
   const halbjahr = useSchuljahrStore(state => state.ausgewaeltesHalbjahr)
   const klassen = useKlassenStore(state => state.neueKlassen)
-  const klassenlehrer = useKlassenStore(store => store.klassenlehrer)
+  const klassenlehrer = useSelectedUserStore(store => store.selectedUser)
 
   const { isPending, data: klasse } = useQuery({
     queryKey: [KLASSEN_QUERY_KEY, schuljahr, halbjahr, klassenId],
