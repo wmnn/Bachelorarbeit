@@ -31,5 +31,10 @@ function RouteComponent() {
     }
   }, [schuelerArr])
 
-  return <SchuelerList schueler={schueler} className='p-8' typ={AnwesenheitTyp.UNTERRICHT}/>
+  return <SchuelerList 
+    schueler={schueler} 
+    className='p-8' 
+    typ={AnwesenheitTyp.UNTERRICHT}
+  
+  />
 }

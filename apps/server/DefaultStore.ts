@@ -38,7 +38,8 @@ export class DefaultStore {
             'port'     : parseInt((process.env.MYSQL_HOST?.split(':')[1] ?? process.env.MYSQL_PORT) ?? '3306'),
             'database' : process.env.MYSQL_DB,
             'user'     : process.env.MYSQL_USER,
-            'password' : process.env.MYSQL_ROOT_PASSWORD
+            'password' : process.env.MYSQL_ROOT_PASSWORD,
+            timezone: 'Z'
         });
     }
   
@@ -1220,6 +1221,30 @@ export class DefaultStore {
         }
     }
 
+    async getAnwesenheiten(
+        schuelerId: number,
+        schuljahr: Schuljahr,
+        typ: AnwesenheitTyp
+    ) {
+        if (!this.connection) {
+            return [];
+        }
+
+        const conn = this.connection;
+
+        const schuljahrStart = `20${schuljahr.split('/')[0]}-08-01`
+        const schuljahrEnde = `20${schuljahr.split('/')[1]}-07-31`
+        const [rows] = await conn.execute<ResultSetHeader>(
+            `
+            SELECT datum, typ, status 
+            FROM anwesenheitsstatus
+            WHERE schueler_id = ? AND datum BETWEEN ? AND ? AND typ = ?
+            ORDER BY datum ASC
+            `,
+            [schuelerId, schuljahrStart, schuljahrEnde, typ]
+        );
+        return rows;
+    }
     async updateAnwesenheitsstatus(
         schuelerId: number,
         typ: AnwesenheitTyp,

@@ -63,7 +63,6 @@ export function KlasseErstellenDialogKlasse({ klasse, setKlasse }: {
     function handleQueryChange(newVal: string) {
         const filteredUsers = schueler
             .filter((item) => {
-            console.log(item, newVal, `${item.vorname} ${item.nachname}`.includes(newVal))
             return `${item.vorname} ${item.nachname}`.includes(newVal)
         })
 

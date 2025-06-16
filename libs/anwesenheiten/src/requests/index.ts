@@ -1,5 +1,30 @@
 import { ANWESENHEITEN_ENDPOINT } from "../../../config/config";
 import type { Anwesenheiten, AnwesenheitTyp } from "../models";
+import type { Schuljahr } from "@thesis/schule";
+
+export const getAnwesenheiten = async (
+    schuelerId: number,
+    schuljahr: Schuljahr,
+    typ: AnwesenheitTyp
+) => {
+    try {
+        const res = await fetch(ANWESENHEITEN_ENDPOINT  + `/${schuelerId}?schuljahr=${schuljahr}&typ=${typ}`, {
+            method: 'GET',
+            headers: {
+                'content-type': 'application/json'
+            },
+        })
+
+        if (res.status === 403) {
+            window.location.href = '/login'
+        }
+
+        return await res.json() as any[];
+    } catch (e) {
+        return undefined;
+    }
+
+}
 
 export interface UpdateStatusReqBody {
     status: Anwesenheiten,

@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import { getDB } from '../../singleton';
-import { DeleteStatusReqBody, UpdateStatusBatchReqBody, type UpdateStatusReqBody } from '@thesis/anwesenheiten'
+import { AnwesenheitTyp, DeleteStatusReqBody, UpdateStatusBatchReqBody, type UpdateStatusReqBody } from '@thesis/anwesenheiten'
+import { Schuljahr } from '@thesis/schule';
 
 let router = express.Router();
 
@@ -27,6 +28,14 @@ router.put('/:schuelerId', async (req: Request<any, {}, UpdateStatusReqBody>, re
     const { status, typ, startDatum, endDatum } = req.body
     const { schuelerId } = req.params
     const msg = await getDB().updateAnwesenheitsstatus(parseInt(schuelerId), typ, status, startDatum, endDatum)
+    res.status(200).json(msg);
+});
+
+router.get('/:schuelerId', async (req: Request<any, {}, UpdateStatusReqBody>, res) => {
+    const { schuelerId } = req.params
+    const { schuljahr, typ } = req.query
+
+    const msg = await getDB().getAnwesenheiten(parseInt(schuelerId), schuljahr as Schuljahr, parseInt(typ as string) as AnwesenheitTyp)
     res.status(200).json(msg);
 });
 

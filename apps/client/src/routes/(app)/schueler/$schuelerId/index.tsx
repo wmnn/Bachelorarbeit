@@ -8,7 +8,6 @@ import { SCHUELER_QUERY_KEY } from '@/reactQueryKeys';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { editSchueler, getSchuelerComplete, type Schueler } from '@thesis/schueler';
-import { MoveLeft } from 'lucide-react';
 import { useState } from 'react';
 
 export const Route = createFileRoute('/(app)/schueler/$schuelerId/')({
@@ -32,7 +31,6 @@ function RouteComponent() {
     });
 
     const [responseMessage, setResponseMessage] = useState('')
-    const [isDeleteDialogShown, setIsDeleteDialogShown] = useState(false)
 
     if (isPending) {
         return <p>Loading...</p>;
@@ -51,27 +49,6 @@ function RouteComponent() {
     return <div className='flex flex-col w-full'>
 
         {(responseMessage !== '') && <ErrorDialog message={responseMessage} closeDialog={() => setResponseMessage('')}/>}
-
-            {
-                isDeleteDialogShown && <SchuelerLoeschenDialog schuelerId={schueler.id ?? -1} closeDialog={() => setIsDeleteDialogShown(false)}/>
-            }
-
-        <div className='flex justify-between items-center px-8'>
-            <div className='flex gap-4 items-center pt-8'>
-                <button onClick={() => router.history.back()}>
-                    <MoveLeft />
-                </button>
-                <h1>{schueler.vorname} {schueler.nachname}</h1>
-                <div className='pt-2'>
-                    <SchuelerIcons schueler={schueler} />
-                </div>
-            </div>
-
-            <button onClick={() => setIsDeleteDialogShown(true)}>
-                <DeleteIcon />
-            </button>
-
-        </div>
 
         <SchuelerNav schuelerId={schuelerId} />
 
