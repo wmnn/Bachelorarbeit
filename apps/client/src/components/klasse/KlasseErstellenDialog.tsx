@@ -14,7 +14,6 @@ export function KlasseErstellenDialog({ closeDialog, setResponseMessage }: Klass
 
     const klassen = useKlassenStore(state => state.neueKlassen)
     const klassenlehrer = useSelectedUserStore(store => store.selectedUser)
-
     const queryClient = useQueryClient();
 
     async function handleSubmit() {

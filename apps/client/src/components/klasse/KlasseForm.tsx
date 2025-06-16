@@ -40,8 +40,15 @@ export const KlasseForm = (props: KlasseFormProps) => {
         if (initialKlasse?.versionen) {
             setKlassen(() => [...initialKlasse?.versionen])
         } else {
-            setKlassen(() => [])
+            setKlassen(() => [ {
+                schuljahr,
+                halbjahr,
+                klassenstufe: undefined,
+                zusatz: undefined,
+                schueler: []
+            }])
         }
+
 
         if (initialKlasse?.klassenlehrer) {
             setSelectedUser(() => [...(initialKlasse?.klassenlehrer ?? [])])
@@ -68,9 +75,13 @@ export const KlasseForm = (props: KlasseFormProps) => {
             label="Klassenlehrer"
         />
 
+        <hr className="mb-8" />
+
+        <h2>Klassen</h2>
+
         {
             klassen.map((klasse) => {
-                return <KlasseErstellenDialogKlasse klasse={klasse} setKlasse={(updatedKlasse: KlassenVersion) => {
+                return <><KlasseErstellenDialogKlasse klasse={klasse} setKlasse={(updatedKlasse: KlassenVersion) => {
                     setKlassen((prev) => {
                         return prev.map(o => {
                             if (o !== klasse) {
@@ -80,12 +91,16 @@ export const KlasseForm = (props: KlasseFormProps) => {
                         })
                     })
                 }}/>
+                <hr className="my-8" />
+                </>
             })
         }
 
         <ButtonLight onClick={() => klasseHinzufügen()}>
-            Unterklasse hinzufügen
+            Zugehörige Klasse hinzufügen
         </ButtonLight>
+
+    
 
         <div className="flex gap-2 py-8">
             <ButtonLight className={cancelButtonClassName} onClick={() => onAbort()}>

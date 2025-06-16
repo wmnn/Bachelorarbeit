@@ -36,6 +36,7 @@ function RouteComponent() {
  
   async function onSubmit() {
     const res = await editKlasse(klassen, klassenlehrer, klassenId, schuljahr, halbjahr);
+    alert(res.message)
   }
   return <div className='pt-8'>
     <KlasseForm 
