@@ -63,7 +63,7 @@ export const KlasseForm = (props: KlasseFormProps) => {
 
         <SelectedUserCtrl 
             berechtigung={Berechtigung.KlasseCreate as Berechtigung} 
-            berechtigungValue={["alle", "eigene"]} 
+            berechtigungValue={[true]} 
             placeholder="Lehrernamen eingeben"
             label="Klassenlehrer"
         />
