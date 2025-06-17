@@ -953,7 +953,7 @@ export class DefaultStore {
     }
 
 
-    async createClass(klassen: KlassenVersion[], klassenlehrer: User[]): Promise<DatabaseMessage> {
+    async createClass(klassenId: undefined | number, klassen: KlassenVersion[], klassenlehrer: User[]): Promise<DatabaseMessage> {
         if (!this.connection) {
             return STANDARD_FEHLER
         }
@@ -962,12 +962,15 @@ export class DefaultStore {
 
         try {
             await conn.beginTransaction();
+            let id = klassenId
+            if (!klassenId) {
+                const [result] = await conn.execute<ResultSetHeader>(`
+                    INSERT INTO klassen VALUES ()
+                `, []);
 
-            const [result] = await conn.execute<ResultSetHeader>(`
-                INSERT INTO klassen VALUES ()
-            `, []);
-
-            const id = result.insertId;
+                id = result.insertId;
+            }
+            
 
             let schuljahr: undefined | string;
             let halbjahr: undefined | string;

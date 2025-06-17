@@ -1,4 +1,4 @@
-import { Halbjahr, Schuljahr, Klasse } from '../index'
+import type { Halbjahr, Schuljahr, Klasse } from '../index'
 
 export function getHalbjahr(date: Date): Halbjahr {
   const monat = date.getMonth();
@@ -23,4 +23,22 @@ export function getTitle(klasse: Klasse) {
         parts.push(`${version.klassenstufe}${version.zusatz}`)
     }
     return parts.join('/')
+}
+
+export function getVorherigesHalbjahr(halbjahr: Halbjahr): Halbjahr {
+  if (halbjahr === "1. Halbjahr") {
+      return "2. Halbjahr"
+  }
+  return "1. Halbjahr"
+}
+
+export function getSchuljahrVorherigesHalbjahr(schuljahr: Schuljahr, halbjahr: Halbjahr): Schuljahr {
+  if (halbjahr === "1. Halbjahr") {
+    if (schuljahr === "00/01") {
+        return "99/00"
+    }
+    const splitted = schuljahr.split('/')
+    return `${parseInt(splitted[0]) - 1}/${parseInt(splitted[1]) - 1}` as Schuljahr
+  }
+  return schuljahr
 }

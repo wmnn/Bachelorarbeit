@@ -12,6 +12,8 @@ import { getKlassen, type Halbjahr, type Klasse, type Schuljahr } from '@thesis/
 import { useEffect, useState } from 'react'
 import { useSchuljahrStore } from '@/components/schuljahr/SchuljahrStore'
 import { ErrorDialog } from '@/components/dialog/MessageDialog'
+import { ButtonLight } from '@/components/ButtonLight'
+import { KlasseImportDialog } from '@/components/klasse/KlasseImportDialog'
 
 export const Route = createFileRoute('/(app)/klassen/')({
   component: RouteComponent,
@@ -22,6 +24,9 @@ function RouteComponent() {
   const setSchueler = useSchuelerStore(state => state.setSchueler)
   const schuljahr = useSchuljahrStore(state => state.ausgewaeltesSchuljahr)
   const halbjahr = useSchuljahrStore(state => state.ausgewaeltesHalbjahr)
+  const [isCreateDialogShown, setIsCreateDialogShown] = useState(false)
+  const [isImportDialogShown, setIsImportDialogShown] = useState(false)
+  const [responseMessage, setResponseMessage] = useState('')
 
   const { isPending: isPending2, data: schueler } = useQuery<SchuelerSimple[]>({
     queryKey: [SCHUELER_QUERY_KEY],
@@ -36,9 +41,6 @@ function RouteComponent() {
     },
     initialData: [],
   });
-
-  const [isCreateDialogShown, setIsCreateDialogShown] = useState(false)
-  const [responseMessage, setResponseMessage] = useState('')
 
   useEffect(() => {
     if (schueler) {
@@ -55,7 +57,7 @@ function RouteComponent() {
     <SchuljahrSelect />
     <HalbjahrSelect />
   </div>
-  
+
   const header = <div className='flex justify-between mb-8'>
         <h1>Klassen</h1>
 
@@ -66,6 +68,7 @@ function RouteComponent() {
 
   return <div className='w-full'>
 
+    { isImportDialogShown && <KlasseImportDialog closeDialog={() => setIsImportDialogShown(false)} setResponseMessage={setResponseMessage}/>}
     { isCreateDialogShown && <KlasseErstellenDialog closeDialog={() => setIsCreateDialogShown(false)} setResponseMessage={setResponseMessage} />}
     {(responseMessage !== '') && <ErrorDialog message={responseMessage} closeDialog={() => setResponseMessage('')}/>}
 
@@ -79,6 +82,11 @@ function RouteComponent() {
         klassen.map((item: Klasse) => {
           return <KlasseListItem klasse={item} key={item.id}/>
         })
+      }
+      {
+        klassen.length === 0 && <ButtonLight onClick={() => setIsImportDialogShown(true)}>
+          Aus letztem Halbjahr importieren
+        </ButtonLight>
       }
 
     </List>

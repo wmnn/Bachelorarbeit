@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import { getDB } from '../../singleton';
-import { CreateClassRequestBody, CreateClassResponseBody, DeleteKlasseRequestBody, DeleteKlasseResponseBody, Halbjahr, Schuljahr } from '@thesis/schule';
+import { CreateClassRequestBody, CreateClassResponseBody, DeleteKlasseRequestBody, DeleteKlasseResponseBody, getSchuljahrVorherigesHalbjahr, getVorherigesHalbjahr, Halbjahr, ImportKlasse, ImportKlassenversion, ImportModus, Klasse, KlassenVersion, Schuljahr } from '@thesis/schule';
 import { DeleteSchuelerResponseBody } from '@thesis/schueler';
 
 let router = express.Router();
@@ -38,8 +38,163 @@ router.put('/:klassenId', async (req, res) => {
 
 router.post('/', async (req: Request<{}, {}, CreateClassRequestBody>, res: Response<CreateClassResponseBody>) => {
     const { versionen, klassenlehrer } = req.body
-    const msg = await getDB().createClass(versionen, klassenlehrer)
+    const msg = await getDB().createClass(undefined, versionen, klassenlehrer)
     res.status(msg.success ? 200 : 400).json(msg);
+});
+
+router.post('/import', async (req: Request<{}, {}, ImportKlasse[]>, res: Response<CreateClassResponseBody>) => {
+    
+    const BAD_REQUEST_RESPONSE = {
+        success: false,
+        message: 'Ein Fehler ist aufgetreten.'
+    }
+    const importKlassen = req.body
+    const { schuljahr, halbjahr } = req.query as { schuljahr: Schuljahr, halbjahr: Halbjahr}
+
+    let neueKlassen: Klasse[] = []
+    const prevSchuljahr = getSchuljahrVorherigesHalbjahr(schuljahr, halbjahr)
+    const prevHalbjahr = getVorherigesHalbjahr(halbjahr)
+
+
+    let prevKlassenTmp = await getDB().getClasses(prevSchuljahr, prevHalbjahr) as (Klasse | undefined)[]
+    // Schüler werden den Klassenversionen hinzugefügt.
+    prevKlassenTmp = await Promise.all(
+        prevKlassenTmp.map((klasse) =>
+            getDB().getClass(prevSchuljahr, prevHalbjahr, klasse?.id ?? -1)
+        )
+    );
+    let prevKlassen = prevKlassenTmp.filter(klasse => klasse !== undefined) as Klasse[]
+
+    // -------- Zusammenlegung von Klassen ----------------
+    // Diese Klassenversionen werden dem prev Array hinzugefügt.
+
+    let zusammenlegungen = importKlassen
+        .map(klasse => klasse.versionen.filter((item: ImportKlassenversion) => item.modus === ImportModus.Zusammenlegung))
+        .reduce((prev, acc) => {
+            prev.push(...acc);
+            return prev;
+        }, [])
+    // Hinzufügen der Schüler zur Zusammenlegung.
+    zusammenlegungen = zusammenlegungen.map(item => {
+        const klasse = prevKlassen.find(klasse => klasse?.id === item.klassenId)
+        const version = klasse?.versionen.find(version => version.klassenstufe === item.klassenstufe)
+
+        return {
+            ...item,
+            schueler: version?.schueler ?? []
+        }
+    })
+    if (zusammenlegungen.some(item => item.schueler?.length === 0)) {
+        res.status(400).json(BAD_REQUEST_RESPONSE)
+        return;
+    }
+
+    // Hinzufügen der Zusammenlegung zur Klasse
+    for (const zusammenlegung of zusammenlegungen) {
+        prevKlassen = prevKlassen.map(item => {
+            if (!item.versionen.some(
+                    (version: KlassenVersion) => version.klassenstufe === zusammenlegung.neueKlassenstufe && 
+                    version.zusatz === zusammenlegung.neuerZusatz
+                )
+            ) {
+                return item;
+            }
+
+            const neueVersionen = item?.versionen.map(version => {
+                if (version.klassenstufe !== zusammenlegung.neueKlassenstufe) {
+                    return version;
+                }
+                return {
+                    ...version,
+                    schueler: [
+                        ...version.schueler ?? [],
+                        ...zusammenlegung.schueler ?? []
+                    ]
+                }
+            })
+
+            return {
+                ...item,
+                versionen: neueVersionen ?? []
+            }
+        })
+    }
+
+    // -------- Import von Klassen in höhere Klassenstufen ----------------
+
+    for (const importKlasse of importKlassen) {
+        const { id } = importKlasse
+
+        // Überprüfung, ob eine vorherige Klasse existiert.
+        const prevKlasse = prevKlassen.find(item => item?.id == importKlasse.id)
+        if (!prevKlasse) {
+            res.status(400).json(BAD_REQUEST_RESPONSE)
+            return;
+        }
+
+        let neueKlassenVersionen = []
+        for (const klassenVersion of importKlasse.versionen) {
+            if (klassenVersion.modus === ImportModus.KeineKlasse) {
+                continue;
+            }
+            if (klassenVersion.modus === ImportModus.Import) {
+                const prevKlassenVersion = prevKlasse?.versionen.find(item => item.klassenstufe === klassenVersion.klassenstufe)
+                if (!prevKlassenVersion) {
+                    res.status(400).json(BAD_REQUEST_RESPONSE)
+                    return;
+                }
+        
+                neueKlassenVersionen.push({
+                    ...prevKlassenVersion,
+                    klassenstufe: klassenVersion.neueKlassenstufe,
+                    zusatz: klassenVersion.neuerZusatz,
+                    schuljahr, 
+                    halbjahr
+                })
+                continue;
+            }
+            if (klassenVersion.modus === ImportModus.Zusammenlegung) {
+                // Wurde vorher schon berücksichtigt.
+                continue;
+            }
+            res.status(400).json(BAD_REQUEST_RESPONSE)
+            return;
+        }
+        if (neueKlassenVersionen.length == 0) {
+            continue;
+        }
+        
+        if (neueKlassen.some(item => item.id === importKlasse.id)) {
+            neueKlassen.map(item => {
+                if (item.id !== importKlasse.id) {
+                    return item;
+                }
+                return {
+                    ...item,
+                    versionen: [...item.versionen, ...neueKlassenVersionen]
+                }
+            })
+        } else {
+            neueKlassen.push({
+                id,
+                klassenlehrer: prevKlasse.klassenlehrer,
+                versionen: neueKlassenVersionen
+            })
+        }  
+    }
+
+    let success = true
+    for (const klasse of neueKlassen) {
+        const msg = await getDB().createClass(klasse.id, klasse.versionen, klasse.klassenlehrer ?? [])
+        if (!msg.success) {
+            success = false
+        }
+    }
+
+    res.status(500).json({
+        success: success,
+        message: success ? 'Die Klassen wurden erfolgreich importiert.' : 'Ein Fehler ist aufgetreten.'
+    })
 });
 
 router.delete('/', async (req: Request<{}, {}, DeleteKlasseRequestBody>, res: Response<DeleteKlasseResponseBody>) => {

@@ -1,7 +1,6 @@
 import { ErrorDialog } from '@/components/dialog/MessageDialog'
 import { GanztagsangebotErstellenDialog } from '@/components/ganztagsangebot/GanztagsangebotErstellenDialog'
 import { GanztagsangebotListItem } from '@/components/ganztagsangebot/GanztagsangebotListItem'
-import { KlasseListItem } from '@/components/klasse/KlasseListItem'
 import { List } from '@/components/List'
 import { HalbjahrSelect } from '@/components/schuljahr/HalbjahrSelect'
 import { SchuljahrSelect } from '@/components/schuljahr/SchuljahrSelect'
