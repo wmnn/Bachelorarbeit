@@ -361,6 +361,33 @@ export class DefaultStore {
         };
     }
 
+    async getSessions(): Promise<SessionData[]> {
+        if (!this.connection) {
+            return [];
+        }
+
+        const [rows] = await this.connection.execute(
+            'SELECT * FROM session_store'
+        );
+
+        if (!Array.isArray(rows)) {
+            return [];
+        }
+
+        return rows.map((row: any) => {
+            let user = undefined;
+            try {
+                user = JSON.parse(row.session_data);
+            } catch (_) { }
+
+            return {
+                sessionId: row.session_id,
+                user: user,
+                createdAt: row.created_at,
+                expiresAt: row.expires_at
+            } as SessionData;
+        });
+    }
 
     async getSession(sessionId: string): Promise<undefined | SessionData> {
         if (!this.connection) {

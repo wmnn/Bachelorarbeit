@@ -44,7 +44,22 @@ router.post('/',async (
 router.patch('/', async (req: Request<{}, {}, UpdateRoleRequestBody>, res) => {
     const { rollenbezeichnung, updated } = req.body;
     const dbMessage = await getDB().updateRole(rollenbezeichnung, updated);
-    res.status(200).json(dbMessage);
+    // TODO delete session with the role
+    const sessions = await getDB().getSessions()
+    let success = true
+    console.log(sessions)
+    for (const session of sessions) {
+        if (typeof session.user?.rolle == 'string' && session.user.rolle === rollenbezeichnung) {
+            success = success && await getDB().removeSession(session.sessionId)
+        } else if (typeof session.user?.rolle == 'object' && session.user.rolle.rolle == rollenbezeichnung) {
+            success = success && await getDB().removeSession(session.sessionId)
+        }
+    }
+    console.log(success)
+    res.status(200).json({
+        success: success,
+        message: dbMessage.message
+    });
 });
 router.delete('/', async (req: Request<{}, {}, DeleteRoleRequestBody>, res: Response<DeleteRoleResponseBody>) => {
     if (!req.permissions?.[Berechtigung.RollenVerwalten]) {

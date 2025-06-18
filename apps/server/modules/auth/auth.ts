@@ -45,6 +45,7 @@ export const SESSION_MAX_AGE = 30 * 24 * 60 * 60 * 1000; // 30 days
 let router = express.Router();
 
 export type SessionData = {
+    sessionId: string,
     user?: User;
     createdAt: Date;
     expiresAt: Date;
@@ -65,6 +66,7 @@ async function createSession(res: Response, user: User): Promise<Response> {
         user.rolle = user.rolle.rolle;
     }
     const sessionData: SessionData = {
+        sessionId,
         user,
         createdAt: new Date(),
         expiresAt: new Date(Date.now() + SESSION_MAX_AGE),
@@ -325,6 +327,15 @@ router.patch('/user', async (req: Request<{}, {}, UpdateUserRequestBody>, res: R
         const rolle = req.body.user.rolle
         if (typeof rolle == 'string') {
             const msg = await getDB().updateUser(userId, undefined, undefined, undefined, undefined, rolle, undefined, undefined)
+            
+            const sessions = await getDB().getSessions()
+            let success = msg.success
+            for (const session of sessions) {
+                if (session.user?.id === userId) {
+                    success = success && await getDB().removeSession(session.sessionId)
+                }
+            }
+     
             res.status(200).json(msg);
             return;
         }
