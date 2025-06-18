@@ -35,6 +35,7 @@ function RouteComponent() {
     schueler={schueler} 
     className='p-8' 
     typ={AnwesenheitTyp.UNTERRICHT}
+    leftHeader={<h1>Schüler</h1>}
   
   />
 }

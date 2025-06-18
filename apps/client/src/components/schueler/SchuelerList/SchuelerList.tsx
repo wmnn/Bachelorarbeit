@@ -135,7 +135,7 @@ export const SchuelerList = (props: SchuelerListProps ) => {
 
     const header = <>
       <div className='flex justify-between mb-8 items-center'>
-        <h1>Schüler</h1>
+        { props.leftHeader }
         { rightHeader }
           
       </div>
