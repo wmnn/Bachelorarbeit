@@ -147,6 +147,8 @@ export const SchuelerList = (props: SchuelerListProps ) => {
       <List 
         header={header}
         {...rest}
+        createButonLabel="Schüler erstellen"
+        setIsCreateDialogShown={setIsCreateDialogShown}
       >
         { isCreateDialogShown && <SchuelerErstellenDialog closeDialog={() => setIsCreateDialogShown(false)}/>}
         {
