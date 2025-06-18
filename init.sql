@@ -190,7 +190,7 @@ CREATE TABLE diagnostikverfahren_dateien (
 CREATE TABLE diagnostikverfahren_farbbereiche (
     diagnostikverfahren_id INT,
     hex_farbe VARCHAR(255),
-    obere_grenze FLOAT,
+    obere_grenze FLOAT NULL,
     PRIMARY KEY (diagnostikverfahren_id, hex_farbe)
 );
 

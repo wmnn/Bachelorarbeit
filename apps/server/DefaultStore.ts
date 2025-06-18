@@ -1605,7 +1605,7 @@ export class DefaultStore {
             await conn.beginTransaction();
 
             let { name, beschreibung, obereGrenze, untereGrenze, klasseId } = diagnostik
-            if (diagnostik.typ === 'benutzerdefiniert') {
+            if (diagnostik.erstellungsTyp === 'benutzerdefiniert') {
 
             }
             
@@ -1634,7 +1634,7 @@ export class DefaultStore {
                 await conn.execute(`
                     INSERT INTO diagnostikverfahren_farbbereiche (diagnostikverfahren_id, hex_farbe, obere_grenze)
                     VALUES (?, ?, ?)
-                `, [id, element.hexFarbe, element.obereGrenze]);
+                `, [id, element.hexFarbe, element.obereGrenze ?? null]);
             }    
 
             await conn.commit();

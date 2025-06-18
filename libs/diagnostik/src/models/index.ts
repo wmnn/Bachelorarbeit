@@ -8,9 +8,10 @@ export type Diagnostik = {
     klasseId: number,
     format?: DiagnostikNumberFormat,
     vorlageId: number,
-    typ: 'benutzerdefiniert' | 'Vorlage'
-    obereGrenze?: number,
-    untereGrenze?: number,
+    erstellungsTyp: 'benutzerdefiniert' | 'Vorlage'
+    speicherTyp: DiagnostikTyp,
+    obereGrenze?: number | string,
+    untereGrenze?: number | string,
     farbbereiche?: Farbbereich[],
     anhang?: any[],
     geeigneteKlassen?: string[],
@@ -22,6 +23,6 @@ export enum DiagnostikNumberFormat {
     NUMMER = 'Nummer'
 } 
 export interface Farbbereich {
-    obereGrenze?: number,
+    obereGrenze?: number | string,
     hexFarbe: string
 } 

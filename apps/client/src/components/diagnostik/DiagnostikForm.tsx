@@ -1,12 +1,11 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ButtonLight } from "../ButtonLight"
 import { Input } from "../Input";
-import { DiagnostikNumberFormat, type Diagnostik, type Farbbereich } from '@thesis/diagnostik'
+import { DiagnostikNumberFormat, DiagnostikTyp, sortFarbbereiche, type Diagnostik, type Farbbereich } from '@thesis/diagnostik'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { useKlassen } from "../shared/useKlassen";
 import { getTitle, type Klasse } from "@thesis/schule";
 import { MultiInput } from "../shared/MultiInput";
-import { NumberInput } from "../shared/NumberInput";
 
 interface DiagnostikFormProps {
   onAbort: () => void,
@@ -23,13 +22,14 @@ export const DiagnostikForm = (props: DiagnostikFormProps) => {
     const [diagnostik, setDiagnostik] = useState<Diagnostik>({
         name: '',
         beschreibung: '',
-        typ: 'Vorlage',
+        erstellungsTyp: 'Vorlage',
         format: DiagnostikNumberFormat.NUMMER,
         klasseId: -1,
         vorlageId: -1,
         farbbereiche: [{
             hexFarbe: '#129600'
-        }]
+        }],
+        speicherTyp: DiagnostikTyp.LAUFENDES_VERFAHREN
     })
 
     const klassenQuery = useKlassen()
@@ -45,8 +45,23 @@ export const DiagnostikForm = (props: DiagnostikFormProps) => {
             farbbereiche: values
         }))          
     }
+
+    function handleVorlageButton() {
+        const newDiagnostik: Diagnostik = {
+            ...diagnostik,
+            speicherTyp: DiagnostikTyp.VORLAGE
+        }
+        setDiagnostik(newDiagnostik)
+        props.onSubmit(newDiagnostik)
+    }
     
     return <form className="flex flex-col gap-2">
+        <div className="flex justify-end">
+            
+            <button type="button" className="border-[1px] border-gray-200 px-2 py-2 rounded-lg hover:bg-black hover:text-white transition-all" onClick={() => handleVorlageButton()}>
+                Als Vorlage speichern
+            </button>
+        </div>
         <div className="flex flex-col">
             <label>Name</label>
             <Input 
@@ -64,7 +79,7 @@ export const DiagnostikForm = (props: DiagnostikFormProps) => {
 
         <label>Klasse (aktuelles Halbjahr)</label>
         <Select 
-            value={diagnostik.klasseId === -1 ? undefined : `${diagnostik.klasseId}`}
+            value={`${diagnostik.klasseId}`}
             onValueChange={async (val: string) => {
                 setDiagnostik(prev => ({
                     ...prev,
@@ -76,23 +91,26 @@ export const DiagnostikForm = (props: DiagnostikFormProps) => {
                 <SelectValue placeholder="Keine Klasse ausgewählt"/>
             </SelectTrigger>
             <SelectContent>
+                <SelectItem value={`-1`}>
+                    Keine Klasse
+                </SelectItem>  
                 {
                     klassen.map((klasse) => {
                         return <SelectItem key={klasse.id} value={`${klasse.id}`}>
                             {getTitle(klasse)}
                         </SelectItem>  
                     })
-                } 
+                }
             </SelectContent>
         </Select>  
 
         <label>Erstellungstyp</label>
         <Select 
-            value={`${diagnostik.typ}`}
-            onValueChange={async (val: Diagnostik['typ']) => {
+            value={`${diagnostik.erstellungsTyp}`}
+            onValueChange={async (val: Diagnostik['erstellungsTyp']) => {
                 setDiagnostik(prev => ({
                     ...prev,
-                    typ: val
+                    erstellungsTyp: val
                 }))
             }}
         >
@@ -100,24 +118,24 @@ export const DiagnostikForm = (props: DiagnostikFormProps) => {
                 <SelectValue placeholder="Keine Rolle"/>
             </SelectTrigger>
             <SelectContent>
-                <SelectItem value={`${'Vorlage' satisfies Diagnostik['typ']}`}>
+                <SelectItem value={`${'Vorlage' satisfies Diagnostik['erstellungsTyp']}`}>
                     Vorlage
                 </SelectItem>     
-                <SelectItem value={`${'benutzerdefiniert' satisfies Diagnostik['typ']}`}>
+                <SelectItem value={`${'benutzerdefiniert' satisfies Diagnostik['erstellungsTyp']}`}>
                     benutzerdefiniert
                 </SelectItem>    
             </SelectContent>
         </Select>  
 
         {
-            diagnostik.typ === 'Vorlage' && <div className="flex flex-col">
+            diagnostik.erstellungsTyp === 'Vorlage' && <div className="flex flex-col">
                 <label>Vorlage</label>
                 <Select 
                     value={diagnostik.vorlageId === -1 ? undefined : `${diagnostik.vorlageId}`}
-                    onValueChange={async (val: Diagnostik['typ']) => {
+                    onValueChange={async (val: Diagnostik['erstellungsTyp']) => {
                         setDiagnostik(prev => ({
                             ...prev,
-                            typ: val
+                            erstellungsTyp: val
                         }))
                     }}
                 >
@@ -132,7 +150,7 @@ export const DiagnostikForm = (props: DiagnostikFormProps) => {
         }
 
         {
-            diagnostik.typ === 'benutzerdefiniert' && <div className="flex flex-col">
+            diagnostik.erstellungsTyp === 'benutzerdefiniert' && <div className="flex flex-col">
                 <label>Beschreibung</label>
                 <textarea className="border-[1px] border-gray-200 p-2" value={diagnostik.beschreibung} onChange={(e) => {
                     setDiagnostik(prev => ({
@@ -166,21 +184,21 @@ export const DiagnostikForm = (props: DiagnostikFormProps) => {
                 </Select> 
 
                 <label>Obere Grenze</label>
-                <NumberInput value={diagnostik.obereGrenze ?? ''}
-                    setValue={(val) => {
+                <Input type="number" value={`${diagnostik.obereGrenze ?? ''}`}
+                    onChange={(e) => {
                         setDiagnostik(prev => ({
                             ...prev,
-                            obereGrenze: val
+                            obereGrenze: e.target.value
                         }));
                     }}
                 />
 
                 <label>Untere Grenze</label>
-                <NumberInput value={diagnostik.untereGrenze ?? ''}
-                    setValue={(val) => {
+                <Input type="number" value={diagnostik.untereGrenze ?? ''}
+                    onChange={(e) => {
                         setDiagnostik(prev => ({
                             ...prev,
-                            untereGrenze: val
+                            untereGrenze: e.target.value
                         }));
                     }}
                 />
@@ -192,12 +210,6 @@ export const DiagnostikForm = (props: DiagnostikFormProps) => {
                     obereGrenze={diagnostik.obereGrenze ?? 0}
                     untereGrenze={diagnostik.untereGrenze ?? 0}
                 />
-                <ButtonLight onClick={() => setFarbbereiche([...(diagnostik.farbbereiche ?? []), {
-                    obereGrenze: -1,
-                    hexFarbe: '#000000'
-                }])}>
-                    Farbbereich hinzufügen
-                </ButtonLight>
 
                 <label>Dateien</label>
 
@@ -241,63 +253,57 @@ export const DiagnostikForm = (props: DiagnostikFormProps) => {
 interface FarbbereicheProps {
     farbbereiche: Farbbereich[], 
     setFarbbereiche: (bereiche: Farbbereich[]) => void,
-    obereGrenze: number,
-    untereGrenze: number
+    obereGrenze: number | string,
+    untereGrenze: number | string
 }
 const Farbbereiche = (props: FarbbereicheProps) => {
     const { farbbereiche, setFarbbereiche, obereGrenze, untereGrenze } = props
 
-    // const heightInPx = 250
-    // function getHeight(grenze: number) {
-    //     console.log(obereGrenze, untereGrenze, heightInPx)
-    //     const totalHeight = obereGrenze - untereGrenze
-    //     const wertInBereich = grenze - untereGrenze
-    //     return heightInPx - ((wertInBereich / totalHeight ) * heightInPx)
-    // }
+    const [lastUpdatedValue, setLastUpdatedValue] = useState<null | string>(null);
+    const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+    
+
+    useEffect(() => {
+        if (lastUpdatedValue !== null) {
+            inputRefs.current.find(ref => ref?.value === lastUpdatedValue)?.focus()
+        }
+    }, [farbbereiche]);
+
     return <div className="flex flex-col xl:flex-row gap-8">
         <div>
-            {/* <div className={`min-h-[${heightInPx}px] min-w-[${heightInPx}px] border border-gray-300 rounded-lg overflow-hidden flex flex-col`}>
-                {farbbereiche.map((bereich, index) => {
-                    return (
-                    <div
-                        key={index}
-                        className="flex items-center justify-center text-white font-bold text-sm"
-                        style={{
-                            height: `${getHeight(bereich.obereGrenze ?? 0)}px`,
-                            backgroundColor: bereich.hexFarbe,
-                        }}
-                    >
-                        {bereich.obereGrenze}
-                        {getHeight(bereich.obereGrenze ?? 0)}
-                    </div>
-                    );
-                })}
-            </div> */}
-
-
+            <FarbbereichSlider {...props} />
         </div>
 
 
-        <div>
+        <div className="flex flex-col gap-2">
             {
-                farbbereiche?.map((bereich, idx) => <div className="flex gap-2">
+                sortFarbbereiche(farbbereiche).map((bereich, idx) => <div key={idx} className="flex gap-2 items-center w-full justify-end">
+
                     {
-                        bereich.obereGrenze && <NumberInput 
-                            value={bereich.obereGrenze ?? ''}
-                            setValue={(val) => {
+                        farbbereiche.length -1 == idx && <label>Mindeststandard</label>
+                    }
+
+                    {
+                        bereich.obereGrenze !== undefined && <Input type="number" 
+                            ref={(el) => {
+                                inputRefs.current[idx] = el;
+                            }}
+                            value={bereich.obereGrenze}
+                            onChange={(e) => {
+                                const value = e.target.value
+                                setLastUpdatedValue(value);
                                 setFarbbereiche(farbbereiche.map((item, i) => {
                                     if (i !== idx) {
                                         return item;
                                     }
                                     return {
                                         ...item,
-                                        obereGrenze: val ?? 0
+                                        obereGrenze: value
                                     }
                                 }))
                             }}
                         />
                     }
-                    
 
                 
                     <input type="color" key={idx} value={bereich.hexFarbe} onChange={(e) => {
@@ -314,8 +320,51 @@ const Farbbereiche = (props: FarbbereicheProps) => {
                     }}/>
                 </div>)
             }
+            <ButtonLight onClick={() => setFarbbereiche([...(farbbereiche), {
+                obereGrenze: -1,
+                hexFarbe: '#000000'
+            }])}>
+                Farbbereich hinzufügen
+            </ButtonLight>
 
         </div>
         
     </div>
+}
+const FarbbereichSlider = (props: FarbbereicheProps) => {
+
+    const { farbbereiche, setFarbbereiche, obereGrenze, untereGrenze } = props
+    const sortedFarbbereiche = sortFarbbereiche(farbbereiche)
+
+    const heightInPx = 250
+
+    function getHeight(sortedFarbbereicheIdx: number) {
+
+        return 0;
+        // console.log(obereGrenze, untereGrenze, heightInPx)
+        // const totalHeight = obereGrenze - untereGrenze
+        // const wertInBereich = grenze - untereGrenze
+        // return heightInPx - ((wertInBereich / totalHeight ) * heightInPx)
+    }
+
+    return <>
+    
+        <div className={`min-h-[${heightInPx}px] min-w-[${heightInPx}px] border border-gray-300 rounded-lg overflow-hidden flex flex-col`}>
+            {sortedFarbbereiche.map((bereich, index) => {
+                return (
+                <div
+                    key={index}
+                    className="flex items-center justify-center text-white font-bold text-sm"
+                    style={{
+                        height: `${getHeight(index)}px`,
+                        backgroundColor: bereich.hexFarbe,
+                    }}
+                >
+                    {bereich.obereGrenze}
+                    {getHeight(index)}
+                </div>
+                );
+            })}
+        </div>
+     </>
 }

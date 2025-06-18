@@ -6,7 +6,11 @@ export function NumberInput(props: { value: number | '', setValue: (val: undefin
     return <Input value={value} onChange={(e) => {
         const value = e.target.value;
         if (/^-?\d*$/.test(value)) {
-            setValue(value === '' ? undefined : parseInt(value, 10));
+            if (value == '-') {
+                setValue(0);
+                return;
+            }
+            setValue(value === '' ? 0 : parseInt(value, 10));
         }
     }}/>
 }
