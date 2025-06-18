@@ -1,4 +1,4 @@
-import { type Rolle, type User } from "@thesis/auth";
+import { type User } from "@thesis/auth";
 import { TableCell, TableRow } from "../ui/table";
 import { UserRolleSelect } from "./UserRolleSelect";
 import { useState } from "react";
@@ -10,6 +10,7 @@ import { LockUserDialog } from "./LockUserDialog";
 import { DeleteIcon } from "../icons/DeleteIcon";
 import { LockIcon } from "../icons/LockIcon";
 import { LockIconOpen } from "../icons/LockIconOpen";
+import type { Rolle } from "@thesis/rollen";
 
 export function UserTableEntry({ user, rollen}: { user: User, rollen: Rolle[]}) {
 

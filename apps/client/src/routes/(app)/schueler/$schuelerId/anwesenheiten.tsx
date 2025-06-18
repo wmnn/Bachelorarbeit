@@ -16,7 +16,7 @@ export const Route = createFileRoute(
 function RouteComponent() {
 
   const { schuelerId } = Route.useParams();
-  const [schuljahr, setSchuljar] = useState<Schuljahr>(getSchuljahr(new Date()));
+  const [schuljahr, _] = useState<Schuljahr>(getSchuljahr(new Date()));
 
   const { isPending, data: schultagAnwesenheiten } = useQuery({
       queryKey: ['sadnkajsd', schuelerId, schuljahr, AnwesenheitTyp.UNTERRICHT],

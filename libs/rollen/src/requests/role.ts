@@ -1,4 +1,4 @@
-import { Rolle } from "../models/role"
+import { type Rolle } from "../models/role"
 
 export const ROLLE_ENDPOINT = '/api/role'
 export type CreateRoleRequestBody = Rolle

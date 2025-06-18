@@ -2,20 +2,19 @@ import { useState } from "react";
 import { DeleteIcon } from "../icons/DeleteIcon";
 import { type Ganztagsangebot } from "@thesis/schule";
 import { Link } from "@tanstack/react-router";
-import type { User } from "@thesis/auth";
 
 export function GanztagsangebotListItem({ ganztagsangebot }: { ganztagsangebot: Ganztagsangebot }) {
 
-    const [isDeleteDialogShown, setIsDeleteDialogShown] = useState(false)
+    const [_, setIsDeleteDialogShown] = useState(false)
 
-    function formatLehrer(klassenlehrer: User[] | undefined) {
-        if (!klassenlehrer) {
-            return ''
-        }
-        return klassenlehrer.map(lehrer => {
-            return `${lehrer.vorname} ${lehrer.nachname}`
-        }).join(', ')
-    }
+    // function formatLehrer(klassenlehrer: User[] | undefined) {
+    //     if (!klassenlehrer) {
+    //         return ''
+    //     }
+    //     return klassenlehrer.map(lehrer => {
+    //         return `${lehrer.vorname} ${lehrer.nachname}`
+    //     }).join(', ')
+    // }
 
     return <li className='py-2 px-8 flex justify-between w-[100%] gap-8'>
 

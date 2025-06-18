@@ -2,7 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { RiskyActionDialog } from "../dialog/RiskyActionDialog";
 import { GANZTAGSANGEBOT_QUERY_KEY } from "@/reactQueryKeys";
 import { deleteGanztagsangebot } from "@thesis/schule";
-import { useNavigate, useRouter } from "@tanstack/react-router";
+import { useRouter } from "@tanstack/react-router";
 
 interface GanztagsangebotLoeschenDialogProps {
     id: number,

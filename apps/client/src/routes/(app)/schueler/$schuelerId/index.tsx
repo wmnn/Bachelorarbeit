@@ -1,8 +1,5 @@
 import { ErrorDialog } from '@/components/dialog/MessageDialog';
-import { DeleteIcon } from '@/components/icons/DeleteIcon';
 import { SchuelerEditForm } from '@/components/schueler/SchuelerForm';
-import { SchuelerIcons } from '@/components/schueler/SchuelerIcons';
-import { SchuelerLoeschenDialog } from '@/components/schueler/SchuelerLoeschenDialog';
 import { SchuelerNav } from '@/layout/SchuelerNav';
 import { SCHUELER_QUERY_KEY } from '@/reactQueryKeys';
 import { useQuery, useQueryClient } from '@tanstack/react-query';

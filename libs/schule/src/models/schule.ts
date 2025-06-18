@@ -1,5 +1,3 @@
-import { Klasse } from "./klasse";
-
 export type Halbjahr = "1. Halbjahr" | "2. Halbjahr"
 
 export type Schuljahr =
