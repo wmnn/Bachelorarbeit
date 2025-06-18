@@ -47,16 +47,45 @@ function RouteComponent() {
 
   return <div className='w-full'>
     <SchuelerNav schuelerId={schuelerId} />
-    <div className='flex flex-col'>
+    <div className='flex flex-col pl-8'>
 
       <h2>Unterricht</h2>
+
+      <DataDisplay data={schultagAnwesenheiten}/>
       <AnwesenheitenGrid data={schultagAnwesenheiten} schuljahr={schuljahr} />
 
       <h2>Ganztag</h2>
+      <DataDisplay data={ganztagAnwesenheiten}/>
       <AnwesenheitenGrid data={ganztagAnwesenheiten} schuljahr={schuljahr} />
     </div>
     
     </div>
+}
+
+const DataDisplay = ({ data }: { data: any }) => {
+
+  function count(data: any, status: Anwesenheiten) {
+    return data.filter((item: any) => item.status === status).length
+  }
+
+  return <div className='flex flex-col my-2'>
+    <div className='flex gap-2'>
+      <p>Anwesend:</p>
+      <p>{count(data, Anwesenheiten.ANWESEND)}</p>
+    </div>
+    <div className='flex gap-2'>
+      <p>Verspätet:</p>
+      <p>{count(data, Anwesenheiten.VERSPAETET)}</p>
+    </div>
+    <div className='flex gap-2'>
+      <p>Fehlt unentschuldigt:</p>
+      <p>{count(data, Anwesenheiten.FEHLT_UNENTSCHULDIGT)}</p>
+    </div>
+    <div className='flex gap-2'>
+      <p>Fehlt entschuldigt:</p>
+      <p>{count(data, Anwesenheiten.FEHLT_ENTSCHULDIGT)}</p>
+    </div>
+  </div>
 }
 
 const AnwesenheitenGrid = ({ data, schuljahr }: { data: any[], schuljahr: Schuljahr }) => {
@@ -112,7 +141,7 @@ const AnwesenheitenGrid = ({ data, schuljahr }: { data: any[], schuljahr: Schulj
 
 
   return (
-    <div className="flex gap-1">
+    <div className="gap-1 hidden md:flex">
       {weeks.map((week, wi) => (
         <div key={wi} className="flex flex-col gap-1">
           {week.map((day, di) => {
@@ -128,7 +157,7 @@ const AnwesenheitenGrid = ({ data, schuljahr }: { data: any[], schuljahr: Schulj
             return (
               <Tooltip content={tooltipContent} key={di}>
                 <div
-                  className={`w-4 h-4 rounded-sm ${bgColor}`}
+                  className={`w-[12px] h-[12px] xl:w-[16px] xl:h-[16px] rounded-sm ${bgColor}`}
                 />
               </Tooltip>
             );
