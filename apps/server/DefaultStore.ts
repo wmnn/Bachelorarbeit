@@ -6,6 +6,7 @@ import { Schueler, SchuelerSimple } from '@thesis/schueler';
 import { Ganztagsangebot, getHalbjahr, getSchuljahr, getTitle, Halbjahr, Klasse, KlassenVersion, Schuljahr } from '@thesis/schule';
 import { Anwesenheiten, AnwesenheitTyp } from '@thesis/anwesenheiten';
 import { Rolle } from '@thesis/rollen';
+import { Diagnostik, DiagnostikTyp } from '@thesis/diagnostik';
 
 interface DatabaseMessage {
     success: boolean,
@@ -1589,6 +1590,69 @@ export class DefaultStore {
                 message: 'Beim Löschen des Ganztagsangebotes ist ein Fehler aufgetreten.'
             };
         }
+    }
+
+    async createDiagnostik(userId: number, diagnostik: Diagnostik) {
+        if (!this.connection) {
+            return {
+                success: false,
+                message: 'Keine Datenbankverbindung.'
+            };
+        }
+        const conn = this.connection;
+
+        try {
+            await conn.beginTransaction();
+
+            let { name, beschreibung, obereGrenze, untereGrenze, klasseId } = diagnostik
+            if (diagnostik.typ === 'benutzerdefiniert') {
+
+            }
+            
+            const [result] = await conn.execute<ResultSetHeader>(`
+                INSERT INTO diagnostikverfahren (name, beschreibung, erstellungsdatum, obere_grenze, untere_grenze, typ, user_id, klassen_id) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            `, [name, beschreibung, new Date().toISOString().split('T')[0],obereGrenze, untereGrenze, DiagnostikTyp.LAUFENDES_VERFAHREN, userId, klasseId]);
+
+            const id = result.insertId;
+
+            for (const element of diagnostik.geeigneteKlassen || []) {
+                await conn.execute(`
+                    INSERT INTO diagnostikverfahren_klassenstufen (diagnostikverfahren_id, klassenstufe)
+                    VALUES (?, ?)
+                `, [id, element]);
+            }
+
+            for (const element of diagnostik.kategorien || []) {
+                await conn.execute(`
+                    INSERT INTO diagnostikverfahren_kategorien (diagnostikverfahren_id, kategorie)
+                    VALUES (?, ?)
+                `, [id, element]);
+            }    
+            
+            for (const element of diagnostik.farbbereiche || []) {
+                await conn.execute(`
+                    INSERT INTO diagnostikverfahren_farbbereiche (diagnostikverfahren_id, hex_farbe, obere_grenze)
+                    VALUES (?, ?, ?)
+                `, [id, element.hexFarbe, element.obereGrenze]);
+            }    
+
+            await conn.commit();
+
+            return {
+                success: true,
+                message: 'Die Diagnostik wurde erfolgreich erstellt.'
+            };
+        } catch (e) {
+            console.error(e);
+            await conn.rollback();
+            return {
+                success: false,
+                message: 'Beim Erstellen der Diagnostik ist ein Fehler aufgetreten.'
+            };
+        }
+
+
     }
 
 

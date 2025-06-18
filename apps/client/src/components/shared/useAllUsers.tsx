@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { getUsers, getUsersQueryKey, type UsersResponseBody } from '@thesis/auth';
-import { useUserStore } from '@/components/auth/UserStore'; // Assuming this is your Zustand store
-import { useEffect } from 'react'; // Import useEffect
+import { useUserStore } from '@/components/auth/UserStore';
+import { useEffect } from 'react'; 
 
 export const useAllUsers = () => {
   const setUsers = useUserStore(state => state.setUsers);

@@ -67,7 +67,7 @@ export const AppLayout = () => {
                         user?.rolle?.berechtigungen[Berechtigung.DiagnostikverfahrenRead] === "eigene" 
                     ) && 
                     <LayoutButton onClick={() => setIsNavShown(false)}>
-                        <Link className="w-[100%] text-left" to="/dashboard">Diagnostikverfahren</Link>
+                        <Link className="w-[100%] text-left" to="/diagnostikverfahren">Diagnostikverfahren</Link>
                     </LayoutButton>
                 }
                 {

@@ -34,7 +34,7 @@ CREATE TABLE users (
 -- );
 
 CREATE TABLE diagnostikverfahren (
-    id VARCHAR(36) PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255),
     beschreibung VARCHAR(255),
     erstellungsdatum DATE,
@@ -170,25 +170,25 @@ CREATE TABLE schueler_medikamente (
 );
 
 CREATE TABLE diagnostikverfahren_klassenstufen (
-    diagnostikverfahren_id VARCHAR(36),
+    diagnostikverfahren_id INT,
     klassenstufe VARCHAR(255),
     PRIMARY KEY (diagnostikverfahren_id, klassenstufe)
 );
 
 CREATE TABLE diagnostikverfahren_kategorien (
-    diagnostikverfahren_id VARCHAR(36),
+    diagnostikverfahren_id INT,
     kategorie VARCHAR(255),
     PRIMARY KEY (diagnostikverfahren_id, kategorie)
 );
 
 CREATE TABLE diagnostikverfahren_dateien (
-    diagnostikverfahren_id VARCHAR(36),
+    diagnostikverfahren_id INT,
     datei VARCHAR(255),
     PRIMARY KEY (diagnostikverfahren_id, datei)
 );
 
 CREATE TABLE diagnostikverfahren_farbbereiche (
-    diagnostikverfahren_id VARCHAR(36),
+    diagnostikverfahren_id INT,
     hex_farbe VARCHAR(255),
     obere_grenze FLOAT,
     PRIMARY KEY (diagnostikverfahren_id, hex_farbe)

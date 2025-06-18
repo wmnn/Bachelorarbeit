@@ -3,25 +3,7 @@ import { Input } from "../Input";
 import { ButtonLight } from "../ButtonLight";
 import { AbholberechtigtePersonen } from "./AbholberechtigtePersonen";
 import type { Schueler } from "@thesis/schueler";
-
-function MultiInput({ values, setValues, label }: { values: Array<string>, setValues: (values: Array<string>) => void, label: string}) {
-    return <div className="flex flex-col gap-2 my-2">
-        <label>{label}</label>
-        {
-            values.map((value, idx) => <Input key={idx} value={value} onChange={(e) => {
-                setValues(values.map((v, i) => {
-                    if (i !== idx) {
-                        return v;
-                    }
-                    return e.target.value
-                }))
-            }}/>)
-        }
-        <ButtonLight onClick={() => setValues([...values, ''])}>
-            {label} hinzufügen
-        </ButtonLight>
-    </div>
-}
+import { MultiInput } from "../shared/MultiInput";
 
 
 interface SchuelerEditFormProps {

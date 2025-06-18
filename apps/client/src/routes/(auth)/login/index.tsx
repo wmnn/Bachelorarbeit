@@ -41,7 +41,7 @@ export default function Login () {
         setUser(user);
 
         navigate({
-            to: "/dashboard"
+            to: "/diagnostikverfahren"
         })
     }
     return <AuthForm>

@@ -21,10 +21,11 @@ import { Route as appRollenmanagementIndexImport } from './routes/(app)/rollenma
 import { Route as appResetPasswordIndexImport } from './routes/(app)/reset-password/index'
 import { Route as appKlassenIndexImport } from './routes/(app)/klassen/index'
 import { Route as appGanztagsangeboteIndexImport } from './routes/(app)/ganztagsangebote/index'
-import { Route as appDashboardIndexImport } from './routes/(app)/dashboard/index'
+import { Route as appDiagnostikverfahrenIndexImport } from './routes/(app)/diagnostikverfahren/index'
 import { Route as appSchuelerSchuelerIdIndexImport } from './routes/(app)/schueler/$schuelerId/index'
 import { Route as appKlassenKlassenIdIndexImport } from './routes/(app)/klassen/$klassenId/index'
 import { Route as appGanztagsangeboteGanztagsangebotIdIndexImport } from './routes/(app)/ganztagsangebote/$ganztagsangebotId/index'
+import { Route as appDiagnostikverfahrenDiagnostikIdIndexImport } from './routes/(app)/diagnostikverfahren/$diagnostikId/index'
 import { Route as appSchuelerSchuelerIdMonitoringImport } from './routes/(app)/schueler/$schuelerId/monitoring'
 import { Route as appSchuelerSchuelerIdHistorieImport } from './routes/(app)/schueler/$schuelerId/historie'
 import { Route as appSchuelerSchuelerIdBrettImport } from './routes/(app)/schueler/$schuelerId/brett'
@@ -95,11 +96,12 @@ const appGanztagsangeboteIndexRoute = appGanztagsangeboteIndexImport.update({
   getParentRoute: () => appRouteRoute,
 } as any)
 
-const appDashboardIndexRoute = appDashboardIndexImport.update({
-  id: '/dashboard/',
-  path: '/dashboard/',
-  getParentRoute: () => appRouteRoute,
-} as any)
+const appDiagnostikverfahrenIndexRoute =
+  appDiagnostikverfahrenIndexImport.update({
+    id: '/diagnostikverfahren/',
+    path: '/diagnostikverfahren/',
+    getParentRoute: () => appRouteRoute,
+  } as any)
 
 const appSchuelerSchuelerIdIndexRoute = appSchuelerSchuelerIdIndexImport.update(
   {
@@ -119,6 +121,13 @@ const appGanztagsangeboteGanztagsangebotIdIndexRoute =
   appGanztagsangeboteGanztagsangebotIdIndexImport.update({
     id: '/ganztagsangebote/$ganztagsangebotId/',
     path: '/ganztagsangebote/$ganztagsangebotId/',
+    getParentRoute: () => appRouteRoute,
+  } as any)
+
+const appDiagnostikverfahrenDiagnostikIdIndexRoute =
+  appDiagnostikverfahrenDiagnostikIdIndexImport.update({
+    id: '/diagnostikverfahren/$diagnostikId/',
+    path: '/diagnostikverfahren/$diagnostikId/',
     getParentRoute: () => appRouteRoute,
   } as any)
 
@@ -194,11 +203,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appRouteImport
       parentRoute: typeof rootRoute
     }
-    '/(app)/dashboard/': {
-      id: '/(app)/dashboard/'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof appDashboardIndexImport
+    '/(app)/diagnostikverfahren/': {
+      id: '/(app)/diagnostikverfahren/'
+      path: '/diagnostikverfahren'
+      fullPath: '/diagnostikverfahren'
+      preLoaderRoute: typeof appDiagnostikverfahrenIndexImport
       parentRoute: typeof appRouteImport
     }
     '/(app)/ganztagsangebote/': {
@@ -313,6 +322,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appSchuelerSchuelerIdMonitoringImport
       parentRoute: typeof appRouteImport
     }
+    '/(app)/diagnostikverfahren/$diagnostikId/': {
+      id: '/(app)/diagnostikverfahren/$diagnostikId/'
+      path: '/diagnostikverfahren/$diagnostikId'
+      fullPath: '/diagnostikverfahren/$diagnostikId'
+      preLoaderRoute: typeof appDiagnostikverfahrenDiagnostikIdIndexImport
+      parentRoute: typeof appRouteImport
+    }
     '/(app)/ganztagsangebote/$ganztagsangebotId/': {
       id: '/(app)/ganztagsangebote/$ganztagsangebotId/'
       path: '/ganztagsangebote/$ganztagsangebotId'
@@ -340,7 +356,7 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface appRouteRouteChildren {
-  appDashboardIndexRoute: typeof appDashboardIndexRoute
+  appDiagnostikverfahrenIndexRoute: typeof appDiagnostikverfahrenIndexRoute
   appGanztagsangeboteIndexRoute: typeof appGanztagsangeboteIndexRoute
   appKlassenIndexRoute: typeof appKlassenIndexRoute
   appResetPasswordIndexRoute: typeof appResetPasswordIndexRoute
@@ -355,13 +371,14 @@ interface appRouteRouteChildren {
   appSchuelerSchuelerIdBrettRoute: typeof appSchuelerSchuelerIdBrettRoute
   appSchuelerSchuelerIdHistorieRoute: typeof appSchuelerSchuelerIdHistorieRoute
   appSchuelerSchuelerIdMonitoringRoute: typeof appSchuelerSchuelerIdMonitoringRoute
+  appDiagnostikverfahrenDiagnostikIdIndexRoute: typeof appDiagnostikverfahrenDiagnostikIdIndexRoute
   appGanztagsangeboteGanztagsangebotIdIndexRoute: typeof appGanztagsangeboteGanztagsangebotIdIndexRoute
   appKlassenKlassenIdIndexRoute: typeof appKlassenKlassenIdIndexRoute
   appSchuelerSchuelerIdIndexRoute: typeof appSchuelerSchuelerIdIndexRoute
 }
 
 const appRouteRouteChildren: appRouteRouteChildren = {
-  appDashboardIndexRoute: appDashboardIndexRoute,
+  appDiagnostikverfahrenIndexRoute: appDiagnostikverfahrenIndexRoute,
   appGanztagsangeboteIndexRoute: appGanztagsangeboteIndexRoute,
   appKlassenIndexRoute: appKlassenIndexRoute,
   appResetPasswordIndexRoute: appResetPasswordIndexRoute,
@@ -378,6 +395,8 @@ const appRouteRouteChildren: appRouteRouteChildren = {
   appSchuelerSchuelerIdBrettRoute: appSchuelerSchuelerIdBrettRoute,
   appSchuelerSchuelerIdHistorieRoute: appSchuelerSchuelerIdHistorieRoute,
   appSchuelerSchuelerIdMonitoringRoute: appSchuelerSchuelerIdMonitoringRoute,
+  appDiagnostikverfahrenDiagnostikIdIndexRoute:
+    appDiagnostikverfahrenDiagnostikIdIndexRoute,
   appGanztagsangeboteGanztagsangebotIdIndexRoute:
     appGanztagsangeboteGanztagsangebotIdIndexRoute,
   appKlassenKlassenIdIndexRoute: appKlassenKlassenIdIndexRoute,
@@ -390,7 +409,7 @@ const appRouteRouteWithChildren = appRouteRoute._addFileChildren(
 
 export interface FileRoutesByFullPath {
   '/': typeof appRouteRouteWithChildren
-  '/dashboard': typeof appDashboardIndexRoute
+  '/diagnostikverfahren': typeof appDiagnostikverfahrenIndexRoute
   '/ganztagsangebote': typeof appGanztagsangeboteIndexRoute
   '/klassen': typeof appKlassenIndexRoute
   '/reset-password': typeof appResetPasswordIndexRoute
@@ -407,6 +426,7 @@ export interface FileRoutesByFullPath {
   '/schueler/$schuelerId/brett': typeof appSchuelerSchuelerIdBrettRoute
   '/schueler/$schuelerId/historie': typeof appSchuelerSchuelerIdHistorieRoute
   '/schueler/$schuelerId/monitoring': typeof appSchuelerSchuelerIdMonitoringRoute
+  '/diagnostikverfahren/$diagnostikId': typeof appDiagnostikverfahrenDiagnostikIdIndexRoute
   '/ganztagsangebote/$ganztagsangebotId': typeof appGanztagsangeboteGanztagsangebotIdIndexRoute
   '/klassen/$klassenId': typeof appKlassenKlassenIdIndexRoute
   '/schueler/$schuelerId': typeof appSchuelerSchuelerIdIndexRoute
@@ -414,7 +434,7 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/': typeof appRouteRouteWithChildren
-  '/dashboard': typeof appDashboardIndexRoute
+  '/diagnostikverfahren': typeof appDiagnostikverfahrenIndexRoute
   '/ganztagsangebote': typeof appGanztagsangeboteIndexRoute
   '/klassen': typeof appKlassenIndexRoute
   '/reset-password': typeof appResetPasswordIndexRoute
@@ -431,6 +451,7 @@ export interface FileRoutesByTo {
   '/schueler/$schuelerId/brett': typeof appSchuelerSchuelerIdBrettRoute
   '/schueler/$schuelerId/historie': typeof appSchuelerSchuelerIdHistorieRoute
   '/schueler/$schuelerId/monitoring': typeof appSchuelerSchuelerIdMonitoringRoute
+  '/diagnostikverfahren/$diagnostikId': typeof appDiagnostikverfahrenDiagnostikIdIndexRoute
   '/ganztagsangebote/$ganztagsangebotId': typeof appGanztagsangeboteGanztagsangebotIdIndexRoute
   '/klassen/$klassenId': typeof appKlassenKlassenIdIndexRoute
   '/schueler/$schuelerId': typeof appSchuelerSchuelerIdIndexRoute
@@ -440,7 +461,7 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/(app)': typeof appRouteRouteWithChildren
-  '/(app)/dashboard/': typeof appDashboardIndexRoute
+  '/(app)/diagnostikverfahren/': typeof appDiagnostikverfahrenIndexRoute
   '/(app)/ganztagsangebote/': typeof appGanztagsangeboteIndexRoute
   '/(app)/klassen/': typeof appKlassenIndexRoute
   '/(app)/reset-password/': typeof appResetPasswordIndexRoute
@@ -457,6 +478,7 @@ export interface FileRoutesById {
   '/(app)/schueler/$schuelerId/brett': typeof appSchuelerSchuelerIdBrettRoute
   '/(app)/schueler/$schuelerId/historie': typeof appSchuelerSchuelerIdHistorieRoute
   '/(app)/schueler/$schuelerId/monitoring': typeof appSchuelerSchuelerIdMonitoringRoute
+  '/(app)/diagnostikverfahren/$diagnostikId/': typeof appDiagnostikverfahrenDiagnostikIdIndexRoute
   '/(app)/ganztagsangebote/$ganztagsangebotId/': typeof appGanztagsangeboteGanztagsangebotIdIndexRoute
   '/(app)/klassen/$klassenId/': typeof appKlassenKlassenIdIndexRoute
   '/(app)/schueler/$schuelerId/': typeof appSchuelerSchuelerIdIndexRoute
@@ -466,7 +488,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/dashboard'
+    | '/diagnostikverfahren'
     | '/ganztagsangebote'
     | '/klassen'
     | '/reset-password'
@@ -483,13 +505,14 @@ export interface FileRouteTypes {
     | '/schueler/$schuelerId/brett'
     | '/schueler/$schuelerId/historie'
     | '/schueler/$schuelerId/monitoring'
+    | '/diagnostikverfahren/$diagnostikId'
     | '/ganztagsangebote/$ganztagsangebotId'
     | '/klassen/$klassenId'
     | '/schueler/$schuelerId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/dashboard'
+    | '/diagnostikverfahren'
     | '/ganztagsangebote'
     | '/klassen'
     | '/reset-password'
@@ -506,6 +529,7 @@ export interface FileRouteTypes {
     | '/schueler/$schuelerId/brett'
     | '/schueler/$schuelerId/historie'
     | '/schueler/$schuelerId/monitoring'
+    | '/diagnostikverfahren/$diagnostikId'
     | '/ganztagsangebote/$ganztagsangebotId'
     | '/klassen/$klassenId'
     | '/schueler/$schuelerId'
@@ -513,7 +537,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/(app)'
-    | '/(app)/dashboard/'
+    | '/(app)/diagnostikverfahren/'
     | '/(app)/ganztagsangebote/'
     | '/(app)/klassen/'
     | '/(app)/reset-password/'
@@ -530,6 +554,7 @@ export interface FileRouteTypes {
     | '/(app)/schueler/$schuelerId/brett'
     | '/(app)/schueler/$schuelerId/historie'
     | '/(app)/schueler/$schuelerId/monitoring'
+    | '/(app)/diagnostikverfahren/$diagnostikId/'
     | '/(app)/ganztagsangebote/$ganztagsangebotId/'
     | '/(app)/klassen/$klassenId/'
     | '/(app)/schueler/$schuelerId/'
@@ -572,7 +597,7 @@ export const routeTree = rootRoute
     "/(app)": {
       "filePath": "(app)/route.tsx",
       "children": [
-        "/(app)/dashboard/",
+        "/(app)/diagnostikverfahren/",
         "/(app)/ganztagsangebote/",
         "/(app)/klassen/",
         "/(app)/reset-password/",
@@ -587,13 +612,14 @@ export const routeTree = rootRoute
         "/(app)/schueler/$schuelerId/brett",
         "/(app)/schueler/$schuelerId/historie",
         "/(app)/schueler/$schuelerId/monitoring",
+        "/(app)/diagnostikverfahren/$diagnostikId/",
         "/(app)/ganztagsangebote/$ganztagsangebotId/",
         "/(app)/klassen/$klassenId/",
         "/(app)/schueler/$schuelerId/"
       ]
     },
-    "/(app)/dashboard/": {
-      "filePath": "(app)/dashboard/index.tsx",
+    "/(app)/diagnostikverfahren/": {
+      "filePath": "(app)/diagnostikverfahren/index.tsx",
       "parent": "/(app)"
     },
     "/(app)/ganztagsangebote/": {
@@ -656,6 +682,10 @@ export const routeTree = rootRoute
     },
     "/(app)/schueler/$schuelerId/monitoring": {
       "filePath": "(app)/schueler/$schuelerId/monitoring.tsx",
+      "parent": "/(app)"
+    },
+    "/(app)/diagnostikverfahren/$diagnostikId/": {
+      "filePath": "(app)/diagnostikverfahren/$diagnostikId/index.tsx",
       "parent": "/(app)"
     },
     "/(app)/ganztagsangebote/$ganztagsangebotId/": {

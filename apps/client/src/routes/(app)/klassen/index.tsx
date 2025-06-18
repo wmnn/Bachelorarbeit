@@ -14,6 +14,7 @@ import { useSchuljahrStore } from '@/components/schuljahr/SchuljahrStore'
 import { ErrorDialog } from '@/components/dialog/MessageDialog'
 import { ButtonLight } from '@/components/ButtonLight'
 import { KlasseImportDialog } from '@/components/klasse/KlasseImportDialog'
+import { useKlassen } from '@/components/shared/useKlassen'
 
 export const Route = createFileRoute('/(app)/klassen/')({
   component: RouteComponent,
@@ -33,14 +34,7 @@ function RouteComponent() {
     queryFn: getSchueler,
   })
 
-  const { isPending, data: klassen } = useQuery({
-    queryKey: [KLASSEN_QUERY_KEY, schuljahr, halbjahr],
-    queryFn: ({ queryKey }) => {
-      const [_key, schuljahr, halbjahr] = queryKey;
-      return getKlassen((schuljahr as Schuljahr), (halbjahr as Halbjahr));
-    },
-    initialData: [],
-  });
+  const klassenQuery = useKlassen()
 
   useEffect(() => {
     if (schueler) {
@@ -49,9 +43,10 @@ function RouteComponent() {
 
   }, [schueler])
 
-  if (isPending || isPending2) {
+  if (klassenQuery.isPending || isPending2) {
     return <p>Loading...</p>
   }
+  const klassen = klassenQuery.data
 
   const RightHeader = <div className='flex gap-2'>
     <SchuljahrSelect />

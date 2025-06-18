@@ -46,6 +46,7 @@
     "@thesis/auth": "workspace:*",
     "@thesis/rollen": "workspace:*",
     "@thesis/schueler": "workspace:*",
+    "@thesis/diagnostik": "workspace:*",
     "@thesis/schule": "workspace:*",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
