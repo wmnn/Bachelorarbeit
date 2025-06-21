@@ -1,7 +1,7 @@
 import express from 'express';
-import { getDB } from '../../singleton';
 import { Request, Response } from 'express';
 import { CreateDiagnostikRequestBody, CreateDiagnostikResponseBody, Diagnostik, DiagnostikTyp, Farbbereich, GetDiagnostikenResponseBody } from '@thesis/diagnostik';
+import { getDiagnostikStore } from '../../singleton';
 
 let router = express.Router();
 const SUCCESSFULL_VALIDATION_RES =  {
@@ -14,13 +14,13 @@ router.get('/', async (
     res: Response<GetDiagnostikenResponseBody>
 ): Promise<any> => { 
 
-    const data = await getDB().getDiagnostiken()
+    const data = await getDiagnostikStore().getDiagnostiken()
     return res.status(data.success ? 200 : 400).json(data.data ?? [])
 })
 
 router.get('/:diagnostikId', async (req, res) => {
     const { diagnostikId } = req.params
-    const diagnostik = await getDB().getDiagnostik(parseInt(diagnostikId))
+    const diagnostik = await getDiagnostikStore().getDiagnostik(parseInt(diagnostikId))
     res.status(diagnostik ? 200 : 500).json(diagnostik);
 });
 
@@ -104,7 +104,7 @@ router.post('/',async (
             return res.status(400).json(validierungFarbbereicheRes)
         }
     }
-    const msg = await getDB().createDiagnostik(req.userId, diagnostik)
+    const msg = await getDiagnostikStore().createDiagnostik(req.userId, diagnostik)
     res.status(msg.success ? 200 : 400).json(msg);
 });
 

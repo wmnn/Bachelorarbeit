@@ -1,6 +1,5 @@
 import express, { NextFunction } from 'express';
 import { Request, Response } from 'express';
-import { getDB } from '../../singleton';
 import {
     AUTH_API_ENDPOINT,
     LOGIN_ENDPOINT,
@@ -30,8 +29,9 @@ import path from 'path';
 import jwt from 'jsonwebtoken'
 import { sendActivateAccountEmail } from './smtp';
 import { searchUser } from './util';
-import { addRoleDataToUser } from '../rollen/util';
+import { addRoleDataToUser } from '../auth/util';
 import { Berechtigung } from '@thesis/rollen';
+import { getAuthStore } from '../../singleton';
 
 const cookieKey = fs.readFileSync(
     path.join(__dirname, '../../../../cookie_signing.key'),
@@ -71,7 +71,7 @@ async function createSession(res: Response, user: User): Promise<Response> {
         createdAt: new Date(),
         expiresAt: new Date(Date.now() + SESSION_MAX_AGE),
     };
-    getDB().createSession(sessionId, sessionData);
+    getAuthStore().createSession(sessionId, sessionData);
     return res;
 }
 
@@ -106,7 +106,7 @@ export const authMiddleware = async (
     }
 
     req.sessionId = sessionId;
-    const sessionData = await getDB().getSession(sessionId);
+    const sessionData = await getAuthStore().getSession(sessionId);
     if (!sessionData) {
         res.clearCookie(SESSION_COOKIE_NAME, { path: '/' });
         res.status(403).json({
@@ -143,7 +143,7 @@ export const authMiddleware = async (
 router.get(LOGOUT_ENDOINT, async (req, res) => {
     res.clearCookie(SESSION_COOKIE_NAME, { path: '/' });
     if (!req.sessionId) return;
-    const isSessionRemoved = await getDB().removeSession(req.sessionId);
+    const isSessionRemoved = await getAuthStore().removeSession(req.sessionId);
     if (isSessionRemoved) {
         res.status(200).json({
             message: 'Der Nutzer wurde erfolgreich abgemeldet.',
@@ -161,7 +161,7 @@ router.post(
         res: Response<LoginResponseBody>
     ) => {
         const { email, passwort } = req.body;
-        let user = await getDB().findUser(email, passwort);
+        let user = await getAuthStore().findUser(email, passwort);
 
         if (!user) {
             res.status(401).json({
@@ -210,7 +210,7 @@ router.get(REGISTER_CALLBACK_ENDPOINT, async (req, res) => {
             res.status(400).send('Das Konto konnte nicht aktiviert werden.')
             return;
         }
-        const success = await getDB().updateUser(decoded.userId, undefined, undefined, undefined, undefined, undefined, undefined, true)
+        const success = await getAuthStore().updateUser(decoded.userId, undefined, undefined, undefined, undefined, undefined, undefined, true)
 
         if (success) {
             res.status(200).redirect('/login')
@@ -228,7 +228,7 @@ router.post(
         res: Response<RegisterResponseBody>
     ) => {
         const { vorname, nachname, email, passwort } = req.body;
-        const user = await getDB().createUser(
+        const user = await getAuthStore().createUser(
             email,
             passwort,
             vorname,
@@ -266,8 +266,8 @@ router.post(
 );
 
 router.get('/users', async (req, res: Response<UsersResponseBody>) => {
-    let users = await getDB().getUsers();
-    const roles = await getDB().getRoles();
+    let users = await getAuthStore().getUsers();
+    const roles = await getAuthStore().getRoles();
 
     if (!users || !roles) {
         res.status(500).json({
@@ -326,13 +326,13 @@ router.patch('/user', async (req: Request<{}, {}, UpdateUserRequestBody>, res: R
 
         const rolle = req.body.user.rolle
         if (typeof rolle == 'string') {
-            const msg = await getDB().updateUser(userId, undefined, undefined, undefined, undefined, rolle, undefined, undefined)
+            const msg = await getAuthStore().updateUser(userId, undefined, undefined, undefined, undefined, rolle, undefined, undefined)
             
-            const sessions = await getDB().getSessions()
+            const sessions = await getAuthStore().getSessions()
             let success = msg.success
             for (const session of sessions) {
                 if (session.user?.id === userId) {
-                    success = success && await getDB().removeSession(session.sessionId)
+                    success = success && await getAuthStore().removeSession(session.sessionId)
                 }
             }
      
@@ -341,8 +341,8 @@ router.patch('/user', async (req: Request<{}, {}, UpdateUserRequestBody>, res: R
         }
 
         if (user.isLocked !== undefined) {
-            const { success: isLocked } = await getDB().updateUser(userId, undefined, undefined, undefined, undefined, undefined, user.isLocked, undefined)
-            const isSessionRemoved = await getDB().removeSessionForUser(userId) 
+            const { success: isLocked } = await getAuthStore().updateUser(userId, undefined, undefined, undefined, undefined, undefined, user.isLocked, undefined)
+            const isSessionRemoved = await getAuthStore().removeSessionForUser(userId) 
             if (isLocked && isSessionRemoved) {
                 res.status(200).json({
                     success: true,
@@ -361,7 +361,7 @@ router.patch('/user', async (req: Request<{}, {}, UpdateUserRequestBody>, res: R
 
     // Change email
     if (user.email) {
-        const msg = await getDB().updateUser(userId, user.email)
+        const msg = await getAuthStore().updateUser(userId, user.email)
         res.status(200).json(msg);
         return;
     }
@@ -369,7 +369,7 @@ router.patch('/user', async (req: Request<{}, {}, UpdateUserRequestBody>, res: R
     const vorname = user.vorname
     const nachname = user.nachname
     if (vorname && nachname) {
-        const msg = await getDB().updateUser(userId, undefined, undefined, vorname, nachname)
+        const msg = await getAuthStore().updateUser(userId, undefined, undefined, vorname, nachname)
         res.status(200).json({
             success: msg.success,
             message: msg.success ? 'Der Name wurde erfolgreich aktualisiert.' : 'Ein Fehler ist aufgetreten.'
@@ -388,7 +388,7 @@ router.delete('/user', async (req: Request<{}, {}, DeleteUserRequestBody>, res) 
 
     const userId = req.body.userId
     if (req.permissions?.[Berechtigung.RollenVerwalten] || (req.userId !== undefined && req.userId == userId)) {
-        const isDeleted = await getDB().deleteUser(userId)
+        const isDeleted = await getAuthStore().deleteUser(userId)
         if (!isDeleted) {
             res.status(400).json({
                 success: false,
@@ -416,12 +416,12 @@ router.patch('/password', async (req: Request<{}, {}, UpdatePasswordRequestBody>
             return;
         }
 
-        const sessionData = await getDB().getSession(req.sessionId)
+        const sessionData = await getAuthStore().getSession(req.sessionId)
         if (!sessionData || !sessionData.user?.email) {
             return;
         }
 
-        const user = await getDB().findUser(sessionData.user?.email, password)
+        const user = await getAuthStore().findUser(sessionData.user?.email, password)
         if (!user) {
             res.status(400).json({
                 success: false,
@@ -430,7 +430,7 @@ router.patch('/password', async (req: Request<{}, {}, UpdatePasswordRequestBody>
             return;
         }
 
-        const dbMessage = await getDB().updateUser(userId, undefined, newPassword);
+        const dbMessage = await getAuthStore().updateUser(userId, undefined, newPassword);
         res.status(200).json(dbMessage);
     }
 );

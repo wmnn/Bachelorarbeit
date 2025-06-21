@@ -2,20 +2,19 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import dotenv from 'dotenv';
-import { router as authRouter, authMiddleware } from "./modules/auth/auth"
-import { router as schuelerRouter } from "./modules/schueler/schueler"
-import { router as klassenRouter } from "./modules/klassen/klassen"
-import { router as anwesenheitenRouter } from "./modules/anwesenheiten/anwesenheiten"
-import { router as rollenRouter } from './modules/rollen/rollen'
-import { router as ganztagsangebotRouter } from './modules/ganztagsangebot/ganztagsangebot'
-import { router as diagnostikRouter } from './modules/diagnostik/diagnostik'
+import { router as authRouter, authMiddleware } from "./modules/auth/authApi"
+import { router as schuelerRouter } from "./modules/schueler/api"
+import { router as klassenRouter } from "./modules/klassen/api"
+import { router as anwesenheitenRouter } from "./modules/anwesenheiten/api"
+import { router as rollenRouter } from './modules/auth/rollenApi'
+import { router as ganztagsangebotRouter } from './modules/ganztagsangebot/api'
+import { router as diagnostikRouter } from './modules/diagnostik/diagnostikApi'
 import { ANWESENHEITEN_ENDPOINT, AUTH_API_ENDPOINT, DIAGNOSTIK_ENDPOINT, GANZTAGSANGEBOT_ENDPOINT, KLASSEN_ENDPOINT, SCHUELER_ENDPOINT } from "@thesis/config"
-import { getDB } from './singleton';
 import cookieParser from "cookie-parser"
 import https from 'https';
 import fs from 'fs'
-import { Berechtigung, Berechtigungen, ROLLE_ENDPOINT } from '@thesis/rollen';
-import { rolleMiddleware } from './modules/rollen/util';
+import { Berechtigungen, ROLLE_ENDPOINT } from '@thesis/rollen';
+import { rolleMiddleware } from './modules/auth/util';
 
 declare global {
     namespace Express {
@@ -64,7 +63,7 @@ const app = express();
 dotenv.config({
     path: '../../.env'
 });
-getDB(); // Init db connection
+// getDB(); // Init db connection
 app.use(cors({ origin: "http://localhost:5173", credentials: true }))
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

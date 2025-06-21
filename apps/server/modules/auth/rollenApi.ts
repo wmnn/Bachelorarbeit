@@ -1,5 +1,4 @@
 import express from 'express';
-import { getDB } from '../../singleton';
 import { Request, Response } from 'express';
 import {
     CreateRoleRequestBody,
@@ -10,6 +9,7 @@ import {
     UpdateRoleRequestBody,
 } from '@thesis/auth';
 import { Berechtigung } from '@thesis/rollen';
+import { getAuthStore } from '../../singleton';
 
 let router = express.Router();
 
@@ -37,21 +37,21 @@ router.post('/',async (
         legitRole['berechtigungen'][key] = berechtigungen[key];
     }
 
-    const dbMessage = await getDB().createRole(legitRole);
+    const dbMessage = await getAuthStore().createRole(legitRole);
     res.status(200).json(dbMessage);
 });
 
 router.patch('/', async (req: Request<{}, {}, UpdateRoleRequestBody>, res) => {
     const { rollenbezeichnung, updated } = req.body;
-    const dbMessage = await getDB().updateRole(rollenbezeichnung, updated);
+    const dbMessage = await getAuthStore().updateRole(rollenbezeichnung, updated);
     // TODO delete session with the role
-    const sessions = await getDB().getSessions()
+    const sessions = await getAuthStore().getSessions()
     let success = true
     for (const session of sessions) {
         if (typeof session.user?.rolle == 'string' && session.user.rolle === rollenbezeichnung) {
-            success = success && await getDB().removeSession(session.sessionId)
+            success = success && await getAuthStore().removeSession(session.sessionId)
         } else if (typeof session.user?.rolle == 'object' && session.user.rolle.rolle == rollenbezeichnung) {
-            success = success && await getDB().removeSession(session.sessionId)
+            success = success && await getAuthStore().removeSession(session.sessionId)
         }
     }
     res.status(200).json({
@@ -68,7 +68,7 @@ router.delete('/', async (req: Request<{}, {}, DeleteRoleRequestBody>, res: Resp
         return;
     }
     const { rolle } = req.body;
-    const dbMessage = await getDB().deleteRole(rolle);
+    const dbMessage = await getAuthStore().deleteRole(rolle);
     res.status(200).json(dbMessage);
 });
 

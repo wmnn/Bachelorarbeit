@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
-import { getDB } from '../../singleton';
 import { CreateClassRequestBody, CreateClassResponseBody, DeleteKlasseRequestBody, DeleteKlasseResponseBody, getSchuljahrVorherigesHalbjahr, getVorherigesHalbjahr, Halbjahr, ImportKlasse, ImportKlassenversion, ImportModus, Klasse, KlassenVersion, Schuljahr } from '@thesis/schule';
 import { DeleteSchuelerResponseBody } from '@thesis/schueler';
+import { getKlassenStore } from '../../singleton';
 
 let router = express.Router();
 
@@ -14,14 +14,14 @@ router.get('/', async (req, res) => {
         });
         return;
     }
-    const klassen = await getDB().getClasses(schuljahr as Schuljahr, halbjahr as Halbjahr)
+    const klassen = await getKlassenStore().getClasses(schuljahr as Schuljahr, halbjahr as Halbjahr)
     res.status(200).json(klassen);
 });
 
 router.get('/:klassenId', async (req, res) => {
     const { klassenId } = req.params
     const { schuljahr, halbjahr } = req.query;
-    const klasse = await getDB().getClass(schuljahr as Schuljahr, halbjahr as Halbjahr, parseInt(klassenId))
+    const klasse = await getKlassenStore().getClass(schuljahr as Schuljahr, halbjahr as Halbjahr, parseInt(klassenId))
     res.status(klasse ? 200 : 500).json(klasse);
 });
 
@@ -31,14 +31,14 @@ router.put('/:klassenId', async (req, res) => {
     const { schuljahr, halbjahr } = req.query;
     const { versionen, klassenlehrer } = req.body
 
-    const msg = await getDB().editClass(parseInt(klassenId), versionen, klassenlehrer, schuljahr as Schuljahr, halbjahr as Halbjahr)
+    const msg = await getKlassenStore().editClass(parseInt(klassenId), versionen, klassenlehrer, schuljahr as Schuljahr, halbjahr as Halbjahr)
     res.status(200).json(msg);
 });
 
 
 router.post('/', async (req: Request<{}, {}, CreateClassRequestBody>, res: Response<CreateClassResponseBody>) => {
     const { versionen, klassenlehrer } = req.body
-    const msg = await getDB().createClass(undefined, versionen, klassenlehrer)
+    const msg = await getKlassenStore().createClass(undefined, versionen, klassenlehrer)
     res.status(msg.success ? 200 : 400).json(msg);
 });
 
@@ -56,11 +56,11 @@ router.post('/import', async (req: Request<{}, {}, ImportKlasse[]>, res: Respons
     const prevHalbjahr = getVorherigesHalbjahr(halbjahr)
 
 
-    let prevKlassenTmp = await getDB().getClasses(prevSchuljahr, prevHalbjahr) as (Klasse | undefined)[]
+    let prevKlassenTmp = await getKlassenStore().getClasses(prevSchuljahr, prevHalbjahr) as (Klasse | undefined)[]
     // Schüler werden den Klassenversionen hinzugefügt.
     prevKlassenTmp = await Promise.all(
         prevKlassenTmp.map((klasse) =>
-            getDB().getClass(prevSchuljahr, prevHalbjahr, klasse?.id ?? -1)
+            getKlassenStore().getClass(prevSchuljahr, prevHalbjahr, klasse?.id ?? -1)
         )
     );
     let prevKlassen = prevKlassenTmp.filter(klasse => klasse !== undefined) as Klasse[]
@@ -185,7 +185,7 @@ router.post('/import', async (req: Request<{}, {}, ImportKlasse[]>, res: Respons
 
     let success = true
     for (const klasse of neueKlassen) {
-        const msg = await getDB().createClass(klasse.id, klasse.versionen, klasse.klassenlehrer ?? [])
+        const msg = await getKlassenStore().createClass(klasse.id, klasse.versionen, klasse.klassenlehrer ?? [])
         if (!msg.success) {
             success = false
         }
@@ -199,7 +199,7 @@ router.post('/import', async (req: Request<{}, {}, ImportKlasse[]>, res: Respons
 
 router.delete('/', async (req: Request<{}, {}, DeleteKlasseRequestBody>, res: Response<DeleteKlasseResponseBody>) => {
     const { klassenId, schuljahr, halbjahr } = req.body
-    const msg = await getDB().deleteClass(klassenId, schuljahr, halbjahr)
+    const msg = await getKlassenStore().deleteClass(klassenId, schuljahr, halbjahr)
     res.status(200).json(msg as DeleteSchuelerResponseBody);
 });
 
