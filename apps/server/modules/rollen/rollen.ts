@@ -47,7 +47,6 @@ router.patch('/', async (req: Request<{}, {}, UpdateRoleRequestBody>, res) => {
     // TODO delete session with the role
     const sessions = await getDB().getSessions()
     let success = true
-    console.log(sessions)
     for (const session of sessions) {
         if (typeof session.user?.rolle == 'string' && session.user.rolle === rollenbezeichnung) {
             success = success && await getDB().removeSession(session.sessionId)
@@ -55,7 +54,6 @@ router.patch('/', async (req: Request<{}, {}, UpdateRoleRequestBody>, res) => {
             success = success && await getDB().removeSession(session.sessionId)
         }
     }
-    console.log(success)
     res.status(200).json({
         success: success,
         message: dbMessage.message

@@ -48,6 +48,7 @@ function RouteComponent() {
 
   return <div className='w-full flex flex-col gap-8'>
 
+    {/* //TODO refactor to KlasseNav */}
     <div className='flex justify-between px-8 pt-8'>
       <div className='flex gap-2 items-center'>
         <button onClick={() => router.history.back()}>

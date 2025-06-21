@@ -1,12 +1,9 @@
 import { SchuelerList } from '@/components/schueler/SchuelerList/SchuelerList'
 import { useSchuelerStore } from '@/components/schueler/SchuelerStore'
-import { SCHUELER_QUERY_KEY } from '@/reactQueryKeys'
-import { useQuery } from '@tanstack/react-query'
+
+import { useAllSchueler } from '@/components/schueler/useSchueler'
 import { createFileRoute } from '@tanstack/react-router'
 import { AnwesenheitTyp } from '@thesis/anwesenheiten'
-import { type Schueler } from '@thesis/schueler';
-import { getSchueler } from '@thesis/schueler'
-import { useEffect } from 'react'
 
 export const Route = createFileRoute('/(app)/schueler/')({
   component: RouteComponent,
@@ -14,22 +11,12 @@ export const Route = createFileRoute('/(app)/schueler/')({
 
 function RouteComponent() {
 
-  const schueler = useSchuelerStore(store => store.schueler);
-  const setSchueler = useSchuelerStore(store => store.setSchueler);
-  const { isPending, data: schuelerArr } = useQuery<Schueler[]>({
-    queryKey: [SCHUELER_QUERY_KEY],
-    queryFn: getSchueler,
-    initialData: [],  
-  })
-  if (isPending) {
+  const schueler = useSchuelerStore(store => store.schueler)
+  const schuelerQuery = useAllSchueler()
+
+  if (schuelerQuery.isPending) {
     return <p>Loading ...</p>
   }
-
-  useEffect(() => {
-    if (schuelerArr) {
-      setSchueler((_) => schuelerArr ?? [])
-    }
-  }, [schuelerArr])
 
   return <SchuelerList 
     schueler={schueler} 

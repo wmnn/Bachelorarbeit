@@ -1,17 +1,28 @@
 import express from 'express';
 import { getDB } from '../../singleton';
 import { Request, Response } from 'express';
-import {
-    CreateRoleResponseBody,
-} from '@thesis/auth';
-import { CreateDiagnostikRequestBody, CreateDiagnostikResponseBody, Diagnostik, DiagnostikTyp, Farbbereich } from '@thesis/diagnostik';
-import { Berechtigung, BERECHTIGUNGEN_VALUES } from '@thesis/rollen';
+import { CreateDiagnostikRequestBody, CreateDiagnostikResponseBody, Diagnostik, DiagnostikTyp, Farbbereich, GetDiagnostikenResponseBody } from '@thesis/diagnostik';
 
 let router = express.Router();
 const SUCCESSFULL_VALIDATION_RES =  {
     success: true,
     message: 'Die Validierung war erfolgreich.'
 }
+
+router.get('/', async (
+    req: Request,
+    res: Response<GetDiagnostikenResponseBody>
+): Promise<any> => { 
+
+    const data = await getDB().getDiagnostiken()
+    return res.status(data.success ? 200 : 400).json(data.data ?? [])
+})
+
+router.get('/:diagnostikId', async (req, res) => {
+    const { diagnostikId } = req.params
+    const diagnostik = await getDB().getDiagnostik(parseInt(diagnostikId))
+    res.status(diagnostik ? 200 : 500).json(diagnostik);
+});
 
 router.post('/',async (
     req: Request<{}, {}, CreateDiagnostikRequestBody>,

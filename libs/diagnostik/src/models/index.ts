@@ -3,14 +3,17 @@ export enum DiagnostikTyp {
     LAUFENDES_VERFAHREN
 }
 export type Diagnostik = {
+    id?: number,
     name: string,
     beschreibung: string,
     klasseId: number,
     format?: DiagnostikNumberFormat,
-    vorlageId: number,
-    erstellungsTyp: 'benutzerdefiniert' | 'Vorlage'
+    erstellungsDatum?: string,
+    vorlageId?: number,
+    erstellungsTyp?: 'benutzerdefiniert' | 'Vorlage'
     speicherTyp: DiagnostikTyp,
     obereGrenze?: number | string,
+    userId?: number,
     untereGrenze?: number | string,
     farbbereiche?: Farbbereich[],
     anhang?: any[],

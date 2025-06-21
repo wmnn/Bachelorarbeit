@@ -32,3 +32,49 @@ export const createDiagnostik = async (diagnostik: Diagnostik) => {
     }
 
 }
+export type GetDiagnostikenResponseBody = Diagnostik[]
+
+export const getDiagnostiken = async () => {
+    
+    try {
+        const res = await fetch(DIAGNOSTIK_ENDPOINT, {
+            method: 'GET',
+            headers: {
+                'content-type': 'application/json'
+            },
+        })
+
+        if (res.status === 403) {
+            window.location.href = '/login'
+        }
+    
+        return await res.json() as GetDiagnostikenResponseBody;
+        
+    } catch (e) {
+        return []
+    }
+
+}
+
+
+export const getDiagnostik = async (diagnostikId: number) => {
+    
+    try {
+        const res = await fetch(DIAGNOSTIK_ENDPOINT + `/${diagnostikId}`, {
+            method: 'GET',
+            headers: {
+                'content-type': 'application/json'
+            },
+        })
+
+        if (res.status === 403) {
+            window.location.href = '/login'
+        }
+    
+        return await res.json() as Diagnostik | undefined;
+        
+    } catch (e) {
+        return undefined
+    }
+
+}

@@ -34,6 +34,8 @@ import { Route as appKlassenKlassenIdTestsImport } from './routes/(app)/klassen/
 import { Route as appKlassenKlassenIdEditImport } from './routes/(app)/klassen/$klassenId/edit'
 import { Route as appKlassenKlassenIdBrettImport } from './routes/(app)/klassen/$klassenId/brett'
 import { Route as appGanztagsangeboteGanztagsangebotIdEditImport } from './routes/(app)/ganztagsangebote/$ganztagsangebotId/edit'
+import { Route as appDiagnostikverfahrenDiagnostikIdInfoImport } from './routes/(app)/diagnostikverfahren/$diagnostikId/info'
+import { Route as appDiagnostikverfahrenDiagnostikIdDatenImport } from './routes/(app)/diagnostikverfahren/$diagnostikId/daten'
 
 // Create/Update Routes
 
@@ -185,6 +187,20 @@ const appGanztagsangeboteGanztagsangebotIdEditRoute =
     getParentRoute: () => appRouteRoute,
   } as any)
 
+const appDiagnostikverfahrenDiagnostikIdInfoRoute =
+  appDiagnostikverfahrenDiagnostikIdInfoImport.update({
+    id: '/diagnostikverfahren/$diagnostikId/info',
+    path: '/diagnostikverfahren/$diagnostikId/info',
+    getParentRoute: () => appRouteRoute,
+  } as any)
+
+const appDiagnostikverfahrenDiagnostikIdDatenRoute =
+  appDiagnostikverfahrenDiagnostikIdDatenImport.update({
+    id: '/diagnostikverfahren/$diagnostikId/daten',
+    path: '/diagnostikverfahren/$diagnostikId/daten',
+    getParentRoute: () => appRouteRoute,
+  } as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -265,6 +281,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/register'
       preLoaderRoute: typeof authRegisterIndexImport
       parentRoute: typeof rootRoute
+    }
+    '/(app)/diagnostikverfahren/$diagnostikId/daten': {
+      id: '/(app)/diagnostikverfahren/$diagnostikId/daten'
+      path: '/diagnostikverfahren/$diagnostikId/daten'
+      fullPath: '/diagnostikverfahren/$diagnostikId/daten'
+      preLoaderRoute: typeof appDiagnostikverfahrenDiagnostikIdDatenImport
+      parentRoute: typeof appRouteImport
+    }
+    '/(app)/diagnostikverfahren/$diagnostikId/info': {
+      id: '/(app)/diagnostikverfahren/$diagnostikId/info'
+      path: '/diagnostikverfahren/$diagnostikId/info'
+      fullPath: '/diagnostikverfahren/$diagnostikId/info'
+      preLoaderRoute: typeof appDiagnostikverfahrenDiagnostikIdInfoImport
+      parentRoute: typeof appRouteImport
     }
     '/(app)/ganztagsangebote/$ganztagsangebotId/edit': {
       id: '/(app)/ganztagsangebote/$ganztagsangebotId/edit'
@@ -363,6 +393,8 @@ interface appRouteRouteChildren {
   appRollenmanagementIndexRoute: typeof appRollenmanagementIndexRoute
   appSchuelerIndexRoute: typeof appSchuelerIndexRoute
   appSettingsIndexRoute: typeof appSettingsIndexRoute
+  appDiagnostikverfahrenDiagnostikIdDatenRoute: typeof appDiagnostikverfahrenDiagnostikIdDatenRoute
+  appDiagnostikverfahrenDiagnostikIdInfoRoute: typeof appDiagnostikverfahrenDiagnostikIdInfoRoute
   appGanztagsangeboteGanztagsangebotIdEditRoute: typeof appGanztagsangeboteGanztagsangebotIdEditRoute
   appKlassenKlassenIdBrettRoute: typeof appKlassenKlassenIdBrettRoute
   appKlassenKlassenIdEditRoute: typeof appKlassenKlassenIdEditRoute
@@ -385,6 +417,10 @@ const appRouteRouteChildren: appRouteRouteChildren = {
   appRollenmanagementIndexRoute: appRollenmanagementIndexRoute,
   appSchuelerIndexRoute: appSchuelerIndexRoute,
   appSettingsIndexRoute: appSettingsIndexRoute,
+  appDiagnostikverfahrenDiagnostikIdDatenRoute:
+    appDiagnostikverfahrenDiagnostikIdDatenRoute,
+  appDiagnostikverfahrenDiagnostikIdInfoRoute:
+    appDiagnostikverfahrenDiagnostikIdInfoRoute,
   appGanztagsangeboteGanztagsangebotIdEditRoute:
     appGanztagsangeboteGanztagsangebotIdEditRoute,
   appKlassenKlassenIdBrettRoute: appKlassenKlassenIdBrettRoute,
@@ -418,6 +454,8 @@ export interface FileRoutesByFullPath {
   '/settings': typeof appSettingsIndexRoute
   '/login': typeof authLoginIndexRoute
   '/register': typeof authRegisterIndexRoute
+  '/diagnostikverfahren/$diagnostikId/daten': typeof appDiagnostikverfahrenDiagnostikIdDatenRoute
+  '/diagnostikverfahren/$diagnostikId/info': typeof appDiagnostikverfahrenDiagnostikIdInfoRoute
   '/ganztagsangebote/$ganztagsangebotId/edit': typeof appGanztagsangeboteGanztagsangebotIdEditRoute
   '/klassen/$klassenId/brett': typeof appKlassenKlassenIdBrettRoute
   '/klassen/$klassenId/edit': typeof appKlassenKlassenIdEditRoute
@@ -443,6 +481,8 @@ export interface FileRoutesByTo {
   '/settings': typeof appSettingsIndexRoute
   '/login': typeof authLoginIndexRoute
   '/register': typeof authRegisterIndexRoute
+  '/diagnostikverfahren/$diagnostikId/daten': typeof appDiagnostikverfahrenDiagnostikIdDatenRoute
+  '/diagnostikverfahren/$diagnostikId/info': typeof appDiagnostikverfahrenDiagnostikIdInfoRoute
   '/ganztagsangebote/$ganztagsangebotId/edit': typeof appGanztagsangeboteGanztagsangebotIdEditRoute
   '/klassen/$klassenId/brett': typeof appKlassenKlassenIdBrettRoute
   '/klassen/$klassenId/edit': typeof appKlassenKlassenIdEditRoute
@@ -470,6 +510,8 @@ export interface FileRoutesById {
   '/(app)/settings/': typeof appSettingsIndexRoute
   '/(auth)/login/': typeof authLoginIndexRoute
   '/(auth)/register/': typeof authRegisterIndexRoute
+  '/(app)/diagnostikverfahren/$diagnostikId/daten': typeof appDiagnostikverfahrenDiagnostikIdDatenRoute
+  '/(app)/diagnostikverfahren/$diagnostikId/info': typeof appDiagnostikverfahrenDiagnostikIdInfoRoute
   '/(app)/ganztagsangebote/$ganztagsangebotId/edit': typeof appGanztagsangeboteGanztagsangebotIdEditRoute
   '/(app)/klassen/$klassenId/brett': typeof appKlassenKlassenIdBrettRoute
   '/(app)/klassen/$klassenId/edit': typeof appKlassenKlassenIdEditRoute
@@ -497,6 +539,8 @@ export interface FileRouteTypes {
     | '/settings'
     | '/login'
     | '/register'
+    | '/diagnostikverfahren/$diagnostikId/daten'
+    | '/diagnostikverfahren/$diagnostikId/info'
     | '/ganztagsangebote/$ganztagsangebotId/edit'
     | '/klassen/$klassenId/brett'
     | '/klassen/$klassenId/edit'
@@ -521,6 +565,8 @@ export interface FileRouteTypes {
     | '/settings'
     | '/login'
     | '/register'
+    | '/diagnostikverfahren/$diagnostikId/daten'
+    | '/diagnostikverfahren/$diagnostikId/info'
     | '/ganztagsangebote/$ganztagsangebotId/edit'
     | '/klassen/$klassenId/brett'
     | '/klassen/$klassenId/edit'
@@ -546,6 +592,8 @@ export interface FileRouteTypes {
     | '/(app)/settings/'
     | '/(auth)/login/'
     | '/(auth)/register/'
+    | '/(app)/diagnostikverfahren/$diagnostikId/daten'
+    | '/(app)/diagnostikverfahren/$diagnostikId/info'
     | '/(app)/ganztagsangebote/$ganztagsangebotId/edit'
     | '/(app)/klassen/$klassenId/brett'
     | '/(app)/klassen/$klassenId/edit'
@@ -604,6 +652,8 @@ export const routeTree = rootRoute
         "/(app)/rollenmanagement/",
         "/(app)/schueler/",
         "/(app)/settings/",
+        "/(app)/diagnostikverfahren/$diagnostikId/daten",
+        "/(app)/diagnostikverfahren/$diagnostikId/info",
         "/(app)/ganztagsangebote/$ganztagsangebotId/edit",
         "/(app)/klassen/$klassenId/brett",
         "/(app)/klassen/$klassenId/edit",
@@ -651,6 +701,14 @@ export const routeTree = rootRoute
     },
     "/(auth)/register/": {
       "filePath": "(auth)/register/index.tsx"
+    },
+    "/(app)/diagnostikverfahren/$diagnostikId/daten": {
+      "filePath": "(app)/diagnostikverfahren/$diagnostikId/daten.tsx",
+      "parent": "/(app)"
+    },
+    "/(app)/diagnostikverfahren/$diagnostikId/info": {
+      "filePath": "(app)/diagnostikverfahren/$diagnostikId/info.tsx",
+      "parent": "/(app)"
     },
     "/(app)/ganztagsangebote/$ganztagsangebotId/edit": {
       "filePath": "(app)/ganztagsangebote/$ganztagsangebotId/edit.tsx",

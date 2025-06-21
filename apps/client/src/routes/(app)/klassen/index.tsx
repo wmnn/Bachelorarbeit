@@ -4,13 +4,12 @@ import { KlasseListItem } from '@/components/klasse/KlasseListItem'
 import { SchuljahrSelect } from '@/components/schuljahr/SchuljahrSelect'
 import { List } from '@/components/List'
 import { useSchuelerStore } from '@/components/schueler/SchuelerStore'
-import { KLASSEN_QUERY_KEY, SCHUELER_QUERY_KEY } from '@/reactQueryKeys'
+import { SCHUELER_QUERY_KEY } from '@/reactQueryKeys'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { getSchueler, type SchuelerSimple } from '@thesis/schueler'
-import { getKlassen, type Halbjahr, type Klasse, type Schuljahr } from '@thesis/schule' 
+import { type Klasse} from '@thesis/schule' 
 import { useEffect, useState } from 'react'
-import { useSchuljahrStore } from '@/components/schuljahr/SchuljahrStore'
 import { ErrorDialog } from '@/components/dialog/MessageDialog'
 import { ButtonLight } from '@/components/ButtonLight'
 import { KlasseImportDialog } from '@/components/klasse/KlasseImportDialog'
@@ -23,8 +22,6 @@ export const Route = createFileRoute('/(app)/klassen/')({
 function RouteComponent() {
 
   const setSchueler = useSchuelerStore(state => state.setSchueler)
-  const schuljahr = useSchuljahrStore(state => state.ausgewaeltesSchuljahr)
-  const halbjahr = useSchuljahrStore(state => state.ausgewaeltesHalbjahr)
   const [isCreateDialogShown, setIsCreateDialogShown] = useState(false)
   const [isImportDialogShown, setIsImportDialogShown] = useState(false)
   const [responseMessage, setResponseMessage] = useState('')

@@ -1,3 +1,4 @@
 export const KLASSEN_QUERY_KEY = 'klassen'
 export const SCHUELER_QUERY_KEY = 'schueler'
 export const GANZTAGSANGEBOT_QUERY_KEY = 'ganztagsangebot'
+export const DIAGNOSTIKEN_QUERY_KEY = 'diagnostik'
