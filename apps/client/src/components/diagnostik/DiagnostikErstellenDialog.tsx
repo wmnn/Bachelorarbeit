@@ -1,6 +1,3 @@
-import { createSchueler, type Schueler } from "@thesis/schueler";
-import { useQueryClient } from "@tanstack/react-query";
-import { SCHUELER_QUERY_KEY } from "@/reactQueryKeys";
 import { Dialog } from "../dialog/Dialog";
 import { DiagnostikForm } from "./DiagnostikForm";
 import { createDiagnostik } from "@thesis/diagnostik";
@@ -10,8 +7,6 @@ interface DiagnostikErstellenDialogProps {
 }
 
 export function DiagnostikErstellenDialog({ closeDialog }: DiagnostikErstellenDialogProps) {
-
-    const queryClient = useQueryClient()
 
     async function handleSubmit(diagnostik: any) {
        const res = await createDiagnostik(diagnostik);

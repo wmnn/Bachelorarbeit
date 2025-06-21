@@ -23,7 +23,7 @@ export class GanztagsangebotStore {
             return STANDARD_FEHLER
         }
 
-        const conn = this.connection;
+        const conn = await this.connection.getConnection();
 
         try {
             await conn.beginTransaction();
@@ -47,6 +47,7 @@ export class GanztagsangebotStore {
             }
             
             await conn.commit();
+            conn.release()
             return {
                 success: true,
                 message: 'Das Ganztagsangebot wurde erfolgreich erstellt.'
@@ -54,6 +55,7 @@ export class GanztagsangebotStore {
         } catch (e) {
             console.log(e)
             await conn.rollback()
+            conn.release()
             return {
                 success: false,
                 message: 'Beim Erstellen des Ganztagsangebotes ist ein Fehler aufgetreten.'
@@ -156,7 +158,7 @@ export class GanztagsangebotStore {
             };
         }
 
-        const conn = this.connection;
+        const conn = await this.connection.getConnection();
 
         try {
             await conn.beginTransaction();
@@ -191,6 +193,7 @@ export class GanztagsangebotStore {
             }
 
             await conn.commit();
+            conn.release()
 
             return {
                 success: true,
@@ -200,6 +203,7 @@ export class GanztagsangebotStore {
         } catch (e) {
             console.error(e);
             await conn.rollback();
+            conn.release()
             return {
                 success: false,
                 message: 'Beim Aktualisieren des Ganztagsangebotes ist ein Fehler aufgetreten.'
@@ -214,7 +218,7 @@ export class GanztagsangebotStore {
             };
         }
 
-        const conn = this.connection;
+        const conn = await this.connection.getConnection();
 
         try {
             await conn.beginTransaction();
@@ -232,6 +236,7 @@ export class GanztagsangebotStore {
             `, [ganztagsangebotId]);
 
             await conn.commit();
+            conn.release()
 
             return {
                 success: true,
@@ -240,6 +245,7 @@ export class GanztagsangebotStore {
         } catch (e) {
             console.error(e);
             await conn.rollback();
+            conn.release()
             return {
                 success: false,
                 message: 'Beim Löschen des Ganztagsangebotes ist ein Fehler aufgetreten.'

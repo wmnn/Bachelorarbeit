@@ -1,8 +1,5 @@
-import { useSchuljahrStore } from '@/components/schuljahr/SchuljahrStore';
-import { KLASSEN_QUERY_KEY } from '@/reactQueryKeys';
-import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { getKlasse, type Halbjahr, type Klasse, type Schuljahr } from '@thesis/schule';
+import { type Klasse } from '@thesis/schule';
 import { useRouter } from '@tanstack/react-router'
 import { Edit, MoveLeft } from 'lucide-react';
 import { KlasseNav } from '@/layout/KlasseNav';
@@ -10,6 +7,8 @@ import { getTitle } from '@thesis/schule'
 import { SchuelerList } from '@/components/schueler/SchuelerList/SchuelerList';
 import { useSchuelerStore } from '@/components/schueler/SchuelerStore';
 import { AnwesenheitTyp } from '@thesis/anwesenheiten';
+import { useKlasse } from '@/components/shared/useKlasse';
+import { useAllSchueler } from '@/components/schueler/useSchueler';
 
 export const Route = createFileRoute('/(app)/klassen/$klassenId/')({
   component: RouteComponent,
@@ -19,30 +18,23 @@ function RouteComponent() {
 
   const router = useRouter()
   const { klassenId } = Route.useParams();
+  const schueler = useSchuelerStore(store => store.schueler)
   
-  const schuljahr = useSchuljahrStore(state => state.ausgewaeltesSchuljahr)
-  const schueler = useSchuelerStore(state => state.schueler)
-  const halbjahr = useSchuljahrStore(state => state.ausgewaeltesHalbjahr)
+  const klasseQuery = useKlasse(parseInt(klassenId))
+  const schuelerQuery = useAllSchueler()
 
-  const { isPending, data: klasse } = useQuery({
-    queryKey: [KLASSEN_QUERY_KEY, schuljahr, halbjahr, klassenId],
-    queryFn: ({ queryKey }) => {
-      const [_key, schuljahr, halbjahr] = queryKey;
-      return getKlasse((schuljahr as Schuljahr), (halbjahr as Halbjahr), parseInt(klassenId));
-    },
-    initialData: undefined,
-  });
- 
 
-  if (isPending) {
+  if (klasseQuery.isPending || schuelerQuery.isPending) {
     return <p>Loading...</p>
   }
+
+  const klasse = klasseQuery.data
 
   const BackButton = <button onClick={() => router.history.back()}>
     <MoveLeft />
   </button>
 
-  if (!klasse.versionen) {
+  if (!klasse?.versionen) {
     return <p>{BackButton} Ein Fehler ist aufgetreten</p>
   }
 

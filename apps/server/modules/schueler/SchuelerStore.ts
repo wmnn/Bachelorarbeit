@@ -109,7 +109,7 @@ export class SchuelerStore {
             return STANDARD_FEHLER
         }
 
-        const conn = this.connection;
+        const conn = await this.connection.getConnection();
 
         try {
             await conn.beginTransaction();
@@ -163,6 +163,7 @@ export class SchuelerStore {
             }
 
             await conn.commit();
+            conn.release()
 
             return {
                 success: true,
@@ -170,6 +171,7 @@ export class SchuelerStore {
             };
         } catch (e) {
             await conn.rollback();
+            conn.release()
             return {
                 success: false,
                 message: 'Beim Erstellen des Schülers ist ein Fehler aufgetreten.'
@@ -182,7 +184,7 @@ export class SchuelerStore {
             return STANDARD_FEHLER;
         }
 
-        const conn = this.connection;
+        const conn = await this.connection.getConnection();
 
         try {
             await conn.beginTransaction();
@@ -254,6 +256,7 @@ export class SchuelerStore {
             }
 
             await conn.commit();
+            conn.release()
 
             return {
                 success: true,
@@ -262,6 +265,7 @@ export class SchuelerStore {
         } catch (e) {
             console.log(e)
             await conn.rollback();
+            conn.release()
             return {
                 success: false,
                 message: 'Beim Bearbeiten des Schülers ist ein Fehler aufgetreten.'
@@ -274,7 +278,7 @@ export class SchuelerStore {
             return STANDARD_FEHLER
         }
 
-        const conn = this.connection;
+        const conn = await this.connection.getConnection();
 
         try {
             await conn.beginTransaction();
@@ -300,6 +304,7 @@ export class SchuelerStore {
             `, [schuelerId]);
 
             await conn.commit();
+            conn.release()
 
             if (result.affectedRows === 0) {
                 return {
@@ -314,6 +319,7 @@ export class SchuelerStore {
             };
         } catch (e) {
             await conn.rollback();
+            conn.release()
             console.error(e);
             return {
                 success: false,

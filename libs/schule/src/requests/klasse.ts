@@ -15,7 +15,7 @@ export const getKlasse = async (schuljahr: Schuljahr, halbjahr: Halbjahr, klasse
             window.location.href = '/login'
         }
     
-        return await res.json();
+        return await res.json() as Klasse;
         
     } catch (e) {
         return undefined
@@ -36,7 +36,7 @@ export const getKlassen = async (schuljahr: Schuljahr, halbjahr: Halbjahr) => {
             window.location.href = '/login'
         }
     
-        return await res.json();
+        return await res.json() as Klasse[];
         
     } catch (e) {
         return [];

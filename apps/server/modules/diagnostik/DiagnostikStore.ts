@@ -149,7 +149,7 @@ export class DiagnostikStore {
                 message: 'Keine Datenbankverbindung.'
             };
         }
-        const conn = this.connection;
+        const conn = await this.connection.getConnection();
 
         try {
             await conn.beginTransaction();
@@ -188,6 +188,7 @@ export class DiagnostikStore {
             }    
 
             await conn.commit();
+            conn.release();
 
             return {
                 success: true,
@@ -196,6 +197,7 @@ export class DiagnostikStore {
         } catch (e) {
             console.error(e);
             await conn.rollback();
+            conn.release();
             return {
                 success: false,
                 message: 'Beim Erstellen der Diagnostik ist ein Fehler aufgetreten.'

@@ -118,7 +118,7 @@ export class KlassenStore {
             return STANDARD_FEHLER
         }
 
-        const conn = this.connection;
+        const conn = await this.connection.getConnection();
 
         try {
             await conn.beginTransaction();
@@ -211,6 +211,7 @@ export class KlassenStore {
             }
 
             await conn.commit();
+            conn.release()
             return {
                 success: true,
                 message: 'Die Klasse wurde erfolgreich erstellt.'
@@ -218,6 +219,7 @@ export class KlassenStore {
         } catch (e) {
             console.log(e)
             await conn.rollback()
+            conn.release()
             return {
                 success: false,
                 message: 'Beim Erstellen der Klasse ist ein Fehler aufgetreten.'
@@ -236,7 +238,7 @@ export class KlassenStore {
             return STANDARD_FEHLER;
         }
 
-        const conn = this.connection;
+        const conn = await this.connection.getConnection();
         
         try {
             await conn.beginTransaction();
@@ -314,6 +316,7 @@ export class KlassenStore {
             }
 
             await conn.commit();
+            conn.release()
 
             return {
                 success: true,
@@ -322,6 +325,7 @@ export class KlassenStore {
         } catch (e) {
             console.log(e);
             await conn.rollback();
+            conn.release()
             return {
                 success: false,
                 message: 'Beim Bearbeiten der Klasse ist ein Fehler aufgetreten.',
@@ -335,7 +339,7 @@ export class KlassenStore {
             return STANDARD_FEHLER
         }
 
-        const conn = this.connection;
+        const conn = await this.connection.getConnection();
 
         try {
             await conn.beginTransaction();
@@ -368,6 +372,7 @@ export class KlassenStore {
             );
 
             await conn.commit();
+            conn.release()
 
             return {
                 success: true,
@@ -376,6 +381,7 @@ export class KlassenStore {
 
         } catch (e) {
             await conn.rollback();
+            conn.release()
             console.error(e);
             return {
                 success: false,
