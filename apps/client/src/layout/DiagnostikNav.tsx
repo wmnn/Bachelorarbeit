@@ -45,7 +45,7 @@ export const DiagnostikNav = ({ diagnostikId }: { diagnostikId: string }) => {
 
       <div>
         <ButtonLight onClick={() => setIsAddTestDataDialogShown(true)}>
-          Ergebnisse hinzufügen +
+          Ergebnisse aktualisieren
         </ButtonLight>
       </div>
     </div>

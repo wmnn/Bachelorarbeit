@@ -214,7 +214,6 @@ export class DiagnostikStore {
         try {
             await conn.beginTransaction();
 
-            // Prepare values and flatten for parameter binding
             const values: any[] = [];
             const placeholders = ergebnisse.map(ergebnis => {
                 values.push(diagnostikId, datum, ergebnis.schuelerId, ergebnis.ergebnis);
@@ -222,8 +221,11 @@ export class DiagnostikStore {
             }).join(", ");
 
             const sql = `
-                INSERT INTO diagnostikverfahren_ergebnisse (diagnostikverfahren_id, datum, schueler_id, ergebnis)
+                INSERT INTO diagnostikverfahren_ergebnisse 
+                    (diagnostikverfahren_id, datum, schueler_id, ergebnis)
                 VALUES ${placeholders}
+                ON DUPLICATE KEY UPDATE
+                    ergebnis = VALUES(ergebnis)
             `;
 
             await conn.execute(sql, values);
@@ -231,7 +233,7 @@ export class DiagnostikStore {
 
             return {
                 success: true,
-                message: 'Die Ergebnisse wurden erfolgreich hinzugefügt.'
+                message: 'Die Ergebnisse wurden erfolgreich aktualisiert.'
             };
 
         } catch (e) {

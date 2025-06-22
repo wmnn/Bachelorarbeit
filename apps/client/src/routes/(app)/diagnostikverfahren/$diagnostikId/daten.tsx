@@ -77,12 +77,12 @@ const Table = ({ data }: { data: Row[]}) => {
         }
         console.log('index', index)
       }
-      console.log(ergebnisse)
+
       const newItem = {
         ...item,
         ergebnisse
       }
-      console.log(newItem)
+
       return newItem
     })
 
@@ -142,7 +142,8 @@ const Table = ({ data }: { data: Row[]}) => {
                 if (idx == 0) {
                   return <td key={idx}>{ergebnis.ergebnis}</td>
                 }
-                return <td key={idx}><Input className='w-[100px]' value={ergebnis.ergebnis} /></td>
+                return <td key={idx} className=''><p className='w-[100px] text-center'>{ergebnis.ergebnis}</p></td>
+                // return <td key={idx}><Input className='w-[100px]' value={ergebnis.ergebnis} /></td>
               }) }
             </tr>)
           } 

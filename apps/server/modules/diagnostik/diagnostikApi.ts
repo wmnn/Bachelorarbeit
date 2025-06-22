@@ -32,7 +32,7 @@ router.get('/:diagnostikId/data', async (req, res) => {
 
 router.post('/:diagnostikId', async (req, res: Response<AddErgebnisseResponseBody>): Promise<any> => {
     const { diagnostikId } = req.params
-    const ergebnisse: Ergebnis[] = req.body ?? []
+    let ergebnisse: Ergebnis[] = req.body ?? []
     let { datum } = req.query;
 
     if (Array.isArray(datum)) {
@@ -71,6 +71,8 @@ router.post('/:diagnostikId', async (req, res: Response<AddErgebnisseResponseBod
             message: `Die obere Grenze für Ergebnisse ist "${diagnostik?.obereGrenze}" und die untere Grenze ist "${diagnostik?.untereGrenze}"`
         })
     }
+
+    ergebnisse = ergebnisse.filter(item => item.ergebnis !== '')
 
     const msg = await getDiagnostikStore().addErgebnisse(ergebnisse, parseInt(diagnostikId), datum)
     res.status(msg.success ? 200 : 400).json(msg);

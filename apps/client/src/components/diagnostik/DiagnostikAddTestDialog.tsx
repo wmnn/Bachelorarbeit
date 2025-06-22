@@ -5,6 +5,8 @@ import { useSchuelerStore } from "../schueler/SchuelerStore";
 import { useAllSchueler } from "../schueler/useSchueler";
 import { useKlasse } from "../shared/useKlasse";
 import { useEffect, useState } from "react";
+import { useQueryClient } from '@tanstack/react-query';
+import { DIAGNOSTIKEN_QUERY_KEY } from "@/reactQueryKeys";
 
 interface DiagnostikAddTestDialogProps {
   closeDialog: () => void,
@@ -18,6 +20,8 @@ export function DiagnostikAddTestDialog({ closeDialog, klasseId, diagnostikId }:
     useAllSchueler()
     const schueler = useSchuelerStore(store => store.schueler)
     const [ergebnisse, setErgebnisse] = useState<Ergebnis[]>([])
+    const [datum, setDatum] = useState<any>(new Date().toISOString().split('T')[0])
+    const queryClient = useQueryClient();
 
     const klasse = klasseQuery.data
     const schuelerIds = klasse?.versionen.reduce((prev, acc) => {
@@ -45,9 +49,14 @@ export function DiagnostikAddTestDialog({ closeDialog, klasseId, diagnostikId }:
     }
 
     async function handleSubmit() {
-        console.log(ergebnisse)
-        const res = await addErgebnisse(ergebnisse, `${diagnostikId}`, new Date().toISOString())
+        const res = await addErgebnisse(ergebnisse, `${diagnostikId}`, datum)
         alert(JSON.stringify(res))
+        if (res.success) {
+            queryClient.invalidateQueries({
+                queryKey: [DIAGNOSTIKEN_QUERY_KEY + 'data', diagnostikId],
+            });
+        }
+        closeDialog()
     }
 
     return <DialogWithButtons className="overflow-auto! p-8" 
@@ -57,6 +66,14 @@ export function DiagnostikAddTestDialog({ closeDialog, klasseId, diagnostikId }:
     >
         <ul>
 
+        <div className="flex gap-4 items-center">
+            <label>
+                Datum
+            </label>
+            <Input type="date" value={datum} onChange={(e) => setDatum(e.target.value)} />
+
+        </div>
+        
         <div className="flex justify-between my-4">
             <label>
                 Name
