@@ -1,5 +1,6 @@
-import { Diagnostik, DiagnostikTyp, Farbbereich } from "@thesis/diagnostik";
+import { Diagnostik, DiagnostikTyp, Ergebnis, Farbbereich } from "@thesis/diagnostik";
 import { Pool, ResultSetHeader, RowDataPacket } from "mysql2/promise"
+import { DatabaseMessage, STANDARD_FEHLER } from "../shared/models";
 
 export class DiagnostikStore {
 
@@ -51,7 +52,7 @@ export class DiagnostikStore {
             console.error('Fehler in getDiagnostik:', e);
             return undefined;
         }
-        }
+    }
     async getDiagnostiken() {
         if (!this.connection) {
             return {
@@ -188,7 +189,6 @@ export class DiagnostikStore {
             }    
 
             await conn.commit();
-            conn.release();
 
             return {
                 success: true,
@@ -197,13 +197,50 @@ export class DiagnostikStore {
         } catch (e) {
             console.error(e);
             await conn.rollback();
-            conn.release();
             return {
                 success: false,
                 message: 'Beim Erstellen der Diagnostik ist ein Fehler aufgetreten.'
             };
+        } finally {
+            conn.release();
         }
+    }
 
+    async addErgebnisse(ergebnisse: Ergebnis[], diagnostikId: number, datum: string): Promise<DatabaseMessage> {
+        if (!this.connection) return STANDARD_FEHLER;
 
+        const conn = await this.connection.getConnection();
+
+        try {
+            await conn.beginTransaction();
+
+            // Prepare values and flatten for parameter binding
+            const values: any[] = [];
+            const placeholders = ergebnisse.map(ergebnis => {
+                values.push(diagnostikId, datum, ergebnis.schuelerId, ergebnis.ergebnis);
+                return "(?, ?, ?, ?)";
+            }).join(", ");
+
+            const sql = `
+                INSERT INTO diagnostikverfahren_ergebnisse (diagnostikverfahren_id, datum, schueler_id, ergebnis)
+                VALUES ${placeholders}
+            `;
+
+            await conn.execute(sql, values);
+            await conn.commit();
+
+            return {
+                success: true,
+                message: 'Die Ergebnisse wurden erfolgreich hinzugefügt.'
+            };
+
+        } catch (e) {
+            console.error('Fehler in addErgebnisse:', e);
+            await conn.rollback();
+            return STANDARD_FEHLER;
+
+        } finally {
+            conn.release();
+        }
     }
 }

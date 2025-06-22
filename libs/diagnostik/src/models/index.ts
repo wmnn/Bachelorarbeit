@@ -29,3 +29,9 @@ export interface Farbbereich {
     obereGrenze?: number | string,
     hexFarbe: string
 } 
+
+export interface Ergebnis {
+    schuelerId: number,
+    ergebnis: string,
+    datum?: string,
+}

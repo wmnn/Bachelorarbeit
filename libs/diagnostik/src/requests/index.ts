@@ -1,5 +1,5 @@
 import { DIAGNOSTIK_ENDPOINT } from "../../../config/config";
-import type { Diagnostik } from "../models";
+import type { Diagnostik, Ergebnis } from "../models";
 
 export type CreateDiagnostikRequestBody = Diagnostik
 export interface CreateDiagnostikResponseBody {
@@ -75,6 +75,37 @@ export const getDiagnostik = async (diagnostikId: number) => {
         
     } catch (e) {
         return undefined
+    }
+
+}
+
+export interface AddErgebnisseResponseBody {
+    success: boolean,
+    message: string
+}
+
+export const addErgebnisse = async (ergebnisse: Ergebnis[], diagnostikId: string, datum: string) => {
+    
+    try {
+        const res = await fetch(DIAGNOSTIK_ENDPOINT + `/${diagnostikId}?datum=${datum}`, {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(ergebnisse)
+        })
+
+        if (res.status === 403) {
+            window.location.href = '/login'
+        }
+    
+        return await res.json() as AddErgebnisseResponseBody;
+        
+    } catch (e) {
+        return {
+            success: false,
+            message: 'Ein Fehler ist aufgetreten.'
+        }
     }
 
 }

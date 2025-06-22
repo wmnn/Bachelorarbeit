@@ -29,6 +29,7 @@ export const DiagnostikNav = ({ diagnostikId }: { diagnostikId: string }) => {
     <>
     {
       isAddTestDataDialogShown && <DiagnostikAddTestDialog 
+        diagnostikId={parseInt(diagnostikId)}
         closeDialog={() => setIsAddTestDataDialogShown(false)} 
         klasseId={typeof diagnostik.klasseId === 'number' ? diagnostik.klasseId : parseInt(diagnostik.klasseId)}
       />

@@ -106,12 +106,6 @@ CREATE TABLE klassenversionen (
     PRIMARY KEY (klassen_id, schuljahr, halbjahr, klassenstufe)
 );
 
-CREATE TABLE tests (
-    diagnostikverfahren_id VARCHAR(36),
-    datum DATE,
-    PRIMARY KEY (diagnostikverfahren_id, datum)
-);
-
 CREATE TABLE nachrichten (
     id INT AUTO_INCREMENT PRIMARY KEY,
     typ VARCHAR(255),
@@ -120,11 +114,11 @@ CREATE TABLE nachrichten (
     user_id VARCHAR(36)
 );
 
-CREATE TABLE schueler_tests (
-    diagnostikverfahren_id VARCHAR(36),
+CREATE TABLE diagnostikverfahren_ergebnisse (
+    diagnostikverfahren_id INT,
     datum DATE,
-    schueler_id VARCHAR(36),
-    ergebnis VARCHAR(255),
+    schueler_id INT,
+    ergebnis VARCHAR(10),
     PRIMARY KEY (diagnostikverfahren_id, datum, schueler_id)
 );
 

@@ -1,6 +1,6 @@
 import express from 'express';
 import { Request, Response } from 'express';
-import { CreateDiagnostikRequestBody, CreateDiagnostikResponseBody, Diagnostik, DiagnostikTyp, Farbbereich, GetDiagnostikenResponseBody } from '@thesis/diagnostik';
+import { AddErgebnisseResponseBody, CreateDiagnostikRequestBody, CreateDiagnostikResponseBody, Diagnostik, DiagnostikTyp, Ergebnis, Farbbereich, GetDiagnostikenResponseBody } from '@thesis/diagnostik';
 import { getDiagnostikStore } from '../../singleton';
 
 let router = express.Router();
@@ -21,8 +21,59 @@ router.get('/', async (
 router.get('/:diagnostikId', async (req, res) => {
     const { diagnostikId } = req.params
     const diagnostik = await getDiagnostikStore().getDiagnostik(parseInt(diagnostikId))
-    res.status(diagnostik ? 200 : 500).json(diagnostik);
+    res.status(diagnostik ? 200 : 400).json(diagnostik);
 });
+
+router.post('/:diagnostikId', async (req, res: Response<AddErgebnisseResponseBody>): Promise<any> => {
+    const { diagnostikId } = req.params
+    const ergebnisse: Ergebnis[] = req.body ?? []
+    let { datum } = req.query;
+
+    if (Array.isArray(datum)) {
+        datum = datum[0]; 
+    }
+
+    if (typeof datum !== 'string') {
+        datum = '';
+    }
+
+    datum = datum.split('T')[0];
+
+    if (!isValidDateFormat(datum as string | undefined ?? '')) {
+        return res.status(400).json({
+            success: false,
+            message: 'Es wurde kein korrektes Datum spezifiziert.'
+        })
+    }
+
+    const diagnostik = await getDiagnostikStore().getDiagnostik(parseInt(diagnostikId))
+    let isValidData = true;
+    for (const ergebnis of ergebnisse) {
+        if (diagnostik?.obereGrenze === undefined || diagnostik.untereGrenze === undefined) {
+            isValidData = false
+            break;
+        }
+        if (parseInt(ergebnis.ergebnis) > parseInt(`${diagnostik?.obereGrenze}`) || parseInt(ergebnis.ergebnis) < parseInt(`${diagnostik.untereGrenze}`)) {
+            isValidData = false
+            break;
+        }
+    }
+
+    if (!isValidData) {
+        return res.status(400).json({
+            success: false,
+            message: `Die obere Grenze für Ergebnisse ist "${diagnostik?.obereGrenze}" und die untere Grenze ist "${diagnostik?.untereGrenze}"`
+        })
+    }
+
+    const msg = await getDiagnostikStore().addErgebnisse(ergebnisse, parseInt(diagnostikId), datum)
+    res.status(msg.success ? 200 : 400).json(msg);
+});
+
+function isValidDateFormat(dateStr: string) {
+    const regex = /^\d{4}-\d{2}-\d{2}$/;
+    return regex.test(dateStr);
+}
 
 router.post('/',async (
     req: Request<{}, {}, CreateDiagnostikRequestBody>,
