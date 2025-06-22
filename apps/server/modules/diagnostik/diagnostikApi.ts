@@ -119,7 +119,7 @@ router.post('/',async (
 
     // Klasse
     if (speicherTyp === DiagnostikTyp.LAUFENDES_VERFAHREN) {
-        if (!klasseId || klasseId === -1) {
+        if (!klasseId || klasseId == -1) {
             return res.status(400).json({
                 success: false,
                 message: 'Eine Diagnostik muss für eine Klasse erstellt werden.'

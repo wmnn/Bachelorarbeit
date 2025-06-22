@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router"
-import type { Diagnostik } from "@thesis/diagnostik"
+import { createDiagnostik, DiagnostikTyp, type Diagnostik } from "@thesis/diagnostik"
 import { useState } from "react"
 import { DiagnostikListItemInfoDialog } from "./DiagnostikListItemInfoDialog"
 import { Edit2, Info, Trash2 } from "lucide-react"
@@ -8,14 +8,18 @@ import { getTitle } from "@thesis/schule"
 import { Tooltip } from "../Tooltip"
 import { DeleteDiagnostikDialog } from "./DeleteDiagnostikDialog"
 import { ErrorDialog } from "../dialog/MessageDialog"
+import { ButtonLight } from "../ButtonLight"
+import { DiagnostikVorlageSelectClassDialog } from "./DiagnostikVorlageSelectClassDialog"
 
 export const DiagnostikListItem = ({ diagnostik }: { diagnostik: Diagnostik }) => {
 
     const [isInfoDialogShown, setIsInfoDialogShown] = useState(false)
     const [isDeleteDialogShown, setIsDeleteDialogShown] = useState(false)
+    const [isSelectClassDialogShown, setIsSelectClassDialogShown] = useState(false)
     const [responseMessage, setResponseMsg] = useState('')
 
     const klassenQuery = useKlassen()
+    const isVorlage = diagnostik.speicherTyp == DiagnostikTyp.VORLAGE
 
     if (klassenQuery.isPending) {
         return <p>...Loading</p>
@@ -24,6 +28,13 @@ export const DiagnostikListItem = ({ diagnostik }: { diagnostik: Diagnostik }) =
     const klasse = klassen.find(item => item.id == diagnostik.klasseId)
 
     return <li className="px-4 py-4">
+        {
+            isSelectClassDialogShown && <DiagnostikVorlageSelectClassDialog 
+                closeDialog={() => setIsSelectClassDialogShown(false)}
+                setResponseMsg={setResponseMsg}
+                diagnostik={diagnostik}
+            />
+        }
         {
             isInfoDialogShown && <DiagnostikListItemInfoDialog 
                 closeDialog={() => setIsInfoDialogShown(false)} 
@@ -54,6 +65,11 @@ export const DiagnostikListItem = ({ diagnostik }: { diagnostik: Diagnostik }) =
                 
             </Link>
             <div className="flex gap-4 items-center">
+                { 
+                    isVorlage && <ButtonLight onClick={() => setIsSelectClassDialogShown(true)}>
+                        Benutzen
+                    </ButtonLight>
+                }
                 <p>{klasse !== undefined && getTitle(klasse)}</p>
 
                 <Tooltip content={'Info'}>
