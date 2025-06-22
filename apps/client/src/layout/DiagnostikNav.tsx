@@ -26,7 +26,7 @@ export const DiagnostikNav = ({ diagnostikId }: { diagnostikId: string }) => {
   }
 
   return (
-    <>
+    <div className="w-full">
     {
       isAddTestDataDialogShown && <DiagnostikAddTestDialog 
         diagnostikId={parseInt(diagnostikId)}
@@ -67,6 +67,6 @@ export const DiagnostikNav = ({ diagnostikId }: { diagnostikId: string }) => {
       </ul>
       <hr className="h-[1px] border-gray-800" />
     </nav>
-    </>
+    </div>
   );
 };

@@ -111,7 +111,7 @@ export const AppLayout = () => {
         
         <div className=""/>
 
-        <div className={`${isNavShown ? 'hidden xl:flex' : 'flex'} justify-center flex-col items-center w-full xl:ml-[20%] pt-[80px] md:pt-0`}>
+        <div className={`${isNavShown ? 'hidden xl:flex' : 'flex'} justify-center flex-col items-center w-full xl:ml-[20%] pt-[80px] md:pt-0 max-w-full overflow-hidden`}>
             <Outlet />
         </div>
     </div>

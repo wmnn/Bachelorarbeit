@@ -1,4 +1,4 @@
-import { Diagnostik, DiagnostikTyp, Ergebnis, Farbbereich } from "@thesis/diagnostik";
+import { Diagnostik, DiagnostikTyp, Ergebnis, Farbbereich, Row } from "@thesis/diagnostik";
 import { Pool, ResultSetHeader, RowDataPacket } from "mysql2/promise"
 import { DatabaseMessage, STANDARD_FEHLER } from "../shared/models";
 
@@ -243,4 +243,56 @@ export class DiagnostikStore {
             conn.release();
         }
     }
+
+    async getErgebnisse(diagnostikId: number): Promise<Row[] | DatabaseMessage> {
+        if (!this.connection) return STANDARD_FEHLER;
+
+        const conn = await this.connection.getConnection();
+
+        try {
+            const [rows] = await conn.execute(
+                `
+                    SELECT schueler_id as schuelerId, ergebnis, datum
+                    FROM diagnostikverfahren_ergebnisse
+                    WHERE diagnostikverfahren_id = ?
+                    ORDER BY datum DESC, schueler_id
+                `,
+                [diagnostikId]
+            );
+
+            const res = (rows as Ergebnis[]).reduce((prev, acc) => {
+                const isSchuelerInside = prev.some(o => o.schuelerId === acc.schuelerId)
+                if (!isSchuelerInside) {
+                    prev.push({
+                        schuelerId: acc.schuelerId,
+                        ergebnisse: []
+                    })
+                }
+                return prev.map(obj => {
+                    if (obj.schuelerId !== acc.schuelerId) {
+                        return obj
+                    }
+                    return {
+                        ...obj,
+                        ergebnisse: [...obj.ergebnisse, acc]
+                    }
+                })
+            }, [] as Row[])
+
+            return res
+
+            // return (rows as any[]).map(row => ({
+            //     schuelerId: row.schueler_id,
+            //     ergebnis: row.ergebnis,
+            //     datum: row.datum
+            // }));
+
+        } catch (e) {
+            console.error('Fehler in getErgebnisse:', e);
+            return STANDARD_FEHLER;
+        } finally {
+            conn.release();
+        }
+    }
+
 }

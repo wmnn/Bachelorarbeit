@@ -1,5 +1,5 @@
 import { DIAGNOSTIK_ENDPOINT } from "../../../config/config";
-import type { Diagnostik, Ergebnis } from "../models";
+import type { Diagnostik, Ergebnis, Row } from "../models";
 
 export type CreateDiagnostikRequestBody = Diagnostik
 export interface CreateDiagnostikResponseBody {
@@ -106,6 +106,28 @@ export const addErgebnisse = async (ergebnisse: Ergebnis[], diagnostikId: string
             success: false,
             message: 'Ein Fehler ist aufgetreten.'
         }
+    }
+
+}
+
+export const getErgebnisse = async (diagnostikId: string) => {
+    
+    try {
+        const res = await fetch(DIAGNOSTIK_ENDPOINT + `/${diagnostikId}/data`, {
+            method: 'GET',
+            headers: {
+                'content-type': 'application/json'
+            },
+        })
+
+        if (res.status === 403) {
+            window.location.href = '/login'
+        }
+    
+        return await res.json() as Row[];
+        
+    } catch (e) {
+        return []
     }
 
 }

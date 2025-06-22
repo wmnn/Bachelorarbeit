@@ -35,3 +35,8 @@ export interface Ergebnis {
     ergebnis: string,
     datum?: string,
 }
+
+export interface Row {
+    schuelerId: number,
+    ergebnisse: Ergebnis[]
+}

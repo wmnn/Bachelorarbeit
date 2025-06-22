@@ -24,6 +24,12 @@ router.get('/:diagnostikId', async (req, res) => {
     res.status(diagnostik ? 200 : 400).json(diagnostik);
 });
 
+router.get('/:diagnostikId/data', async (req, res) => {
+    const { diagnostikId } = req.params
+    const diagnostik = await getDiagnostikStore().getErgebnisse(parseInt(diagnostikId))
+    res.status(diagnostik ? 200 : 400).json(diagnostik);
+});
+
 router.post('/:diagnostikId', async (req, res: Response<AddErgebnisseResponseBody>): Promise<any> => {
     const { diagnostikId } = req.params
     const ergebnisse: Ergebnis[] = req.body ?? []
