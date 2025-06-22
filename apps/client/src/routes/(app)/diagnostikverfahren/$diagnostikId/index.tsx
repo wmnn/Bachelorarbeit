@@ -22,7 +22,7 @@ function RouteComponent() {
     return <p>Ein Fehler ist aufgetreten, kontaktieren Sie den Admin.</p>
   }
 
-  return <div>
+  return <div className='w-full'>
     <DiagnostikNav diagnostikId={diagnostikId} />
     {JSON.stringify(diagnostik)}
   

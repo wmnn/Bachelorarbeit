@@ -95,7 +95,8 @@ function validateDiagnostikInput(
   diagnostik: CreateDiagnostikRequestBody,
   userId?: number
 ): { success: boolean; message?: string } {
-    const { name, speicherTyp, klasseId, vorlageId, erstellungsTyp } = diagnostik;
+    let { name, speicherTyp, klasseId, vorlageId, erstellungsTyp } = diagnostik;
+    speicherTyp = typeof speicherTyp === 'string' ? parseInt(speicherTyp as string) : speicherTyp
 
     if (!userId) {
         return { 
@@ -249,7 +250,7 @@ function validierungFarbbereiche(diagnostik: Diagnostik): CreateDiagnostikRespon
             message: 'Es wurde kein Mindeststandard definiert.'
         }
     }
-    if (farbbereiche.filter(item => [undefined, '', 'undefined', null].includes(item.obereGrenze as any)).length !== 1 ) {
+    if (farbbereiche.filter(item => [undefined, '', 'undefined', null, diagnostik.obereGrenze, `${diagnostik.obereGrenze}`].includes(item.obereGrenze as any)).length !== 1 ) {
         return {
             success: false,
             message: 'Ein Farbbereich muss undefiniert sein.'

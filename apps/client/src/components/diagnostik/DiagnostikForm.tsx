@@ -22,7 +22,6 @@ export const DiagnostikForm = (props: DiagnostikFormProps) => {
     const [diagnostik, setDiagnostik] = useState<Diagnostik>(initialDiagnostik ? {
         ...initialDiagnostik,
         erstellungsTyp: "benutzerdefiniert",
-        speicherTyp: DiagnostikTyp.LAUFENDES_VERFAHREN
     } : {
         id: -1,
         name: '',

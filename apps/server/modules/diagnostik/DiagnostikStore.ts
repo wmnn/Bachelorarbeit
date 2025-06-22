@@ -86,11 +86,11 @@ export class DiagnostikStore {
                     name: diag.name,
                     beschreibung: diag.beschreibung,
                     erstellungsDatum: diag.erstellungsdatum,
-                    obereGrenze: diag.obereGrenze,
+                    obereGrenze: parseInt(diag.obereGrenze),
                     untereGrenze: diag.untereGrenze,
-                    speicherTyp: diag.typ,
+                    speicherTyp: parseInt(diag.typ),
                     userId: diag.userId,
-                    klasseId: diag.klasseId,
+                    klasseId: parseInt(diag.klasseId),
                     geeigneteKlassen,
                     kategorien,
                     farbbereiche
@@ -139,7 +139,7 @@ export class DiagnostikStore {
 
         return rows.map(row => ({
             hexFarbe: row.hexFarbe,
-            obereGrenze: row.obereGrenze ?? null
+            obereGrenze: parseInt(row.obereGrenze) ?? null
         }));
     }
 
