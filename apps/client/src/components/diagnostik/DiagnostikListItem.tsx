@@ -2,9 +2,10 @@ import { Link } from "@tanstack/react-router"
 import type { Diagnostik } from "@thesis/diagnostik"
 import { useState } from "react"
 import { DiagnostikListItemInfoDialog } from "./DiagnostikListItemInfoDialog"
-import { Info } from "lucide-react"
+import { Edit2, Info, Trash2 } from "lucide-react"
 import { useKlassen } from "../shared/useKlassen"
 import { getTitle } from "@thesis/schule"
+import { Tooltip } from "../Tooltip"
 
 export const DiagnostikListItem = ({ diagnostik }: { diagnostik: Diagnostik }) => {
 
@@ -41,11 +42,26 @@ export const DiagnostikListItem = ({ diagnostik }: { diagnostik: Diagnostik }) =
                 
             </Link>
             <div className="flex gap-4 items-center">
-                <button onClick={() => setIsInfoDialogShown(true)}>
-                    <Info />
-                </button>
-
                 <p>{klasse !== undefined && getTitle(klasse)}</p>
+
+                <Tooltip content={'Info'}>
+                    <button onClick={() => setIsInfoDialogShown(true)}>
+                        <Info />
+                    </button>
+                </Tooltip>
+                
+
+                <Tooltip content={'Bearbeiten'}>
+                    <button onClick={() => setIsInfoDialogShown(true)}>
+                    <Edit2 />
+                </button>
+                </Tooltip>
+                
+                <Tooltip content={'Löschen'}>
+                    <button onClick={() => setIsInfoDialogShown(true)}>
+                        <Trash2 />
+                    </button>
+                </Tooltip>
             </div>
             
             

@@ -1,3 +1,4 @@
+import { DiagnostikInfo } from '@/components/diagnostik/DiagnostikInfo';
 import { useDiagnostik } from '@/components/diagnostik/useDiagnostik';
 import { DiagnostikNav } from '@/layout/DiagnostikNav';
 import { createFileRoute } from '@tanstack/react-router'
@@ -23,8 +24,9 @@ function RouteComponent() {
 
   return <div className='w-full'>
     <DiagnostikNav diagnostikId={diagnostikId} />
-
-  
-    {JSON.stringify(diagnostik)}
+    <div className='px-8'>
+      <DiagnostikInfo diagnostik={diagnostik}/>
+    </div>
+    
   </div>
 }
