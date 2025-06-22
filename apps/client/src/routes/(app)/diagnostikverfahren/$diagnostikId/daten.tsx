@@ -26,11 +26,7 @@ function RouteComponent() {
 
   return <div className='w-full'>
     <DiagnostikNav diagnostikId={diagnostikId} />
- 
-  
-    {/* {JSON.stringify(ergebnisse)}  */}
     <Table data={ergebnisse} />
-  
   </div>
 }
 
@@ -97,13 +93,18 @@ const Table = ({ data }: { data: Row[]}) => {
   }
 
   const handleDownload = () => {
-    const jsonString = JSON.stringify(data, null, 2);
-    const blob = new Blob([jsonString], { type: 'application/json' });
+
+    const csvRows = rows.map(row => {
+      return row.ergebnisse.map(e => e.ergebnis ?? '').join(',');
+    });
+    const csvContent = [header.join(','), ...csvRows].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
 
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'ergebnisse.json'; 
+    link.download = `data.csv`; 
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
