@@ -1,4 +1,4 @@
-import { Diagnostik, DiagnostikTyp, Ergebnis, Farbbereich, Row } from "@thesis/diagnostik";
+import { deleteDiagnostik, Diagnostik, DiagnostikTyp, Ergebnis, Farbbereich, Row } from "@thesis/diagnostik";
 import { Pool, ResultSetHeader, RowDataPacket } from "mysql2/promise"
 import { DatabaseMessage, STANDARD_FEHLER } from "../shared/models";
 
@@ -284,12 +284,6 @@ export class DiagnostikStore {
 
             return res
 
-            // return (rows as any[]).map(row => ({
-            //     schuelerId: row.schueler_id,
-            //     ergebnis: row.ergebnis,
-            //     datum: row.datum
-            // }));
-
         } catch (e) {
             console.error('Fehler in getErgebnisse:', e);
             return STANDARD_FEHLER;
@@ -297,5 +291,58 @@ export class DiagnostikStore {
             conn.release();
         }
     }
+    
+    async deleteDiagnostik(diagnostikId: string): Promise<DatabaseMessage> {
+        if (!this.connection) {
+            return STANDARD_FEHLER
+        }
+
+        const conn = await this.connection.getConnection();
+
+        try {
+            await conn.beginTransaction();
+
+            await conn.execute(`
+                DELETE FROM diagnostikverfahren_klassenstufen WHERE diagnostikverfahren_id = ?
+            `, [diagnostikId]);
+
+            await conn.execute(`
+                DELETE FROM diagnostikverfahren_kategorien WHERE diagnostikverfahren_id = ?
+            `, [diagnostikId]);
+
+            await conn.execute(`
+                DELETE FROM diagnostikverfahren_farbbereiche WHERE diagnostikverfahren_id = ?
+            `, [diagnostikId]);
+
+            const [result] = await conn.execute<ResultSetHeader>(`
+                DELETE FROM diagnostikverfahren WHERE id = ?
+            `, [diagnostikId]);
+
+            if (result.affectedRows === 0) {
+                await conn.rollback();
+                return {
+                    success: false,
+                    message: 'Das Diagnostikverfahren wurde nicht gefunden.'
+                };
+            }
+
+            await conn.commit();
+
+            return {
+                success: true,
+                message: 'Das Diagnostikverfahren wurde erfolgreich gelöscht.'
+            };
+        } catch (e) {
+            console.error(e);
+            await conn.rollback();
+            return {
+                success: false,
+                message: 'Beim Löschen der Diagnostik ist ein Fehler aufgetreten.'
+            };
+        } finally {
+            conn.release();
+        }
+    }
+
 
 }

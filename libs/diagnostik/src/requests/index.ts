@@ -131,3 +131,29 @@ export const getErgebnisse = async (diagnostikId: string) => {
     }
 
 }
+
+
+export const deleteDiagnostik = async (diagnostikId: string) => {
+
+    try {
+        const res = await fetch(DIAGNOSTIK_ENDPOINT + `/${diagnostikId}`, {
+            method: 'DELETE',
+            headers: {
+                'content-type': 'application/json'
+            },
+        })
+
+        if (res.status === 403) {
+            window.location.href = '/login'
+        }
+    
+        return await res.json() as CreateDiagnostikResponseBody;
+        
+    } catch (e) {
+        return {
+            success: false,
+            message: 'Ein Fehler ist aufgetreten.'
+        };
+    }
+
+}

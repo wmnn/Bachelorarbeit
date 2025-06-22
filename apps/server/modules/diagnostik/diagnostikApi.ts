@@ -236,4 +236,10 @@ function validierungFarbbereiche(diagnostik: Diagnostik): CreateDiagnostikRespon
     return SUCCESSFULL_VALIDATION_RES
 }
 
+router.delete('/:diagnostikId', async (req, res: Response): Promise<any> => {
+    const { diagnostikId } = req.params
+    const msg = await getDiagnostikStore().deleteDiagnostik(diagnostikId)
+    res.status(msg.success ? 200 : 400).json(msg);
+});
+
 export { router };

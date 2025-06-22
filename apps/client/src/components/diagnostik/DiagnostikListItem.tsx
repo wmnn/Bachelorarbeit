@@ -6,10 +6,14 @@ import { Edit2, Info, Trash2 } from "lucide-react"
 import { useKlassen } from "../shared/useKlassen"
 import { getTitle } from "@thesis/schule"
 import { Tooltip } from "../Tooltip"
+import { DeleteDiagnostikDialog } from "./DeleteDiagnostikDialog"
+import { ErrorDialog } from "../dialog/MessageDialog"
 
 export const DiagnostikListItem = ({ diagnostik }: { diagnostik: Diagnostik }) => {
 
     const [isInfoDialogShown, setIsInfoDialogShown] = useState(false)
+    const [isDeleteDialogShown, setIsDeleteDialogShown] = useState(false)
+    const [responseMessage, setResponseMsg] = useState('')
 
     const klassenQuery = useKlassen()
 
@@ -26,6 +30,14 @@ export const DiagnostikListItem = ({ diagnostik }: { diagnostik: Diagnostik }) =
                 diagnostik={diagnostik}
             />
         }
+        {
+            isDeleteDialogShown && <DeleteDiagnostikDialog 
+                diagnostikId={`${diagnostik.id ?? -1}`} 
+                setResponseMsg={setResponseMsg}
+                closeDialog={() => setIsDeleteDialogShown(false)}
+            />
+        }
+        {(responseMessage !== '') && <ErrorDialog message={responseMessage} closeDialog={() => setResponseMsg('')}/>}
         <div className="flex justify-between items-center">
             <Link className="flex gap-2 w-full"
                 to="/diagnostikverfahren/$diagnostikId"
@@ -58,7 +70,7 @@ export const DiagnostikListItem = ({ diagnostik }: { diagnostik: Diagnostik }) =
                 </Tooltip>
                 
                 <Tooltip content={'Löschen'}>
-                    <button onClick={() => setIsInfoDialogShown(true)}>
+                    <button onClick={() => setIsDeleteDialogShown(true)}>
                         <Trash2 />
                     </button>
                 </Tooltip>
