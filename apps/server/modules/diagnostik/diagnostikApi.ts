@@ -10,13 +10,21 @@ const SUCCESSFULL_VALIDATION_RES =  {
 }
 
 router.get('/', async (
-    req: Request,
+    req: Request<{}, {}, {}, { typ?: string }>,
     res: Response<GetDiagnostikenResponseBody>
 ): Promise<any> => { 
+    let speicherTyp: DiagnostikTyp = DiagnostikTyp.LAUFENDES_VERFAHREN;
 
-    const data = await getDiagnostikStore().getDiagnostiken()
-    return res.status(data.success ? 200 : 400).json(data.data ?? [])
-})
+    if (req.query.typ) {
+        const typ = parseInt(req.query.typ); 
+        if (!isNaN(typ)) {
+            speicherTyp = typ as DiagnostikTyp;
+        }
+    }
+
+    const data = await getDiagnostikStore().getDiagnostiken(speicherTyp);
+    return res.status(data.success ? 200 : 400).json(data.data ?? []);
+});
 
 router.get('/:diagnostikId', async (req, res) => {
     const { diagnostikId } = req.params

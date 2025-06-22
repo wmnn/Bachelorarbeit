@@ -1,5 +1,5 @@
 import { DIAGNOSTIK_ENDPOINT } from "../../../config/config";
-import type { Diagnostik, Ergebnis, Row } from "../models";
+import type { Diagnostik, DiagnostikTyp, Ergebnis, Row } from "../models";
 
 export type CreateDiagnostikRequestBody = Diagnostik
 export interface CreateDiagnostikResponseBody {
@@ -34,10 +34,10 @@ export const createDiagnostik = async (diagnostik: Diagnostik) => {
 }
 export type GetDiagnostikenResponseBody = Diagnostik[]
 
-export const getDiagnostiken = async () => {
+export const getDiagnostiken = async (speicherTyp: DiagnostikTyp) => {
     
     try {
-        const res = await fetch(DIAGNOSTIK_ENDPOINT, {
+        const res = await fetch(DIAGNOSTIK_ENDPOINT + `?typ=${speicherTyp}`, {
             method: 'GET',
             headers: {
                 'content-type': 'application/json'

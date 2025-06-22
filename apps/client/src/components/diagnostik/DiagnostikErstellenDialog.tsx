@@ -9,8 +9,11 @@ interface DiagnostikErstellenDialogProps {
 export function DiagnostikErstellenDialog({ closeDialog }: DiagnostikErstellenDialogProps) {
 
     async function handleSubmit(diagnostik: any) {
-       const res = await createDiagnostik(diagnostik);
-       alert(JSON.stringify(res))
+        const res = await createDiagnostik(diagnostik);
+        alert(JSON.stringify(res))
+        if (res.success) {
+            closeDialog()
+        }
     }
 
     return <Dialog className="overflow-auto! p-8">

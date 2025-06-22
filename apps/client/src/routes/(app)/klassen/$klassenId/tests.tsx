@@ -2,7 +2,7 @@ import { DiagnostikListItem } from '@/components/diagnostik/DiagnostikListItem';
 import { List } from '@/components/List';
 import { useDiagnostiken } from '@/components/shared/useDiagnostiken';
 import { KlasseNav } from '@/layout/KlasseNav'
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/(app)/klassen/$klassenId/tests')({
   component: RouteComponent,

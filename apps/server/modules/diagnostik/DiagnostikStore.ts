@@ -53,7 +53,7 @@ export class DiagnostikStore {
             return undefined;
         }
     }
-    async getDiagnostiken() {
+    async getDiagnostiken(speicherTyp: Diagnostik['speicherTyp']) {
         if (!this.connection) {
             return {
                 success: false,
@@ -69,7 +69,8 @@ export class DiagnostikStore {
                 SELECT id, name, beschreibung, erstellungsdatum, obere_grenze AS obereGrenze, 
                     untere_grenze AS untereGrenze, typ, user_id AS userId, klassen_id AS klasseId
                 FROM diagnostikverfahren
-            `);
+                WHERE typ = ?
+            `, [speicherTyp]);
 
             const result: Diagnostik[] = [];
 
@@ -155,7 +156,7 @@ export class DiagnostikStore {
         try {
             await conn.beginTransaction();
 
-            let { name, beschreibung, obereGrenze, untereGrenze, klasseId } = diagnostik
+            let { name, beschreibung, obereGrenze, untereGrenze, klasseId, speicherTyp } = diagnostik
             if (diagnostik.erstellungsTyp === 'benutzerdefiniert') {
 
             }
@@ -163,7 +164,7 @@ export class DiagnostikStore {
             const [result] = await conn.execute<ResultSetHeader>(`
                 INSERT INTO diagnostikverfahren (name, beschreibung, erstellungsdatum, obere_grenze, untere_grenze, typ, user_id, klassen_id) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            `, [name, beschreibung, new Date().toISOString().split('T')[0],obereGrenze, untereGrenze, DiagnostikTyp.LAUFENDES_VERFAHREN, userId, klasseId]);
+            `, [name, beschreibung, new Date().toISOString().split('T')[0],obereGrenze, untereGrenze, speicherTyp, userId, klasseId]);
 
             const id = result.insertId;
 

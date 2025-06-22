@@ -3,11 +3,12 @@ import { List } from "../List"
 import { DiagnostikErstellenDialog } from "./DiagnostikErstellenDialog"
 import { DiagnostikListItem } from "./DiagnostikListItem"
 import { useDiagnostiken } from "../shared/useDiagnostiken"
+import { DiagnostikTyp } from "@thesis/diagnostik"
 
-export function DiagnostikList() {
+export function DiagnostikVorlagenList() {
     const [isCreateDialogShown, setIsCreateDialogShown] = useState(false)
 
-    const query = useDiagnostiken()
+    const query = useDiagnostiken(DiagnostikTyp.VORLAGE)
 
     if (query.isPending) {
         return <p>...Loading</p>
