@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router"
-import { createDiagnostik, DiagnostikTyp, type Diagnostik } from "@thesis/diagnostik"
+import { DiagnostikTyp, type Diagnostik } from "@thesis/diagnostik"
 import { useState } from "react"
 import { DiagnostikListItemInfoDialog } from "./DiagnostikListItemInfoDialog"
 import { Edit2, Info, Trash2 } from "lucide-react"
@@ -10,12 +10,14 @@ import { DeleteDiagnostikDialog } from "./DeleteDiagnostikDialog"
 import { ErrorDialog } from "../dialog/MessageDialog"
 import { ButtonLight } from "../ButtonLight"
 import { DiagnostikVorlageSelectClassDialog } from "./DiagnostikVorlageSelectClassDialog"
+import { DiagnostikEditDialog } from "./DiagnostikEditDialog"
 
 export const DiagnostikListItem = ({ diagnostik }: { diagnostik: Diagnostik }) => {
 
     const [isInfoDialogShown, setIsInfoDialogShown] = useState(false)
     const [isDeleteDialogShown, setIsDeleteDialogShown] = useState(false)
     const [isSelectClassDialogShown, setIsSelectClassDialogShown] = useState(false)
+    const [isEditDialogShown, setIsEditDialogShown] = useState(false)
     const [responseMessage, setResponseMsg] = useState('')
 
     const klassenQuery = useKlassen()
@@ -48,6 +50,14 @@ export const DiagnostikListItem = ({ diagnostik }: { diagnostik: Diagnostik }) =
                 closeDialog={() => setIsDeleteDialogShown(false)}
             />
         }
+        {
+            isEditDialogShown && <DiagnostikEditDialog 
+                closeDialog={() => setIsEditDialogShown(false)} 
+                diagnostik={diagnostik}
+                setResponseMsg={setResponseMsg}
+            />
+        }
+
         {(responseMessage !== '') && <ErrorDialog message={responseMessage} closeDialog={() => setResponseMsg('')}/>}
         <div className="flex justify-between items-center">
             <Link className="flex gap-2 w-full"
@@ -80,7 +90,7 @@ export const DiagnostikListItem = ({ diagnostik }: { diagnostik: Diagnostik }) =
                 
 
                 <Tooltip content={'Bearbeiten'}>
-                    <button onClick={() => setIsInfoDialogShown(true)}>
+                    <button onClick={() => setIsEditDialogShown(true)}>
                     <Edit2 />
                 </button>
                 </Tooltip>

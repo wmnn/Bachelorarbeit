@@ -164,7 +164,7 @@ export class DiagnostikStore {
             const [result] = await conn.execute<ResultSetHeader>(`
                 INSERT INTO diagnostikverfahren (name, beschreibung, erstellungsdatum, obere_grenze, untere_grenze, typ, user_id, klassen_id) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            `, [name, beschreibung, new Date().toISOString().split('T')[0],obereGrenze, untereGrenze, speicherTyp, userId, klasseId]);
+            `, [name, beschreibung, new Date().toISOString().split('T')[0], obereGrenze, untereGrenze, speicherTyp, userId, klasseId]);
 
             const id = result.insertId;
 
@@ -206,6 +206,71 @@ export class DiagnostikStore {
             conn.release();
         }
     }
+
+    async editDiagnostik(userId: number, diagnostik: Diagnostik) {
+        if (!this.connection) {
+            return STANDARD_FEHLER
+        }
+
+        const conn = await this.connection.getConnection();
+
+        try {
+            await conn.beginTransaction();
+
+            const { id, name, beschreibung, obereGrenze, untereGrenze, klasseId, speicherTyp } = diagnostik;
+
+            await conn.execute(`
+                UPDATE diagnostikverfahren
+                SET name = ?, beschreibung = ?, obere_grenze = ?, untere_grenze = ?, typ = ?, klassen_id = ?
+                WHERE id = ? AND user_id = ?
+            `, [name, beschreibung, obereGrenze, untereGrenze, speicherTyp, klasseId, id, userId]);
+
+            await conn.execute(`DELETE FROM diagnostikverfahren_klassenstufen WHERE diagnostikverfahren_id = ?`, [id]);
+            await conn.execute(`DELETE FROM diagnostikverfahren_kategorien WHERE diagnostikverfahren_id = ?`, [id]);
+            await conn.execute(`DELETE FROM diagnostikverfahren_farbbereiche WHERE diagnostikverfahren_id = ?`, [id]);
+
+            for (const element of diagnostik.geeigneteKlassen || []) {
+                await conn.execute(`
+                    INSERT INTO diagnostikverfahren_klassenstufen (diagnostikverfahren_id, klassenstufe)
+                    VALUES (?, ?)
+                `, [id, element]);
+            }
+
+            for (const element of diagnostik.kategorien || []) {
+                await conn.execute(`
+                    INSERT INTO diagnostikverfahren_kategorien (diagnostikverfahren_id, kategorie)
+                    VALUES (?, ?)
+                `, [id, element]);
+            }
+
+            for (const element of diagnostik.farbbereiche || []) {
+                let { obereGrenze } = element
+                obereGrenze = (obereGrenze ?? null) as any
+                obereGrenze = (obereGrenze == '' ? null : obereGrenze) as any
+                await conn.execute(`
+                    INSERT INTO diagnostikverfahren_farbbereiche (diagnostikverfahren_id, hex_farbe, obere_grenze)
+                    VALUES (?, ?, ?)
+                `, [id, element.hexFarbe, obereGrenze]);
+            }
+
+            await conn.commit();
+
+            return {
+                success: true,
+                message: 'Die Diagnostik wurde erfolgreich aktualisiert.'
+            };
+        } catch (e) {
+            console.error(e);
+            await conn.rollback();
+            return {
+                success: false,
+                message: 'Beim Aktualisieren der Diagnostik ist ein Fehler aufgetreten.'
+            };
+        } finally {
+            conn.release();
+        }
+    }
+
 
     async addErgebnisse(ergebnisse: Ergebnis[], diagnostikId: number, datum: string): Promise<DatabaseMessage> {
         if (!this.connection) return STANDARD_FEHLER;

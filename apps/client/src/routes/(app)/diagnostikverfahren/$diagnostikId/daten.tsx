@@ -1,6 +1,5 @@
 import { ButtonLight } from '@/components/ButtonLight';
 import { useErgebnisse } from '@/components/diagnostik/useErgebnisse';
-import { Input } from '@/components/Input';
 import { useSchuelerStore } from '@/components/schueler/SchuelerStore';
 import { useAllSchueler } from '@/components/schueler/useSchueler';
 import { DiagnostikNav } from '@/layout/DiagnostikNav';

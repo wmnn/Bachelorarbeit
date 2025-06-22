@@ -91,88 +91,123 @@ function isValidDateFormat(dateStr: string) {
     return regex.test(dateStr);
 }
 
-router.post('/',async (
+function validateDiagnostikInput(
+  diagnostik: CreateDiagnostikRequestBody,
+  userId?: number
+): { success: boolean; message?: string } {
+    const { name, speicherTyp, klasseId, vorlageId, erstellungsTyp } = diagnostik;
+
+    if (!userId) {
+        return { 
+            success: false, 
+            message: 'Kein Benutzer identifiziert.' 
+        };
+    }
+
+    if (!name || name.trim() === '') {
+        return { 
+            success: false, 
+            message: 'Eine Diagnostik muss einen Namen haben.' 
+
+        };
+    }
+
+    if (![DiagnostikTyp.VORLAGE, DiagnostikTyp.LAUFENDES_VERFAHREN].includes(speicherTyp)) {
+        return { 
+            success: false, 
+            message: 'Es wurde ein ungültiger Speichertyp definiert.' 
+        };
+    }
+
+    if (speicherTyp === DiagnostikTyp.LAUFENDES_VERFAHREN) {
+        if (!klasseId || klasseId === -1) {
+            return { 
+                success: false, 
+                message: 'Eine Diagnostik muss für eine Klasse erstellt werden.' 
+
+            };
+        }
+
+        if (erstellungsTyp === 'Vorlage' && (!vorlageId || vorlageId === -1)) {
+            return { 
+                success: false, 
+                message: 'Es muss eine Vorlage ausgewählt werden.' 
+
+            };
+        }
+
+        if (erstellungsTyp === 'benutzerdefiniert') {
+            const grenzen = validierungGrenzen(diagnostik);
+            if (!grenzen.success) return grenzen;
+
+            const farben = validierungFarbbereiche(diagnostik);
+            if (!farben.success) return farben;
+        }
+    }
+
+    if (speicherTyp === DiagnostikTyp.VORLAGE) {
+        if (klasseId && klasseId !== -1) {
+            return { 
+                success: false, 
+                message: 'Bei einer Vorlage darf keine Klasse ausgewählt sein.' 
+            };
+        }
+
+        if (erstellungsTyp === 'Vorlage') {
+            return { 
+                success: false, 
+                message: 'Eine Vorlage muss benutzerdefiniert sein.' 
+            };
+        }
+
+        const grenzen = validierungGrenzen(diagnostik);
+        if (!grenzen.success) return grenzen;
+
+        const farben = validierungFarbbereiche(diagnostik);
+        if (!farben.success) return farben;
+    }
+
+    return { success: true };
+}
+
+
+router.post('/', async (
     req: Request<{}, {}, CreateDiagnostikRequestBody>,
     res: Response<CreateDiagnostikResponseBody>
 ): Promise<any> => {
     if (!req.userId) {
         return;
     }
-    const diagnostik = req.body
-    const { name, speicherTyp, klasseId, vorlageId, erstellungsTyp, obereGrenze, untereGrenze } = diagnostik
-    
-    // Name
-    if (!name || name == '') {
-        res.status(400).json({
-            success: false,
-            message: 'Eine Diagnostik muss einen Namen haben.'
-        });
-        return
-    }
+    const diagnostik = req.body;
+    const validation = validateDiagnostikInput(diagnostik, req.userId);
 
-    if (speicherTyp !== DiagnostikTyp.VORLAGE && speicherTyp !== DiagnostikTyp.LAUFENDES_VERFAHREN) {
+    if (!validation.success) {
         return res.status(400).json({
             success: false,
-            message: 'Es wurde ein ungültiger Speichertyp definiert.'
+            message: validation.message ?? 'Ungültige Eingabe.'
+        });
+    }
+  
+    const msg = await getDiagnostikStore().createDiagnostik(req.userId, diagnostik)
+    res.status(msg.success ? 200 : 400).json(msg);
+});
+
+router.put('/', async (
+    req: Request<{}, {}, CreateDiagnostikRequestBody>,
+    res: Response<CreateDiagnostikResponseBody>
+): Promise<any> => {
+    const diagnostik = req.body;
+    const validation = validateDiagnostikInput(diagnostik, req.userId);
+
+    if (!validation.success) {
+        return res.status(400).json({
+            success: false,
+            message: validation.message ?? 'Ungültige Eingabe.'
         });
     }
 
-    // Klasse
-    if (speicherTyp === DiagnostikTyp.LAUFENDES_VERFAHREN) {
-        if (!klasseId || klasseId == -1) {
-            return res.status(400).json({
-                success: false,
-                message: 'Eine Diagnostik muss für eine Klasse erstellt werden.'
-            });
-        }
-        if (erstellungsTyp === 'Vorlage' && (!vorlageId || vorlageId === -1)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Es muss eine Vorlage ausgewählt werden.'
-            });
-        }
-        if (erstellungsTyp === 'benutzerdefiniert') {
-            const validierungGrenzenRes = validierungGrenzen(diagnostik);
-            if (!validierungGrenzenRes.success) {
-                return res.status(400).json(validierungGrenzenRes)
-            }
-
-            const validierungFarbbereicheRes = validierungFarbbereiche(diagnostik)
-            if (!validierungFarbbereicheRes.success) {
-                return res.status(400).json(validierungFarbbereicheRes)
-            }
-        }
-        
-    }
-   
-    if (speicherTyp === DiagnostikTyp.VORLAGE) {
-        if (klasseId && klasseId !== -1) {
-            return res.status(400).json({
-                success: false,
-                message: 'Bei einer Vorlage darf keine Klasse ausgewählt sein.'
-            });
-        }
-        
-        // Erstellungstyp
-        if (erstellungsTyp === 'Vorlage') {
-            return res.status(400).json({
-                success: false,
-                message: 'Eine Vorlage muss benutzerdefiniert sein.'
-            });
-        }
-
-        const validierungGrenzenRes = validierungGrenzen(diagnostik);
-        if (!validierungGrenzenRes.success) {
-            return res.status(400).json(validierungGrenzenRes)
-        }
-
-        const validierungFarbbereicheRes = validierungFarbbereiche(diagnostik)
-        if (!validierungFarbbereicheRes.success) {
-            return res.status(400).json(validierungFarbbereicheRes)
-        }
-    }
-    const msg = await getDiagnostikStore().createDiagnostik(req.userId, diagnostik)
-    res.status(msg.success ? 200 : 400).json(msg);
+    const msg = await getDiagnostikStore().editDiagnostik(req.userId!, diagnostik);
+    return res.status(msg.success ? 200 : 400).json(msg);
 });
 
 function validierungGrenzen(diagnostik: Diagnostik): CreateDiagnostikResponseBody {
@@ -214,7 +249,7 @@ function validierungFarbbereiche(diagnostik: Diagnostik): CreateDiagnostikRespon
             message: 'Es wurde kein Mindeststandard definiert.'
         }
     }
-    if (farbbereiche.filter(item => item.obereGrenze === undefined).length !== 1) {
+    if (farbbereiche.filter(item => [undefined, '', 'undefined', null].includes(item.obereGrenze as any)).length !== 1 ) {
         return {
             success: false,
             message: 'Ein Farbbereich muss undefiniert sein.'

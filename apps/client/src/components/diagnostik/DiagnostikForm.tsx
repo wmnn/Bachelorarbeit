@@ -13,13 +13,18 @@ interface DiagnostikFormProps {
   submitButtonClassName?: string,
   cancelButtonClassName?: string,
   submitButtonText: string,
-  initialDiagnostik?: any,
-  title?: string
+  initialDiagnostik?: Diagnostik,
+  title?: string,
 }
 
 export const DiagnostikForm = (props: DiagnostikFormProps) => {
-    const { submitButtonText, submitButtonClassName, cancelButtonClassName, onAbort, onSubmit } = props;
-    const [diagnostik, setDiagnostik] = useState<Diagnostik>({
+    const { submitButtonText, submitButtonClassName, cancelButtonClassName, onAbort, onSubmit, initialDiagnostik } = props;
+    const [diagnostik, setDiagnostik] = useState<Diagnostik>(initialDiagnostik ? {
+        ...initialDiagnostik,
+        erstellungsTyp: "benutzerdefiniert",
+        speicherTyp: DiagnostikTyp.LAUFENDES_VERFAHREN
+    } : {
+        id: -1,
         name: '',
         beschreibung: '',
         erstellungsTyp: 'Vorlage',
@@ -284,7 +289,7 @@ const Farbbereiche = (props: FarbbereicheProps) => {
                     }
 
                     {
-                        bereich.obereGrenze !== undefined && <Input type="number" 
+                        idx !== 0 && <Input type="number" 
                             ref={(el) => {
                                 inputRefs.current[idx] = el;
                             }}

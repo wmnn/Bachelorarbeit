@@ -32,6 +32,33 @@ export const createDiagnostik = async (diagnostik: Diagnostik) => {
     }
 
 }
+
+export const editDiagnostik = async (diagnostik: Diagnostik) => {
+    
+    try {
+        const res = await fetch(DIAGNOSTIK_ENDPOINT, {
+            method: 'PUT',
+            body: JSON.stringify(diagnostik),
+            headers: {
+                'content-type': 'application/json'
+            },
+        })
+
+        if (res.status === 403) {
+            window.location.href = '/login'
+        }
+    
+        return await res.json() as CreateDiagnostikResponseBody;
+        
+    } catch (e) {
+        return {
+            success: false,
+            message: 'Die Diagnostik konnte nicht bearbeitet werden.'
+        };
+    }
+
+}
+
 export type GetDiagnostikenResponseBody = Diagnostik[]
 
 export const getDiagnostiken = async (speicherTyp: DiagnostikTyp) => {
