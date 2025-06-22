@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router"
-import { DiagnostikTyp, type Diagnostik } from "@thesis/diagnostik"
+import { DiagnostikTyp, Sichtbarkeit, updateSichtbarkeit, type Diagnostik } from "@thesis/diagnostik"
 import { useState } from "react"
 import { DiagnostikListItemInfoDialog } from "./DiagnostikListItemInfoDialog"
 import { Edit2, Info, Trash2 } from "lucide-react"
@@ -11,6 +11,9 @@ import { ErrorDialog } from "../dialog/MessageDialog"
 import { ButtonLight } from "../ButtonLight"
 import { DiagnostikVorlageSelectClassDialog } from "./DiagnostikVorlageSelectClassDialog"
 import { DiagnostikEditDialog } from "./DiagnostikEditDialog"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
+import { useQueryClient } from "@tanstack/react-query"
+import { DIAGNOSTIKEN_QUERY_KEY } from "@/reactQueryKeys"
 
 export const DiagnostikListItem = ({ diagnostik }: { diagnostik: Diagnostik }) => {
 
@@ -19,9 +22,18 @@ export const DiagnostikListItem = ({ diagnostik }: { diagnostik: Diagnostik }) =
     const [isSelectClassDialogShown, setIsSelectClassDialogShown] = useState(false)
     const [isEditDialogShown, setIsEditDialogShown] = useState(false)
     const [responseMessage, setResponseMsg] = useState('')
+    const queryClient = useQueryClient()
 
     const klassenQuery = useKlassen()
     const isVorlage = diagnostik.speicherTyp == DiagnostikTyp.VORLAGE
+
+    async function handleSichtbarkeitChange(newValue: Sichtbarkeit) {
+        const res = await updateSichtbarkeit(`${diagnostik?.id ?? -1}`, newValue)
+        setResponseMsg(res.message)
+        if (res.success) {
+            queryClient.invalidateQueries({ queryKey: [DIAGNOSTIKEN_QUERY_KEY]})
+        }
+    }
 
     if (klassenQuery.isPending) {
         return <p>...Loading</p>
@@ -75,6 +87,28 @@ export const DiagnostikListItem = ({ diagnostik }: { diagnostik: Diagnostik }) =
                 
             </Link>
             <div className="flex gap-4 items-center">
+                { 
+                    isVorlage && <Select 
+                        value={`${diagnostik.sichtbarkeit}`}
+                        onValueChange={async (val) => {
+                            const sichtbarkeit = parseInt(val) as Sichtbarkeit
+                            handleSichtbarkeitChange(sichtbarkeit)
+                        }}
+                    >
+                        <SelectTrigger className="xl:w-[200px] w-min">
+                            <SelectValue placeholder="Keine Rolle"/>
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value={`${Sichtbarkeit.PRIVAT}`}>
+                                privat    
+                            </SelectItem>  
+                            <SelectItem value={`${Sichtbarkeit.ÖFFENTLICH}`}>
+                                öffentlich
+                            </SelectItem>                 
+                        </SelectContent>
+                    </Select>    
+                }
+
                 { 
                     isVorlage && <ButtonLight onClick={() => setIsSelectClassDialogShown(true)}>
                         Benutzen

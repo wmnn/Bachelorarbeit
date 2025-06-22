@@ -16,7 +16,7 @@ export function DiagnostikErstellenDialog({ closeDialog }: DiagnostikErstellenDi
         alert(JSON.stringify(res))
         queryClient.invalidateQueries({ queryKey: [DIAGNOSTIKEN_QUERY_KEY]})
         if (res.success) {
-            closeDialog()
+            // closeDialog()
         }
     }
 

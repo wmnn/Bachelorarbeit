@@ -171,6 +171,17 @@ function validateDiagnostikInput(
     return { success: true };
 }
 
+router.put('/sichtbarkeit', async (req, res): Promise<any> => {
+    const {
+        diagnostikId, sichtbarkeit
+    } = req.query as {
+        diagnostikId: string,
+        sichtbarkeit: string
+    }
+
+    const msg = await getDiagnostikStore().updateSichtbarkeit(parseInt(diagnostikId), parseInt(sichtbarkeit));
+    res.status(msg.success ? 200 : 400).json(msg);
+});
 
 router.post('/', async (
     req: Request<{}, {}, CreateDiagnostikRequestBody>,

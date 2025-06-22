@@ -1,5 +1,5 @@
 import { DIAGNOSTIK_ENDPOINT } from "../../../config/config";
-import type { Diagnostik, DiagnostikTyp, Ergebnis, Row } from "../models";
+import { Sichtbarkeit, type Diagnostik, type DiagnostikTyp, type Ergebnis, type Row } from "../models";
 
 export type CreateDiagnostikRequestBody = Diagnostik
 export interface CreateDiagnostikResponseBody {
@@ -28,6 +28,31 @@ export const createDiagnostik = async (diagnostik: Diagnostik) => {
         return {
             success: false,
             message: 'Die Diagnostik konnte nicht erstellt werden.'
+        };
+    }
+
+}
+
+export const updateSichtbarkeit = async (diagnostikId: string, sichtbarkeit: Sichtbarkeit) => {
+    
+    try {
+        const res = await fetch(DIAGNOSTIK_ENDPOINT + `/sichtbarkeit?diagnostikId=${diagnostikId}&sichtbarkeit=${sichtbarkeit}`, {
+            method: 'PUT',
+            headers: {
+                'content-type': 'application/json'
+            },
+        })
+
+        if (res.status === 403) {
+            window.location.href = '/login'
+        }
+    
+        return await res.json() as CreateDiagnostikResponseBody;
+        
+    } catch (e) {
+        return {
+            success: false,
+            message: 'Die Sichtbarkeit konnte nicht aktualisiert werden.'
         };
     }
 

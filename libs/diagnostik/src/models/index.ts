@@ -2,6 +2,10 @@ export enum DiagnostikTyp {
     VORLAGE,
     LAUFENDES_VERFAHREN
 }
+export enum Sichtbarkeit {
+    PRIVAT,
+    ÖFFENTLICH
+}
 export type Diagnostik = {
     id?: number,
     name: string,
@@ -18,7 +22,8 @@ export type Diagnostik = {
     farbbereiche?: Farbbereich[],
     anhang?: any[],
     geeigneteKlassen?: string[],
-    kategorien?: string[]
+    kategorien?: string[],
+    sichtbarkeit?: Sichtbarkeit
 }
 
 export enum DiagnostikNumberFormat {

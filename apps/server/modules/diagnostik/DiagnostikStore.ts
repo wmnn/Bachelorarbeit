@@ -18,7 +18,7 @@ export class DiagnostikStore {
         try {
             const [rows] = await conn.execute<RowDataPacket[]>(`
                 SELECT id, name, beschreibung, erstellungsdatum, obere_grenze AS obereGrenze, 
-                    untere_grenze AS untereGrenze, typ, user_id AS userId, klassen_id AS klasseId
+                    untere_grenze AS untereGrenze, typ, user_id AS userId, klassen_id AS klasseId, sichtbarkeit
                 FROM diagnostikverfahren
                 WHERE id = ?
             `, [diagnostikId]);
@@ -37,7 +37,7 @@ export class DiagnostikStore {
                 id: diag.id,
                 name: diag.name,
                 beschreibung: diag.beschreibung,
-                // erstellungsdatum: diag.erstellungsdatum,
+                erstellungsDatum: diag.erstellungsdatum,
                 obereGrenze: diag.obereGrenze,
                 untereGrenze: diag.untereGrenze,
                 speicherTyp: diag.typ,
@@ -45,7 +45,8 @@ export class DiagnostikStore {
                 klasseId: diag.klasseId,
                 geeigneteKlassen,
                 kategorien,
-                farbbereiche
+                farbbereiche,
+                sichtbarkeit: parseInt(diag.sichtbarkeit)
             };
 
         } catch (e) {
@@ -67,7 +68,7 @@ export class DiagnostikStore {
         try {
             const [rows] = await conn.execute<RowDataPacket[]>(`
                 SELECT id, name, beschreibung, erstellungsdatum, obere_grenze AS obereGrenze, 
-                    untere_grenze AS untereGrenze, typ, user_id AS userId, klassen_id AS klasseId
+                    untere_grenze AS untereGrenze, typ, user_id AS userId, klassen_id AS klasseId, sichtbarkeit
                 FROM diagnostikverfahren
                 WHERE typ = ?
             `, [speicherTyp]);
@@ -93,7 +94,8 @@ export class DiagnostikStore {
                     klasseId: parseInt(diag.klasseId),
                     geeigneteKlassen,
                     kategorien,
-                    farbbereiche
+                    farbbereiche,
+                    sichtbarkeit: parseInt(diag.sichtbarkeit)
                 });
             }
 
@@ -162,9 +164,9 @@ export class DiagnostikStore {
             }
             
             const [result] = await conn.execute<ResultSetHeader>(`
-                INSERT INTO diagnostikverfahren (name, beschreibung, erstellungsdatum, obere_grenze, untere_grenze, typ, user_id, klassen_id) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            `, [name, beschreibung, new Date().toISOString().split('T')[0], obereGrenze, untereGrenze, speicherTyp, userId, klasseId]);
+                INSERT INTO diagnostikverfahren (name, beschreibung, erstellungsdatum, obere_grenze, untere_grenze, typ, user_id, klassen_id, sichtbarkeit) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `, [name, beschreibung, new Date().toISOString().split('T')[0], obereGrenze, untereGrenze, speicherTyp, userId, klasseId, diagnostik.sichtbarkeit ?? null]);
 
             const id = result.insertId;
 
@@ -265,6 +267,35 @@ export class DiagnostikStore {
             return {
                 success: false,
                 message: 'Beim Aktualisieren der Diagnostik ist ein Fehler aufgetreten.'
+            };
+        } finally {
+            conn.release();
+        }
+    }
+
+    async updateSichtbarkeit(diagnostikId: number, sichtbarkeit: number) {
+        if (!this.connection) {
+            return STANDARD_FEHLER
+        }
+
+        const conn = await this.connection.getConnection();
+
+        try {
+            await conn.execute(`
+                UPDATE diagnostikverfahren
+                SET sichtbarkeit = ?
+                WHERE id = ?
+            `, [sichtbarkeit, diagnostikId]);
+
+            return {
+                success: true,
+                message: 'Die Sichtbarkeit wurde erfolgreich aktualisiert.'
+            };
+        } catch (error) {
+            console.error(error);
+            return {
+                success: false,
+                message: 'Fehler beim Aktualisieren der Sichtbarkeit.'
             };
         } finally {
             conn.release();

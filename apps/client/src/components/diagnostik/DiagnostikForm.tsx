@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { ButtonLight } from "../ButtonLight"
 import { Input } from "../Input";
-import { DiagnostikNumberFormat, DiagnostikTyp, sortFarbbereiche, type Diagnostik, type Farbbereich } from '@thesis/diagnostik'
+import { DiagnostikNumberFormat, DiagnostikTyp, Sichtbarkeit, sortFarbbereiche, type Diagnostik, type Farbbereich } from '@thesis/diagnostik'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { useKlassen } from "../shared/useKlassen";
 import { getTitle, type Klasse } from "@thesis/schule";
 import { MultiInput } from "../shared/MultiInput";
+import { DialogWithButtons } from "../dialog/DialogWithButtons";
 
 interface DiagnostikFormProps {
   onAbort: () => void,
@@ -33,8 +34,10 @@ export const DiagnostikForm = (props: DiagnostikFormProps) => {
         farbbereiche: [{
             hexFarbe: '#129600'
         }],
-        speicherTyp: DiagnostikTyp.LAUFENDES_VERFAHREN
+        speicherTyp: DiagnostikTyp.LAUFENDES_VERFAHREN,
+        sichtbarkeit: Sichtbarkeit.PRIVAT
     })
+    const [isSichtbarkeitDialogShown, setIsSichtbarkeitDialogShown] = useState(false)
 
     const klassenQuery = useKlassen()
 
@@ -61,10 +64,46 @@ export const DiagnostikForm = (props: DiagnostikFormProps) => {
     
     return <form className="flex flex-col gap-2">
         <div className="flex justify-end">
+
+        {
+            isSichtbarkeitDialogShown && <DialogWithButtons
+                closeDialog={() => setIsSichtbarkeitDialogShown(false)}
+                onSubmit={handleVorlageButton}
+                submitButtonText="Vorlage erstellen"
+            >
+                <label>
+                    Sichtbarkeit
+                </label>
+                <Select 
+                    value={`${diagnostik.sichtbarkeit}`}
+                    onValueChange={async (val: string) => {
+                        setDiagnostik(prev => ({
+                            ...prev,
+                            sichtbarkeit: parseInt(val)
+                        }))
+                    }}
+                >
+                    <SelectTrigger className="xl:w-[200px] w-min">
+                        <SelectValue placeholder="Keine Sichtbarkeit ausgewählt"/>
+                    </SelectTrigger>
+                    <SelectContent>
+    
+                        <SelectItem value={`${Sichtbarkeit.PRIVAT}`}>
+                            privat
+                        </SelectItem>  
+                        <SelectItem value={`${Sichtbarkeit.ÖFFENTLICH}`}>
+                            öffentlich
+                        </SelectItem>  
+                        
+                    </SelectContent>
+                </Select>  
+            </DialogWithButtons>
+        }
             
-            <button type="button" className="border-[1px] border-gray-200 px-2 py-2 rounded-lg hover:bg-black hover:text-white transition-all" onClick={() => handleVorlageButton()}>
-                Als Vorlage speichern
-            </button>
+        <button type="button" className="border-[1px] border-gray-200 px-2 py-2 rounded-lg hover:bg-black hover:text-white transition-all" onClick={() => setIsSichtbarkeitDialogShown(true)}>
+            Als Vorlage speichern
+        </button>
+
         </div>
         <div className="flex flex-col">
             <label>Name</label>
