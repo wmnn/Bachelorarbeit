@@ -1,14 +1,21 @@
 import {type Farbbereich } from './models'
 
 export function sortFarbbereiche(farbbereiche: Farbbereich[]): Farbbereich[] {
-    return farbbereiche.sort((a, b) => {
-        const aVal = a.obereGrenze === '' || a.obereGrenze === undefined ? null : parseFloat(a.obereGrenze as any);
-        const bVal = b.obereGrenze === '' || b.obereGrenze === undefined ? null : parseFloat(b.obereGrenze as any);
+  return farbbereiche.sort((a, b) => {
+    const parseGrenze = (val: string | number | undefined): number | null => {
+        if (val === '' || val === undefined) return null;
+        if (typeof val === 'number') return val;
+        const parsed = parseFloat(val);
+        return isNaN(parsed) ? null : parsed;
+    };
 
-        if (aVal === null && bVal === null) return 0;
-        if (aVal === null) return -1; // a comes first
-        if (bVal === null) return 1;  // b comes first
+    const aVal = parseGrenze(a.obereGrenze);
+    const bVal = parseGrenze(b.obereGrenze);
 
-        return bVal - aVal; // Descending
-    });
+    if (aVal === null && bVal === null) return 0;
+    if (aVal === null) return -1;
+    if (bVal === null) return 1;
+
+    return bVal - aVal;
+  });
 }
