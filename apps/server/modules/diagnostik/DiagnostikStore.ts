@@ -84,7 +84,7 @@ export class DiagnostikStore {
                     id: diag.id,
                     name: diag.name,
                     beschreibung: diag.beschreibung,
-                    // erstellungsdatum: diag.erstellungsdatum,
+                    erstellungsDatum: diag.erstellungsdatum,
                     obereGrenze: diag.obereGrenze,
                     untereGrenze: diag.untereGrenze,
                     speicherTyp: diag.typ,

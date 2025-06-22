@@ -1,10 +1,8 @@
 import { useState } from "react"
 import { List } from "../List"
 import { DiagnostikErstellenDialog } from "./DiagnostikErstellenDialog"
-import { useQuery } from "@tanstack/react-query"
-import { getDiagnostiken, type Diagnostik } from "@thesis/diagnostik"
-import { DIAGNOSTIKEN_QUERY_KEY } from "@/reactQueryKeys"
 import { DiagnostikListItem } from "./DiagnostikListItem"
+import { useDiagnostiken } from "../shared/useDiagnostiken"
 
 interface DiagnostikListProps {
 
@@ -12,14 +10,13 @@ interface DiagnostikListProps {
 export function DiagnostikList(props: DiagnostikListProps) {
     const [isCreateDialogShown, setIsCreateDialogShown] = useState(false)
 
-    const { isPending, data: diagnostiken } = useQuery<Diagnostik[]>({
-        queryKey: [DIAGNOSTIKEN_QUERY_KEY],
-        queryFn: getDiagnostiken,
-    })
+    const query = useDiagnostiken()
 
-    if (isPending) {
+    if (query.isPending) {
         return <p>...Loading</p>
     }
+
+    const diagnostiken = query.data
 
     const Header = <div className="mt-8">
         <h1>

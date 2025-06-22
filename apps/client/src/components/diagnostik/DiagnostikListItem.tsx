@@ -1,8 +1,30 @@
 import { Link } from "@tanstack/react-router"
 import type { Diagnostik } from "@thesis/diagnostik"
+import { useState } from "react"
+import { DiagnostikListItemInfoDialog } from "./DiagnostikListItemInfoDialog"
+import { Info } from "lucide-react"
+import { useKlassen } from "../shared/useKlassen"
+import { getTitle } from "@thesis/schule"
 
 export const DiagnostikListItem = ({ diagnostik }: { diagnostik: Diagnostik }) => {
-    return <li className="px-2">
+
+    const [isInfoDialogShown, setIsInfoDialogShown] = useState(false)
+
+    const klassenQuery = useKlassen()
+
+    if (klassenQuery.isPending) {
+        return <p>...Loading</p>
+    }
+    const klassen = klassenQuery.data
+    const klasse = klassen.find(item => item.id == diagnostik.klasseId)
+
+    return <li className="px-4 py-4">
+        {
+            isInfoDialogShown && <DiagnostikListItemInfoDialog 
+                closeDialog={() => setIsInfoDialogShown(false)} 
+                diagnostik={diagnostik}
+            />
+        }
         <div className="flex justify-between items-center">
             <Link className="flex gap-2 w-full"
                 to="/diagnostikverfahren/$diagnostikId"
@@ -10,19 +32,24 @@ export const DiagnostikListItem = ({ diagnostik }: { diagnostik: Diagnostik }) =
                     diagnostikId: `${diagnostik.id}`
                 }}
             >
-                <p>{diagnostik.name}</p>    
+                <p>{diagnostik.name}</p>   
+                {
+                    diagnostik.erstellungsDatum && <label>
+                        Erstellt am: {new Date(diagnostik.erstellungsDatum).toLocaleDateString('de')}
+                    </label> 
+                }
+                
             </Link>
+            <div className="flex gap-4 items-center">
+                <button onClick={() => setIsInfoDialogShown(true)}>
+                    <Info />
+                </button>
+
+                <p>{klasse !== undefined && getTitle(klasse)}</p>
+            </div>
             
-            <p>{diagnostik.klasseId}</p>
-        </div>
-
-        {/* {JSON.stringify(diagnostik)} */}
-
-        <span>
-            {diagnostik.beschreibung}
-        </span>
-        
-        
+            
+        </div>        
     
     </li>
 }
