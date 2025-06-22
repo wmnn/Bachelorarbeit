@@ -1,3 +1,4 @@
+import { KlasseNav } from '@/layout/KlasseNav'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/(app)/klassen/$klassenId/tests')({
@@ -5,5 +6,8 @@ export const Route = createFileRoute('/(app)/klassen/$klassenId/tests')({
 })
 
 function RouteComponent() {
-  return <div>Hello "/(app)/klassen/$klassenId/tests"!</div>
+  const { klassenId } = Route.useParams();
+  return <div className='w-full flex flex-col gap-8'>
+    <KlasseNav klassenId={klassenId} />
+  </div>
 }

@@ -39,28 +39,7 @@ function RouteComponent() {
   }
 
   return <div className='w-full flex flex-col gap-8'>
-
-    {/* //TODO refactor to KlasseNav */}
-    <div className='flex justify-between px-8 pt-8'>
-      <div className='flex gap-2 items-center'>
-        <button onClick={() => router.history.back()}>
-          <MoveLeft />
-        </button>
-        <h1>{getTitle(klasse)}</h1>
-      </div>
-
-      <Link
-        to='/klassen/$klassenId/edit'
-        params={{
-          klassenId
-        }}
-      >
-        <Edit />
-      </Link>
-    </div>
-
     <KlasseNav klassenId={klassenId} />
-    
     <div className='px-2 xl:px-8'>
       <div className='mb-8'>
         <h2>Klassenlehrer</h2>

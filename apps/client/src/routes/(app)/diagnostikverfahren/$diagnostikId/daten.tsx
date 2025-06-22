@@ -71,7 +71,6 @@ const Table = ({ data }: { data: Row[]}) => {
         if (index !== -1) {
           ergebnisse[index] = ergebnis
         }
-        console.log('index', index)
       }
 
       const newItem = {
