@@ -67,12 +67,15 @@ export const updateSichtbarkeit = async (diagnostikId: string, sichtbarkeit: Sic
 export const editDiagnostik = async (diagnostik: Diagnostik, files: File[]) => {
     
     try {
+        const formData = new FormData();
+        formData.append('diagnostik', JSON.stringify(diagnostik));
+        for (const file of files) {
+            formData.append('files', file);
+        }
+
         const res = await fetch(DIAGNOSTIK_ENDPOINT, {
             method: 'PUT',
-            body: JSON.stringify(diagnostik),
-            headers: {
-                'content-type': 'application/json'
-            },
+            body: formData
         })
 
         if (res.status === 403) {

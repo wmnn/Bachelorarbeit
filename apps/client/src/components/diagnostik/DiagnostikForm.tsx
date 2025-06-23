@@ -40,6 +40,7 @@ export const DiagnostikForm = (props: DiagnostikFormProps) => {
     })
     const [isSichtbarkeitDialogShown, setIsSichtbarkeitDialogShown] = useState(false)
     const [files, setFiles] = useState<File[]>([])
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const klassenQuery = useKlassen()
     const vorlagenQuery = useDiagnostiken(DiagnostikTyp.VORLAGE)
@@ -214,10 +215,39 @@ export const DiagnostikForm = (props: DiagnostikFormProps) => {
                     }))
                 }}/>
 
+                {
+                    initialDiagnostik !== undefined && <div>
+                        <label>
+                            Hinterlegte Dateien
+                        </label>
+                        {diagnostik.files != undefined && diagnostik.files?.length > 0 && (
+                            <ul className="mt-2 text-sm text-gray-700">
+                            {diagnostik.files.map((file, index) => (
+                                <li key={index}>File: {file}</li>
+                            ))}
+                            </ul>
+                        )}
+                    </div>   
+                }
+
                 <label>
-                    Dateiein
+                    {initialDiagnostik !== undefined && 'Weitere'} Dateien hochladen
                 </label>
-                <Input type="file" id="file" name="file" multiple onChange={(e) => setFiles(Array.from(e.target.files ?? []))} />
+                <Input type="file" ref={fileInputRef} id="file" name="file" multiple onChange={(e) => setFiles(Array.from(e.target.files ?? []))} hidden/>
+                {files.length > 0 && (
+                    <ul className="mt-2 text-sm text-gray-700">
+                    {files.map((file, index) => (
+                        <li key={index}>File: {file.name}</li>
+                    ))}
+                    </ul>
+                )}
+                <ButtonLight
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                >
+                    Dateien auswählen
+                </ButtonLight>
+                
 
                 <label>Format</label>
                 <Select 

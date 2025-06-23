@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import { AddErgebnisseResponseBody, CreateDiagnostikRequestBody, CreateDiagnostikResponseBody, Diagnostik, DiagnostikTyp, Ergebnis, Farbbereich, GetDiagnostikenResponseBody } from '@thesis/diagnostik';
 import { getDiagnostikStore } from '../../singleton';
 import { saveDiagnostikFiles } from '../files/util';
+import fileUpload from 'express-fileupload';
 
 let router = express.Router();
 const SUCCESSFULL_VALIDATION_RES =  {
@@ -184,6 +185,23 @@ router.put('/sichtbarkeit', async (req, res): Promise<any> => {
     res.status(msg.success ? 200 : 400).json(msg);
 });
 
+function handleFileAttachments(rawFiles: fileUpload.UploadedFile | fileUpload.UploadedFile[] | undefined) {
+    const uploadedFiles = Array.isArray(rawFiles)
+    ? rawFiles
+    : rawFiles
+        ? [rawFiles]
+        : [];
+
+    const files = uploadedFiles
+    .filter(file => file && file.name && file.data)
+    .map(file => ({
+        name: file.name,
+        size: file.size,
+        mimetype: file.mimetype,
+        data: file.data,
+    }));
+    return files;
+}
 router.post('/', async (
     req: Request<{}, {}, CreateDiagnostikRequestBody>,
     res: Response<CreateDiagnostikResponseBody>
@@ -192,24 +210,7 @@ router.post('/', async (
         return;
     }
     let diagnostik: Diagnostik = JSON.parse(req.body.diagnostik);
-
-    const rawFiles = req.files?.files;
-    const uploadedFiles = Array.isArray(rawFiles)
-    ? rawFiles
-    : rawFiles
-        ? [rawFiles]
-        : [];
-
-
-    const files = uploadedFiles
-    .filter(file => file && file.name && file.data) // guard
-    .map(file => ({
-        name: file.name,
-        size: file.size,
-        mimetype: file.mimetype,
-        data: file.data,
-    }));
-
+    const files = handleFileAttachments(req.files?.files)
     diagnostik.files = files.map(file => file.name)
 
     const validation = validateDiagnostikInput(diagnostik, req.userId);
@@ -249,7 +250,10 @@ router.put('/', async (
     req: Request<{}, {}, CreateDiagnostikRequestBody>,
     res: Response<CreateDiagnostikResponseBody>
 ): Promise<any> => {
-    const diagnostik = (req.body as any) as Diagnostik;
+    let diagnostik: Diagnostik = JSON.parse(req.body.diagnostik);
+    const files = handleFileAttachments(req.files?.files)
+    diagnostik.files = [...diagnostik.files ?? [], ...files.map(file => file.name)]
+
     const validation = validateDiagnostikInput(diagnostik, req.userId);
 
     if (!validation.success) {
@@ -260,6 +264,9 @@ router.put('/', async (
     }
 
     const msg = await getDiagnostikStore().editDiagnostik(req.userId!, diagnostik);
+    if (msg.success) {
+        await saveDiagnostikFiles(diagnostik.id ?? -1, files)
+    }
     return res.status(msg.success ? 200 : 400).json(msg);
 });
 

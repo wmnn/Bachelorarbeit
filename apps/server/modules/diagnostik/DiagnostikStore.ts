@@ -252,6 +252,7 @@ export class DiagnostikStore {
             await conn.execute(`DELETE FROM diagnostikverfahren_klassenstufen WHERE diagnostikverfahren_id = ?`, [id]);
             await conn.execute(`DELETE FROM diagnostikverfahren_kategorien WHERE diagnostikverfahren_id = ?`, [id]);
             await conn.execute(`DELETE FROM diagnostikverfahren_farbbereiche WHERE diagnostikverfahren_id = ?`, [id]);
+            await conn.execute(`DELETE FROM diagnostikverfahren_dateien WHERE diagnostikverfahren_id = ?`, [id]);
 
             for (const element of diagnostik.geeigneteKlassen || []) {
                 await conn.execute(`
@@ -263,6 +264,13 @@ export class DiagnostikStore {
             for (const element of diagnostik.kategorien || []) {
                 await conn.execute(`
                     INSERT INTO diagnostikverfahren_kategorien (diagnostikverfahren_id, kategorie)
+                    VALUES (?, ?)
+                `, [id, element]);
+            }
+
+            for (const element of diagnostik.files || []) {
+                await conn.execute(`
+                    INSERT INTO diagnostikverfahren_dateien (diagnostikverfahren_id, datei)
                     VALUES (?, ?)
                 `, [id, element]);
             }
