@@ -46,3 +46,14 @@ export function getDates(data: Row[]): string[] {
     return prev
   }, new Set([] as string[])))
 }
+
+export function sortRowErgebnisseByDate(rows: Row[]): Row[] {
+  return rows.map(row => ({
+    ...row,
+    ergebnisse: [...row.ergebnisse].sort((a, b) => {
+      const dateA = new Date(a.datum ?? '').getTime();
+      const dateB = new Date(b.datum ?? '').getTime();
+      return dateA - dateB;
+    })
+  }));
+}

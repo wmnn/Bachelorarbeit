@@ -354,7 +354,7 @@ export class DiagnostikStore {
                     SELECT schueler_id as schuelerId, ergebnis, datum
                     FROM diagnostikverfahren_ergebnisse
                     WHERE diagnostikverfahren_id = ?
-                    ORDER BY datum DESC, schueler_id
+                    ORDER BY datum ASC, schueler_id ASC
                 `,
                 [diagnostikId]
             );

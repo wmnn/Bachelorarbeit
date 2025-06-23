@@ -1,6 +1,6 @@
 import { useSchuelerStore } from '@/components/schueler/SchuelerStore';
 import { useAllSchueler } from '@/components/schueler/useSchueler';
-import { getDates, getMindeststandard, type Diagnostik, type Row } from '@thesis/diagnostik';
+import { getDates, getMindeststandard, sortRowErgebnisseByDate, type Diagnostik, type Row } from '@thesis/diagnostik';
 import Chart from 'chart.js/auto'
 import { useEffect } from 'react';
 
@@ -23,9 +23,10 @@ export const Liniendiagramm = ({ data, diagnostik }: { data: Row[], diagnostik: 
             chart.destroy();
         }
         const ctx = (document.getElementById(id) as HTMLCanvasElement).getContext('2d');
+        const sortedData = sortRowErgebnisseByDate(data)
 
-        const labels = [...getDates(data)]
-        const datasets = [ ...data.map(row => {
+        const labels = [...getDates(sortedData)]
+        const datasets = [ ...(sortedData).map(row => {
                 const schuelerData = schueler.find(schueler => schueler.id === row.schuelerId)
                 let label = `${row.schuelerId}`
                 if (schuelerData) {
