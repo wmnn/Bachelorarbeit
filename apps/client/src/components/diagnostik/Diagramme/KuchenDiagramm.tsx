@@ -1,6 +1,8 @@
+import { ButtonLight } from '@/components/ButtonLight';
 import { getDates, getMindeststandard, getMindeststandardResults, type Diagnostik, type Row } from '@thesis/diagnostik';
 import Chart from 'chart.js/auto'
 import { useEffect } from 'react';
+import { download } from './util';
 
 export const KuchenDiagramm = ({ data, diagnostik }: { data: Row[], diagnostik: Diagnostik }) => {
 
@@ -47,5 +49,11 @@ export const KuchenDiagramm = ({ data, diagnostik }: { data: Row[], diagnostik: 
     }, [])
     return <>
         <canvas id={id} className='max-w-full xl:max-h-[576px] px-8'></canvas>
+        <div className='flex justify-start my-8'>
+            <ButtonLight onClick={() => download(id)} className='max-w-[360px]'>
+                Download
+            </ButtonLight>
+            <div className='grow'/>
+        </div>
     </>
 }

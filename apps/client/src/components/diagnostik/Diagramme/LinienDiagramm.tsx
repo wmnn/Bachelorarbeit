@@ -1,8 +1,10 @@
+import { ButtonLight } from '@/components/ButtonLight';
 import { useSchuelerStore } from '@/components/schueler/SchuelerStore';
 import { useAllSchueler } from '@/components/schueler/useSchueler';
 import { getDates, getMindeststandard, sortRowErgebnisseByDate, type Diagnostik, type Row } from '@thesis/diagnostik';
 import Chart from 'chart.js/auto'
 import { useEffect } from 'react';
+import { download } from './util';
 
 export const Liniendiagramm = ({ data, diagnostik }: { data: Row[], diagnostik: Diagnostik }) => {
 
@@ -86,5 +88,11 @@ export const Liniendiagramm = ({ data, diagnostik }: { data: Row[], diagnostik: 
     }, [])
     return <>
         <canvas id={id} className='max-w-full xl:max-h-[576px] px-8'></canvas>
+        <div className='flex justify-start my-8'>
+            <ButtonLight onClick={() => download(id)} className='max-w-[360px]'>
+                Download
+            </ButtonLight>
+            <div className='grow'/>
+        </div>
     </>
 }
