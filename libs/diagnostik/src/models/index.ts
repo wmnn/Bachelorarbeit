@@ -23,8 +23,15 @@ export type Diagnostik = {
     anhang?: any[],
     geeigneteKlassen?: string[],
     kategorien?: string[],
-    sichtbarkeit?: Sichtbarkeit
+    sichtbarkeit?: Sichtbarkeit,
+    files?: string[]
 }
+export type UploadedFile = {
+  name: string;
+  mimetype: string;
+  size: number;
+  data: any;
+};
 
 export enum DiagnostikNumberFormat {
     PROZENT = 'Prozent',

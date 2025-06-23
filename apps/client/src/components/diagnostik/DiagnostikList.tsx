@@ -21,8 +21,10 @@ export function DiagnostikList() {
         className="mt-8"
     >
         { isCreateDialogShown && <DiagnostikErstellenDialog closeDialog={() => setIsCreateDialogShown(false)}/>}
-        {
-            diagnostiken?.map((diagnostik, idx) => <DiagnostikListItem key={idx} diagnostik={diagnostik} />)
-        }
+        <div className="overflow-y-scroll divide-y divide-gray-200">
+            {
+                diagnostiken?.map((diagnostik, idx) => <DiagnostikListItem key={idx} diagnostik={diagnostik} />)
+            }
+        </div>
     </List> 
 }

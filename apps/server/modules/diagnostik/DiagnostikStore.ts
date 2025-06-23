@@ -27,10 +27,11 @@ export class DiagnostikStore {
 
             const diag = rows[0];
 
-            const [geeigneteKlassen, kategorien, farbbereiche] = await Promise.all([
+            const [geeigneteKlassen, kategorien, farbbereiche, files] = await Promise.all([
                 this.getDiagnostikKlassenstufen(diag.id),
                 this.getDiagnostikKategorien(diag.id),
-                this.getDiagnostikFarbbereiche(diag.id)
+                this.getDiagnostikFarbbereiche(diag.id),
+                this.getDiagnostikFiles(diag.id)
             ]);
 
             return {
@@ -40,13 +41,14 @@ export class DiagnostikStore {
                 erstellungsDatum: diag.erstellungsdatum,
                 obereGrenze: diag.obereGrenze,
                 untereGrenze: diag.untereGrenze,
-                speicherTyp: diag.typ,
+                speicherTyp: parseInt(diag.typ),
                 // userId: diag.userId,
-                klasseId: diag.klasseId,
+                klasseId: parseInt(diag.klasseId),
                 geeigneteKlassen,
                 kategorien,
                 farbbereiche,
-                sichtbarkeit: parseInt(diag.sichtbarkeit)
+                sichtbarkeit: parseInt(diag.sichtbarkeit),
+                files
             };
 
         } catch (e) {
@@ -76,10 +78,11 @@ export class DiagnostikStore {
             const result: Diagnostik[] = [];
 
             for (const diag of rows) {
-                const [geeigneteKlassen, kategorien, farbbereiche] = await Promise.all([
+                const [geeigneteKlassen, kategorien, farbbereiche, files] = await Promise.all([
                     this.getDiagnostikKlassenstufen(diag.id),
                     this.getDiagnostikKategorien(diag.id),
-                    this.getDiagnostikFarbbereiche(diag.id)
+                    this.getDiagnostikFarbbereiche(diag.id),
+                    this.getDiagnostikFiles(diag.id)
                 ]);
 
                 result.push({
@@ -95,7 +98,8 @@ export class DiagnostikStore {
                     geeigneteKlassen,
                     kategorien,
                     farbbereiche,
-                    sichtbarkeit: parseInt(diag.sichtbarkeit)
+                    sichtbarkeit: parseInt(diag.sichtbarkeit),
+                    files
                 });
             }
 
@@ -114,6 +118,16 @@ export class DiagnostikStore {
             };
         }
         }
+
+    private async getDiagnostikFiles(diagnostikId: number): Promise<string[]> {
+        const [rows] = await this.connection!.execute<RowDataPacket[]>(`
+            SELECT datei FROM diagnostikverfahren_dateien
+            WHERE diagnostikverfahren_id = ?
+        `, [diagnostikId]);
+
+        return rows.map(row => row.datei);
+    }
+
     private async getDiagnostikKlassenstufen(diagnostikId: number): Promise<string[]> {
         const [rows] = await this.connection!.execute<RowDataPacket[]>(`
             SELECT klassenstufe FROM diagnostikverfahren_klassenstufen 
@@ -191,9 +205,17 @@ export class DiagnostikStore {
                 `, [id, element.hexFarbe, element.obereGrenze ?? null]);
             }    
 
+            for (const path of diagnostik.files || []) {
+                await conn.execute(`
+                    INSERT INTO diagnostikverfahren_dateien (diagnostikverfahren_id, datei)
+                    VALUES (?, ?)
+                `, [id, path]);
+            }    
+
             await conn.commit();
 
             return {
+                diagnostikId: id,
                 success: true,
                 message: 'Die Diagnostik wurde erfolgreich erstellt.'
             };

@@ -9,12 +9,14 @@ import { router as anwesenheitenRouter } from "./modules/anwesenheiten/api"
 import { router as rollenRouter } from './modules/auth/rollenApi'
 import { router as ganztagsangebotRouter } from './modules/ganztagsangebot/api'
 import { router as diagnostikRouter } from './modules/diagnostik/diagnostikApi'
-import { ANWESENHEITEN_ENDPOINT, AUTH_API_ENDPOINT, DIAGNOSTIK_ENDPOINT, GANZTAGSANGEBOT_ENDPOINT, KLASSEN_ENDPOINT, SCHUELER_ENDPOINT } from "@thesis/config"
+import { router as filesApi } from './modules/files/api'
+import { ANWESENHEITEN_ENDPOINT, AUTH_API_ENDPOINT, DIAGNOSTIK_ENDPOINT, FILES_ENDPOINT, GANZTAGSANGEBOT_ENDPOINT, KLASSEN_ENDPOINT, SCHUELER_ENDPOINT } from "@thesis/config"
 import cookieParser from "cookie-parser"
 import https from 'https';
 import fs from 'fs'
 import { Berechtigungen, ROLLE_ENDPOINT } from '@thesis/rollen';
 import { rolleMiddleware } from './modules/auth/util';
+import fileUpload from 'express-fileupload';
 
 declare global {
     namespace Express {
@@ -68,6 +70,7 @@ app.use(cors({ origin: "http://localhost:5173", credentials: true }))
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.json());
+app.use(fileUpload());
 app.use(authMiddleware)
 app.use(rolleMiddleware as any)
 app.use(AUTH_API_ENDPOINT, authRouter);
@@ -76,6 +79,7 @@ app.use(KLASSEN_ENDPOINT, klassenRouter);
 app.use(ANWESENHEITEN_ENDPOINT, anwesenheitenRouter);
 app.use(GANZTAGSANGEBOT_ENDPOINT, ganztagsangebotRouter);
 app.use(DIAGNOSTIK_ENDPOINT, diagnostikRouter);
+app.use(FILES_ENDPOINT, filesApi);
 app.use(ROLLE_ENDPOINT, rollenRouter);
 app.use(express.static('../client/dist'))
 

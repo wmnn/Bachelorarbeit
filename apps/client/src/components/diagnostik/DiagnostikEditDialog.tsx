@@ -14,8 +14,8 @@ export function DiagnostikEditDialog({ diagnostik, closeDialog, setResponseMsg }
 
     const queryClient = useQueryClient()
     
-    async function handleEdit(diagnostik: Diagnostik) {
-        const res = await editDiagnostik(diagnostik)
+    async function handleEdit(diagnostik: Diagnostik, files: File[]) {
+        const res = await editDiagnostik(diagnostik, files)
         setResponseMsg(res.message)
         if (res.success) {
             queryClient.invalidateQueries({ queryKey: [DIAGNOSTIKEN_QUERY_KEY] })

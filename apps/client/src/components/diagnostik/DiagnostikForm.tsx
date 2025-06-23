@@ -11,7 +11,7 @@ import { useDiagnostiken } from "../shared/useDiagnostiken";
 
 interface DiagnostikFormProps {
   onAbort: () => void,
-  onSubmit: (diagnostik: any) => void,
+  onSubmit: (diagnostik: Diagnostik, files: File[]) => void,
   submitButtonClassName?: string,
   cancelButtonClassName?: string,
   submitButtonText: string,
@@ -39,6 +39,7 @@ export const DiagnostikForm = (props: DiagnostikFormProps) => {
         sichtbarkeit: Sichtbarkeit.PRIVAT
     })
     const [isSichtbarkeitDialogShown, setIsSichtbarkeitDialogShown] = useState(false)
+    const [files, setFiles] = useState<File[]>([])
 
     const klassenQuery = useKlassen()
     const vorlagenQuery = useDiagnostiken(DiagnostikTyp.VORLAGE)
@@ -50,7 +51,7 @@ export const DiagnostikForm = (props: DiagnostikFormProps) => {
     const vorlagen = vorlagenQuery.data ?? []
 
     function handleSubmit() { 
-        onSubmit(diagnostik)
+        onSubmit(diagnostik, files)
     }
 
     function setFarbbereiche(values: Farbbereich[]) {
@@ -66,7 +67,7 @@ export const DiagnostikForm = (props: DiagnostikFormProps) => {
             speicherTyp: DiagnostikTyp.VORLAGE
         }
         setDiagnostik(newDiagnostik)
-        props.onSubmit(newDiagnostik)
+        props.onSubmit(newDiagnostik, [])
     }
     
     return <form className="flex flex-col gap-2">
@@ -213,6 +214,10 @@ export const DiagnostikForm = (props: DiagnostikFormProps) => {
                     }))
                 }}/>
 
+                <label>
+                    Dateiein
+                </label>
+                <Input type="file" id="file" name="file" multiple onChange={(e) => setFiles(Array.from(e.target.files ?? []))} />
 
                 <label>Format</label>
                 <Select 

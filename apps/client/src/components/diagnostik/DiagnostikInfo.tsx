@@ -1,7 +1,9 @@
 import type { Diagnostik } from "@thesis/diagnostik"
+import { ButtonLight } from "../ButtonLight"
+import { downloadDateien } from "./Diagramme/util"
 
 export const DiagnostikInfo = ({ diagnostik }: { diagnostik : Diagnostik }) => {
-    return <div>
+    return <div className="flex flex-col gap-4">
         <div>
             <label>
                 Name
@@ -14,6 +16,19 @@ export const DiagnostikInfo = ({ diagnostik }: { diagnostik : Diagnostik }) => {
                 Beschreibung
             </label>
             <p>{diagnostik.beschreibung}</p>
+        </div>
+
+        <div>
+            <label>
+                Dateien
+            </label>
+            {diagnostik.files?.map(file => <p>{file}</p>)}
+            {
+                diagnostik?.files && diagnostik?.files?.length > 0 && <ButtonLight onClick={() => downloadDateien(`${diagnostik.id ?? -1}`, diagnostik.files ?? [])}>
+                    Download
+                </ButtonLight>
+            }
+            
         </div>
 
         <div>

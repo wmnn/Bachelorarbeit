@@ -1,21 +1,27 @@
 import { DIAGNOSTIK_ENDPOINT } from "../../../config/config";
-import { Sichtbarkeit, type Diagnostik, type DiagnostikTyp, type Ergebnis, type Row } from "../models";
+import { Sichtbarkeit, type Diagnostik, type DiagnostikTyp, type Ergebnis, type Row, type UploadedFile } from "../models";
 
-export type CreateDiagnostikRequestBody = Diagnostik
+export type CreateDiagnostikRequestBody = {
+    diagnostik: string,
+    files: UploadedFile[]
+}
 export interface CreateDiagnostikResponseBody {
     success: boolean,
     message: string,
 }
 
-export const createDiagnostik = async (diagnostik: Diagnostik) => {
+export const createDiagnostik = async (diagnostik: Diagnostik, files: File[]) => {
     
     try {
+        const formData = new FormData();
+        formData.append('diagnostik', JSON.stringify(diagnostik));
+        for (const file of files) {
+            formData.append('files', file);
+        }
+
         const res = await fetch(DIAGNOSTIK_ENDPOINT, {
             method: 'POST',
-            body: JSON.stringify(diagnostik),
-            headers: {
-                'content-type': 'application/json'
-            },
+            body: formData
         })
 
         if (res.status === 403) {
@@ -58,7 +64,7 @@ export const updateSichtbarkeit = async (diagnostikId: string, sichtbarkeit: Sic
 
 }
 
-export const editDiagnostik = async (diagnostik: Diagnostik) => {
+export const editDiagnostik = async (diagnostik: Diagnostik, files: File[]) => {
     
     try {
         const res = await fetch(DIAGNOSTIK_ENDPOINT, {

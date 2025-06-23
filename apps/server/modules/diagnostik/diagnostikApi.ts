@@ -2,6 +2,7 @@ import express from 'express';
 import { Request, Response } from 'express';
 import { AddErgebnisseResponseBody, CreateDiagnostikRequestBody, CreateDiagnostikResponseBody, Diagnostik, DiagnostikTyp, Ergebnis, Farbbereich, GetDiagnostikenResponseBody } from '@thesis/diagnostik';
 import { getDiagnostikStore } from '../../singleton';
+import { saveDiagnostikFiles } from '../files/util';
 
 let router = express.Router();
 const SUCCESSFULL_VALIDATION_RES =  {
@@ -92,7 +93,7 @@ function isValidDateFormat(dateStr: string) {
 }
 
 function validateDiagnostikInput(
-  diagnostik: CreateDiagnostikRequestBody,
+  diagnostik: Diagnostik,
   userId?: number
 ): { success: boolean; message?: string } {
     let { name, speicherTyp, klasseId, vorlageId, erstellungsTyp } = diagnostik;
@@ -190,7 +191,27 @@ router.post('/', async (
     if (!req.userId) {
         return;
     }
-    let diagnostik = req.body;
+    let diagnostik: Diagnostik = JSON.parse(req.body.diagnostik);
+
+    const rawFiles = req.files?.files;
+    const uploadedFiles = Array.isArray(rawFiles)
+    ? rawFiles
+    : rawFiles
+        ? [rawFiles]
+        : [];
+
+
+    const files = uploadedFiles
+    .filter(file => file && file.name && file.data) // guard
+    .map(file => ({
+        name: file.name,
+        size: file.size,
+        mimetype: file.mimetype,
+        data: file.data,
+    }));
+
+    diagnostik.files = files.map(file => file.name)
+
     const validation = validateDiagnostikInput(diagnostik, req.userId);
 
     if (!validation.success) {
@@ -217,6 +238,10 @@ router.post('/', async (
     }
   
     const msg = await getDiagnostikStore().createDiagnostik(req.userId, diagnostik)
+    if (msg.success) {
+        diagnostik.id = msg.diagnostikId
+        await saveDiagnostikFiles(diagnostik.id ?? -1, files)
+    }
     res.status(msg.success ? 200 : 400).json(msg);
 });
 
@@ -224,7 +249,7 @@ router.put('/', async (
     req: Request<{}, {}, CreateDiagnostikRequestBody>,
     res: Response<CreateDiagnostikResponseBody>
 ): Promise<any> => {
-    const diagnostik = req.body;
+    const diagnostik = (req.body as any) as Diagnostik;
     const validation = validateDiagnostikInput(diagnostik, req.userId);
 
     if (!validation.success) {
