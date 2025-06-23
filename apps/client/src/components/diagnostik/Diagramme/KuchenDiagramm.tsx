@@ -48,6 +48,7 @@ export const KuchenDiagramm = ({ data, diagnostik }: { data: Row[], diagnostik: 
         }
     }, [])
     return <>
+        <h1>Kuchendiagramm der letzten Auswertung</h1>
         <canvas id={id} className='max-w-full xl:max-h-[576px] px-8'></canvas>
         <div className='flex justify-start my-8'>
             <ButtonLight onClick={() => download(id)} className='max-w-[360px]'>
