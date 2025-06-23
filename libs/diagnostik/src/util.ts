@@ -1,4 +1,4 @@
-import {type Diagnostik, type Farbbereich, type Row } from './models'
+import {type Diagnostik, type Ergebnis, type Farbbereich, type Row } from './models'
 
 export function sortFarbbereiche(farbbereiche: Farbbereich[]): Farbbereich[] {
   return farbbereiche.sort((a, b) => {
@@ -62,12 +62,7 @@ export function getMindeststandardResults(mindeststandard: number, data: Row[], 
         let mindeststandardNichtErreicht = 0
 
         for (const schueler of data) {
-            const ergebnisAmDatum = schueler.ergebnisse.find(ergebnis => {
-                if (!ergebnis.datum?.includes('T')) {
-                    return ergebnis.datum == datum
-                }
-                return new Date(ergebnis.datum).toISOString().split('T')[0] == new Date(datum).toISOString().split('T')[0]
-            })
+            const ergebnisAmDatum = schueler.ergebnisse.find(ergebnis => ergebnisDatumGleich(ergebnis, datum))
 
             if (!ergebnisAmDatum) {
                 continue;
@@ -86,4 +81,11 @@ export function getMindeststandardResults(mindeststandard: number, data: Row[], 
             mindeststandardErreicht,
             mindeststandardNichtErreicht
         }
+}
+
+export function ergebnisDatumGleich(ergebnis: Ergebnis, datum: string) {
+  if (!ergebnis.datum?.includes('T')) {
+      return ergebnis.datum == datum
+  }
+  return new Date(ergebnis.datum).toISOString().split('T')[0] == new Date(datum).toISOString().split('T')[0]
 }
