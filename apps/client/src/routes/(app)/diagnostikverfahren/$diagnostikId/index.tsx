@@ -1,4 +1,5 @@
 import { KuchenDiagramm } from '@/components/diagnostik/Diagramme/KuchenDiagramm';
+import { Liniendiagramm } from '@/components/diagnostik/Diagramme/LinienDiagramm';
 import { useDiagnostik } from '@/components/diagnostik/useDiagnostik';
 import { useErgebnisse } from '@/components/diagnostik/useErgebnisse';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -77,6 +78,10 @@ function RouteComponent() {
 
     {
       diagrammTyp == DiagrammTyp.KUCHEN && <KuchenDiagramm data={ergebnisse} diagnostik={diagnostik} />
+    }
+
+    {
+      diagrammTyp == DiagrammTyp.LINIEN && <Liniendiagramm data={ergebnisse} diagnostik={diagnostik} />
     }
   
   </div>

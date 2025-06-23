@@ -4,7 +4,7 @@ import { useSchuelerStore } from '@/components/schueler/SchuelerStore';
 import { useAllSchueler } from '@/components/schueler/useSchueler';
 import { DiagnostikNav } from '@/layout/DiagnostikNav';
 import { createFileRoute } from '@tanstack/react-router'
-import type { Ergebnis, Row } from '@thesis/diagnostik';
+import { getDates, type Ergebnis, type Row } from '@thesis/diagnostik';
 
 export const Route = createFileRoute(
   '/(app)/diagnostikverfahren/$diagnostikId/daten',
@@ -33,16 +33,7 @@ const Table = ({ data }: { data: Row[]}) => {
 
   const schueler = useSchuelerStore(store => store.schueler)
   useAllSchueler()
-  const header = Array.from(data.reduce((prev, acc) => {
-    for (const ergebnis of acc.ergebnisse) {
-      let datum = ergebnis.datum ?? ''
-      if (datum.includes('T')) {
-        datum = datum.split('T')[0]
-      }
-      prev.add(datum)
-    }
-    return prev
-  }, new Set(['']))) as string[]
+  const header = ['', ...getDates(data)]
 
   const rows = data.reduce((prev, acc) => {
     const { schuelerId } = acc

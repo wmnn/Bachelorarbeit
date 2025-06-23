@@ -1,17 +1,13 @@
-import { sortFarbbereiche, type Diagnostik, type Row } from '@thesis/diagnostik';
+import { getMindeststandard, type Diagnostik, type Row } from '@thesis/diagnostik';
 import Chart from 'chart.js/auto'
 import { useEffect } from 'react';
 
 export const KuchenDiagramm = ({ data, diagnostik }: { data: Row[], diagnostik: Diagnostik }) => {
 
-    const { farbbereiche } = diagnostik
-
-    sortFarbbereiche(farbbereiche ?? [])
-    if (farbbereiche == undefined || farbbereiche.length == 0) {
+    const mindeststandard = getMindeststandard(diagnostik)
+    if (!mindeststandard) {
         return;
     }
-    console.log(farbbereiche)
-    const mindeststandard = farbbereiche[farbbereiche?.length - 1]
 
     let mindeststandardErreicht = 0
     let mindeststandardNichtErreicht = 0
@@ -25,8 +21,7 @@ export const KuchenDiagramm = ({ data, diagnostik }: { data: Row[], diagnostik: 
         const ergebnis = Number(letztesErgebnis.ergebnis);
         console.log(letztesErgebnis, mindeststandard)
         if (
-            typeof mindeststandard?.obereGrenze === 'number' &&
-            ergebnis >= mindeststandard.obereGrenze
+            ergebnis >= mindeststandard
         ) {
             mindeststandardErreicht += 1;
         } else {
@@ -64,6 +59,6 @@ export const KuchenDiagramm = ({ data, diagnostik }: { data: Row[], diagnostik: 
         }
     }, [])
     return <>
-    <canvas id={id} className='max-w-full xl:max-h-[576px] px-8'></canvas>
+        <canvas id={id} className='max-w-full xl:max-h-[576px] px-8'></canvas>
     </>
 }
