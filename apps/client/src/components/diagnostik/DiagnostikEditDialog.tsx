@@ -23,7 +23,7 @@ export function DiagnostikEditDialog({ diagnostik, closeDialog, setResponseMsg }
         }
     }
 
-    return <Dialog className="p-8">
+    return <Dialog className="p-8 overflow-y-scroll">
         <DiagnostikForm 
             onAbort={closeDialog}
             onSubmit={handleEdit}
