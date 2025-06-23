@@ -37,9 +37,9 @@ export const DiagnostikNav = ({ diagnostikId }: { diagnostikId: string }) => {
     
     <div className='flex justify-between px-8 pt-8'>
       <div className='flex gap-2 items-center'>
-        <button onClick={() => router.history.back()}>
+        <Link to="/diagnostikverfahren">
           <MoveLeft />
-        </button>
+        </Link>
         <h1>{diagnostik.name}</h1>
       </div>
 
