@@ -48,7 +48,7 @@ function RouteComponent() {
   return <div className='w-full'>
     <DiagnostikNav diagnostikId={diagnostikId} />
 
-    <div>
+    <div className='p-2 xl:p-8'>
       <Select 
           value={`${diagrammTyp}`}
           onValueChange={async (val) => {
@@ -74,15 +74,17 @@ function RouteComponent() {
             </SelectItem>                 
           </SelectContent>
       </Select>    
+
+      <div className='mb-8' />
+
+      {
+        diagrammTyp == DiagrammTyp.KUCHEN && <KuchenDiagramm data={ergebnisse} diagnostik={diagnostik} />
+      }
+
+      {
+        diagrammTyp == DiagrammTyp.LINIEN && <Liniendiagramm data={ergebnisse} diagnostik={diagnostik} />
+      }
     </div>
-
-    {
-      diagrammTyp == DiagrammTyp.KUCHEN && <KuchenDiagramm data={ergebnisse} diagnostik={diagnostik} />
-    }
-
-    {
-      diagrammTyp == DiagrammTyp.LINIEN && <Liniendiagramm data={ergebnisse} diagnostik={diagnostik} />
-    }
   
   </div>
 }

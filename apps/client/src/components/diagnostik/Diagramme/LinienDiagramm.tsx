@@ -23,26 +23,40 @@ export const Liniendiagramm = ({ data, diagnostik }: { data: Row[], diagnostik: 
             chart.destroy();
         }
         const ctx = (document.getElementById(id) as HTMLCanvasElement).getContext('2d');
+
+        const labels = [...getDates(data)]
+        const datasets = [ ...data.map(row => {
+                const schuelerData = schueler.find(schueler => schueler.id === row.schuelerId)
+                let label = `${row.schuelerId}`
+                if (schuelerData) {
+                    label = `${schuelerData?.vorname} ${schuelerData?.nachname}`
+                }
+
+                return {
+                    label,
+                    fill: false,
+                    borderColor: `hsl(${Math.floor(Math.random() * 360)}, 70%, 50%)`,
+                    tension: 0.1,
+                    data: row.ergebnisse.map(ergebnis => `${ergebnis.ergebnis}`)
+                }
+            }), 
+            {
+                label: 'Mindeststandard',
+                fill: false,
+                borderColor: 'rgb(0, 0, 0)',
+                borderDash: [5, 5],
+                tension: 0.1,
+                data: Array(labels.length).fill(mindeststandard)
+            }
+        
+        ]
+        
         if (ctx) {
             new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: [...getDates(data)],
-                    datasets: data.map(row => {
-                        const schuelerData = schueler.find(schueler => schueler.id === row.schuelerId)
-                        let label = `${row.schuelerId}`
-                        if (schuelerData) {
-                            label = `${schuelerData?.vorname} ${schuelerData?.nachname}`
-                        }
-
-                        return {
-                            label,
-                            fill: false,
-                            borderColor: `hsl(${Math.floor(Math.random() * 360)}, 70%, 50%)`,
-                            tension: 0.1,
-                            data: row.ergebnisse.map(ergebnis => `${ergebnis.ergebnis}`)
-                        }
-                    })
+                    labels,
+                    datasets
                 },
                 options: {
                     responsive: true,
