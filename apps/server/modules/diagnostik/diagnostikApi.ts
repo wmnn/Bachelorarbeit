@@ -190,7 +190,7 @@ router.post('/', async (
     if (!req.userId) {
         return;
     }
-    const diagnostik = req.body;
+    let diagnostik = req.body;
     const validation = validateDiagnostikInput(diagnostik, req.userId);
 
     if (!validation.success) {
@@ -198,6 +198,22 @@ router.post('/', async (
             success: false,
             message: validation.message ?? 'Ungültige Eingabe.'
         });
+    }
+
+    if (diagnostik.erstellungsTyp === 'Vorlage') {
+        const vorlage = await getDiagnostikStore().getDiagnostik(diagnostik.vorlageId!) 
+        if (!vorlage) {
+            return res.status(400).json({
+                success: false,
+                message: 'Die Vorlage konnte nicht gefunden werden.'
+            });
+        }
+        diagnostik = {
+            ...vorlage,
+            name: diagnostik.name,
+            klasseId: diagnostik.klasseId,
+            speicherTyp: DiagnostikTyp.LAUFENDES_VERFAHREN
+        }
     }
   
     const msg = await getDiagnostikStore().createDiagnostik(req.userId, diagnostik)

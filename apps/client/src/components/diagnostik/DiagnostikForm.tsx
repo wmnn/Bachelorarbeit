@@ -7,6 +7,7 @@ import { useKlassen } from "../shared/useKlassen";
 import { getTitle, type Klasse } from "@thesis/schule";
 import { MultiInput } from "../shared/MultiInput";
 import { DialogWithButtons } from "../dialog/DialogWithButtons";
+import { useDiagnostiken } from "../shared/useDiagnostiken";
 
 interface DiagnostikFormProps {
   onAbort: () => void,
@@ -40,11 +41,17 @@ export const DiagnostikForm = (props: DiagnostikFormProps) => {
     const [isSichtbarkeitDialogShown, setIsSichtbarkeitDialogShown] = useState(false)
 
     const klassenQuery = useKlassen()
+    const vorlagenQuery = useDiagnostiken(DiagnostikTyp.VORLAGE)
 
-    if (klassenQuery.isPending) {
+    if (klassenQuery.isPending || vorlagenQuery.isPending) {
         return <p>...Loading</p>
     }
     const klassen = (klassenQuery.data ?? []) as Klasse[]
+    const vorlagen = vorlagenQuery.data ?? []
+
+    function handleSubmit() { 
+        onSubmit(diagnostik)
+    }
 
     function setFarbbereiche(values: Farbbereich[]) {
         setDiagnostik(prev => ({
@@ -150,10 +157,10 @@ export const DiagnostikForm = (props: DiagnostikFormProps) => {
         <label>Erstellungstyp</label>
         <Select 
             value={`${diagnostik.erstellungsTyp}`}
-            onValueChange={async (val: Diagnostik['erstellungsTyp']) => {
+            onValueChange={async (val: string) => {
                 setDiagnostik(prev => ({
                     ...prev,
-                    erstellungsTyp: val
+                    erstellungsTyp: val as Diagnostik['erstellungsTyp']
                 }))
             }}
         >
@@ -175,10 +182,10 @@ export const DiagnostikForm = (props: DiagnostikFormProps) => {
                 <label>Vorlage</label>
                 <Select 
                     value={diagnostik.vorlageId === -1 ? undefined : `${diagnostik.vorlageId}`}
-                    onValueChange={async (val: Diagnostik['erstellungsTyp']) => {
+                    onValueChange={async (val: string) => {
                         setDiagnostik(prev => ({
                             ...prev,
-                            erstellungsTyp: val
+                            vorlageId: parseInt(val)
                         }))
                     }}
                 >
@@ -186,7 +193,11 @@ export const DiagnostikForm = (props: DiagnostikFormProps) => {
                         <SelectValue placeholder="Keine Vorlage ausgewählt"/>
                     </SelectTrigger>
                     <SelectContent>
-                         
+                        {
+                            vorlagen.map(vorlage => <SelectItem value={`${vorlage.id}`}>
+                                {vorlage.name}
+                            </SelectItem>)
+                        }  
                     </SelectContent>
                 </Select> 
             </div>
@@ -282,10 +293,10 @@ export const DiagnostikForm = (props: DiagnostikFormProps) => {
         }
 
         <div className="flex gap-2 py-8">
-            <ButtonLight className={cancelButtonClassName} onClick={() => onAbort()}>
+            <ButtonLight className={cancelButtonClassName} onClick={onAbort}>
                 Abbrechen
             </ButtonLight>
-            <ButtonLight className={submitButtonClassName} onClick={() => onSubmit(diagnostik)}>
+            <ButtonLight className={submitButtonClassName} onClick={handleSubmit}>
                 {submitButtonText}
             </ButtonLight>
         </div>
