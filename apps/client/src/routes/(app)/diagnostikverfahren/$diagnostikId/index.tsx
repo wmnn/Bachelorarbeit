@@ -1,6 +1,7 @@
 import { KuchenDiagramm } from '@/components/diagnostik/Diagramme/KuchenDiagramm';
 import { useDiagnostik } from '@/components/diagnostik/useDiagnostik';
 import { useErgebnisse } from '@/components/diagnostik/useErgebnisse';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DiagnostikNav } from '@/layout/DiagnostikNav';
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react';
@@ -46,10 +47,37 @@ function RouteComponent() {
   return <div className='w-full'>
     <DiagnostikNav diagnostikId={diagnostikId} />
 
-    <KuchenDiagramm data={ergebnisse} diagnostik={diagnostik} />
-    {JSON.stringify(diagnostik)}
+    <div>
+      <Select 
+          value={`${diagrammTyp}`}
+          onValueChange={async (val) => {
+              const typ = parseInt(val) as DiagrammTyp
+              setDiagrammTyp(typ)
+          }}
+      >
+          <SelectTrigger className="xl:w-[200px] w-min">
+              <SelectValue placeholder="Keine Rolle"/>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={`${DiagrammTyp.BOX}`}>
+              Box-Plot
+            </SelectItem>    
+            <SelectItem value={`${DiagrammTyp.KUCHEN}`}>
+              Kuchen-Diagramm
+            </SelectItem>   
+            <SelectItem value={`${DiagrammTyp.LINIEN}`}>
+              Linien-Diagramm
+            </SelectItem>    
+            <SelectItem value={`${DiagrammTyp.BALKEN}`}>
+                Balken-Diagramm
+            </SelectItem>                 
+          </SelectContent>
+      </Select>    
+    </div>
 
-
+    {
+      diagrammTyp == DiagrammTyp.KUCHEN && <KuchenDiagramm data={ergebnisse} diagnostik={diagnostik} />
+    }
   
   </div>
 }
