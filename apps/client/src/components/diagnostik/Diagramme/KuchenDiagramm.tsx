@@ -1,4 +1,4 @@
-import { getMindeststandard, type Diagnostik, type Row } from '@thesis/diagnostik';
+import { getDates, getMindeststandard, getMindeststandardResults, type Diagnostik, type Row } from '@thesis/diagnostik';
 import Chart from 'chart.js/auto'
 import { useEffect } from 'react';
 
@@ -9,25 +9,12 @@ export const KuchenDiagramm = ({ data, diagnostik }: { data: Row[], diagnostik: 
         return;
     }
 
-    let mindeststandardErreicht = 0
-    let mindeststandardNichtErreicht = 0
+    const dates = getDates(data)
+    const {
+        mindeststandardErreicht,
+        mindeststandardNichtErreicht
+     } = getMindeststandardResults(mindeststandard, data, dates[dates.length - 1])
 
-    for (const schueler of data) {
-        const letztesErgebnis = schueler.ergebnisse.sort((a, b) => {
-            const dateA = a.datum ? new Date(a.datum).getTime() : 0;
-            const dateB = b.datum ? new Date(b.datum).getTime() : 0;
-            return dateB - dateA;
-        })?.[0];
-        const ergebnis = Number(letztesErgebnis.ergebnis);
-        console.log(letztesErgebnis, mindeststandard)
-        if (
-            ergebnis >= mindeststandard
-        ) {
-            mindeststandardErreicht += 1;
-        } else {
-            mindeststandardNichtErreicht += 1;
-        }
-    }
     const id = 'pie'
 
     useEffect(() => {

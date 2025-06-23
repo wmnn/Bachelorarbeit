@@ -1,3 +1,4 @@
+import { KlassenBalkenDiagramm } from '@/components/diagnostik/Diagramme/KlassenBalkenDiagramm';
 import { KuchenDiagramm } from '@/components/diagnostik/Diagramme/KuchenDiagramm';
 import { Liniendiagramm } from '@/components/diagnostik/Diagramme/LinienDiagramm';
 import { useDiagnostik } from '@/components/diagnostik/useDiagnostik';
@@ -83,6 +84,10 @@ function RouteComponent() {
 
       {
         diagrammTyp == DiagrammTyp.LINIEN && <Liniendiagramm data={ergebnisse} diagnostik={diagnostik} />
+      }
+
+      {
+        diagrammTyp == DiagrammTyp.BALKEN && <KlassenBalkenDiagramm data={ergebnisse} diagnostik={diagnostik} />
       }
     </div>
   

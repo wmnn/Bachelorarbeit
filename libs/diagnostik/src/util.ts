@@ -57,3 +57,33 @@ export function sortRowErgebnisseByDate(rows: Row[]): Row[] {
     })
   }));
 }
+export function getMindeststandardResults(mindeststandard: number, data: Row[], datum: string) {
+        let mindeststandardErreicht = 0
+        let mindeststandardNichtErreicht = 0
+
+        for (const schueler of data) {
+            const ergebnisAmDatum = schueler.ergebnisse.find(ergebnis => {
+                if (!ergebnis.datum?.includes('T')) {
+                    return ergebnis.datum == datum
+                }
+                return new Date(ergebnis.datum).toISOString().split('T')[0] == new Date(datum).toISOString().split('T')[0]
+            })
+
+            if (!ergebnisAmDatum) {
+                continue;
+            }
+
+            const ergebnis = Number(ergebnisAmDatum.ergebnis);
+            if (
+                ergebnis >= mindeststandard
+            ) {
+                mindeststandardErreicht += 1;
+            } else {
+                mindeststandardNichtErreicht += 1;
+            }
+        }
+        return {
+            mindeststandardErreicht,
+            mindeststandardNichtErreicht
+        }
+}
