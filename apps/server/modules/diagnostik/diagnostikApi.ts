@@ -24,7 +24,20 @@ router.get('/', async (
         }
     }
 
-    const data = await getDiagnostikStore().getDiagnostiken(speicherTyp);
+    if (speicherTyp === DiagnostikTyp.GETEILT) {
+        let query = await getDiagnostikStore().getDiagnostiken(DiagnostikTyp.LAUFENDES_VERFAHREN);
+        if (!query.success || query.data == null) {
+            return;
+        }
+        let diagnostiken = query.data
+        const shared = await getDiagnostikStore().getDiagnostikenGeteilt(req.userId ?? -1)
+        if (!shared.success || shared.data == null) {
+            return;
+        }
+        return res.status(200).json(diagnostiken.filter(diagnostik => shared.data.includes(diagnostik.id ?? -1)));
+    }
+
+    let data = await getDiagnostikStore().getDiagnostiken(speicherTyp);
     return res.status(data.success ? 200 : 400).json(data.data ?? []);
 });
 

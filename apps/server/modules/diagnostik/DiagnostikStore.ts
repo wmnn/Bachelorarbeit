@@ -58,6 +58,41 @@ export class DiagnostikStore {
             return undefined;
         }
     }
+
+    async getDiagnostikenGeteilt(userId: number) {
+        if (!this.connection) {
+            return {
+                success: false,
+                message: 'Keine Datenbankverbindung.',
+                data: null
+            };
+        }
+        const conn = this.connection;
+
+        try {
+            const [rows] = await conn.execute<RowDataPacket[]>(`
+                SELECT diagnostikverfahren_id FROM diagnostikverfahren_geteilt
+                WHERE user_id = ?
+            `, [userId]);
+
+            let data = rows.map(row => parseInt(row.diagnostikverfahren_id)) as number[];
+
+            return {
+                success: true,
+                message: '',
+                data,
+            };
+
+        } catch (e) {
+            console.error('Fehler in getDiagnostiken:', e);
+            return {
+                success: false,
+                message: 'Fehler beim Abrufen der Diagnostiken.',
+                data: null
+            };
+        }
+
+    }
     async getDiagnostiken(speicherTyp: Diagnostik['speicherTyp']) {
         if (!this.connection) {
             return {
@@ -119,7 +154,7 @@ export class DiagnostikStore {
                 data: null
             };
         }
-        }
+    }
 
     private async getDiagnostikShared(diagnostikId: number): Promise<number[]> {
         const [rows] = await this.connection!.execute<RowDataPacket[]>(`

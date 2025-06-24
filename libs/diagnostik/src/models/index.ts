@@ -1,6 +1,7 @@
 export enum DiagnostikTyp {
     VORLAGE,
-    LAUFENDES_VERFAHREN
+    LAUFENDES_VERFAHREN,
+    GETEILT
 }
 export enum Sichtbarkeit {
     PRIVAT,
