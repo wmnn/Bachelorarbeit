@@ -53,6 +53,14 @@ router.get('/:diagnostikId/data', async (req, res) => {
     res.status(diagnostik ? 200 : 400).json(diagnostik);
 });
 
+router.post('/auswertungsgruppen/:diagnostikId', async (req, res: Response<AddErgebnisseResponseBody>): Promise<any> => {
+    let { diagnostikId: diagnostikIdString } = req.params
+    const diagnostikId = parseInt(diagnostikIdString)
+    const auswertungsgruppen = req.body
+    const msg = await getDiagnostikStore().updateAuswertungsgruppen(diagnostikId, auswertungsgruppen)
+    res.status(msg.success ? 200 : 400).json(msg);
+});
+
 router.post('/copy/:diagnostikId', async (req, res: Response<AddErgebnisseResponseBody>): Promise<any> => {
     let { diagnostikId: diagnostikIdString } = req.params
     const diagnostikId = parseInt(diagnostikIdString)

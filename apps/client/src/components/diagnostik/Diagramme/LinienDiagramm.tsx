@@ -89,7 +89,7 @@ export const Liniendiagramm = ({ data: initialData, diagnostik }: { data: Row[],
         }
     }, [data])
     return <>
-        <Filter initialData={initialData} data={data} setData={setData} />
+        <Filter initialData={initialData} data={data} setData={setData} diagnostik={diagnostik} />
         <canvas id={id} className='max-w-full xl:max-h-[576px] px-8'></canvas>
         <div className='flex justify-start my-8'>
             <ButtonLight onClick={() => download(id)} className='max-w-[360px]'>

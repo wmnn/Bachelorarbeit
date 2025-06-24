@@ -1,4 +1,4 @@
-import { deleteDiagnostik, Diagnostik, DiagnostikTyp, Ergebnis, Farbbereich, Row } from "@thesis/diagnostik";
+import { Auswertungsgruppe, deleteDiagnostik, Diagnostik, DiagnostikTyp, Ergebnis, Farbbereich, Row } from "@thesis/diagnostik";
 import { Pool, ResultSetHeader, RowDataPacket } from "mysql2/promise"
 import { DatabaseMessage, STANDARD_FEHLER } from "../shared/models";
 
@@ -27,12 +27,13 @@ export class DiagnostikStore {
 
             const diag = rows[0];
 
-            const [geeigneteKlassen, kategorien, farbbereiche, files, geteiltMit] = await Promise.all([
+            const [geeigneteKlassen, kategorien, farbbereiche, files, geteiltMit, auswertungsgruppen] = await Promise.all([
                 this.getDiagnostikKlassenstufen(diag.id),
                 this.getDiagnostikKategorien(diag.id),
                 this.getDiagnostikFarbbereiche(diag.id),
                 this.getDiagnostikFiles(diag.id),
-                this.getDiagnostikShared(diag.id)
+                this.getDiagnostikShared(diag.id),
+                this.getAuswertungsgruppen(diag.id)
             ]);
 
             return {
@@ -50,7 +51,8 @@ export class DiagnostikStore {
                 farbbereiche,
                 sichtbarkeit: parseInt(diag.sichtbarkeit),
                 files,
-                geteiltMit
+                geteiltMit,
+                auswertungsgruppen
             };
 
         } catch (e) {
@@ -115,11 +117,12 @@ export class DiagnostikStore {
             const result: Diagnostik[] = [];
 
             for (const diag of rows) {
-                const [geeigneteKlassen, kategorien, farbbereiche, files] = await Promise.all([
+                const [geeigneteKlassen, kategorien, farbbereiche, files, auswertungsgruppen] = await Promise.all([
                     this.getDiagnostikKlassenstufen(diag.id),
                     this.getDiagnostikKategorien(diag.id),
                     this.getDiagnostikFarbbereiche(diag.id),
-                    this.getDiagnostikFiles(diag.id)
+                    this.getDiagnostikFiles(diag.id),
+                    this.getAuswertungsgruppen(diag.id)
                 ]);
 
                 result.push({
@@ -136,7 +139,8 @@ export class DiagnostikStore {
                     kategorien,
                     farbbereiche,
                     sichtbarkeit: parseInt(diag.sichtbarkeit),
-                    files
+                    files,
+                    auswertungsgruppen
                 });
             }
 
@@ -183,6 +187,31 @@ export class DiagnostikStore {
         return rows.map(row => row.klassenstufe);
     }
 
+    private async getAuswertungsgruppen(diagnostikId: number): Promise<Auswertungsgruppe[]> {
+        const [rows] = await this.connection!.execute<RowDataPacket[]>(`
+            SELECT auswertungsgruppe, schueler_id
+            FROM diagnostikverfahren_auswertungsgruppe
+            WHERE diagnostikverfahren_id = ?
+        `, [diagnostikId]);
+
+        const map = new Map<string, number[]>();
+
+        for (const row of rows) {
+            const gruppe = row.auswertungsgruppe;
+            const schuelerId = row.schueler_id;
+
+            if (!map.has(gruppe)) {
+                map.set(gruppe, []);
+            }
+            map.get(gruppe)!.push(schuelerId);
+        }
+
+        return Array.from(map.entries()).map(([name, schuelerIds]) => ({
+            name,
+            schuelerIds,
+        }));
+    }
+
     private async getDiagnostikKategorien(diagnostikId: number): Promise<string[]> {
         const [rows] = await this.connection!.execute<RowDataPacket[]>(`
             SELECT kategorie FROM diagnostikverfahren_kategorien 
@@ -208,6 +237,52 @@ export class DiagnostikStore {
         });
     }
 
+    async updateAuswertungsgruppen(
+        diagnostikId: number,
+        auswertungsgruppen: Auswertungsgruppe[]
+    ) {
+        if (!this.connection) return STANDARD_FEHLER;
+
+        const conn = await this.connection.getConnection();
+
+        try {
+            await conn.beginTransaction();
+
+            await conn.execute(`DELETE FROM diagnostikverfahren_auswertungsgruppe WHERE diagnostikverfahren_id = ?`,
+                [diagnostikId]
+            );
+
+            const values: any[] = [];
+            const placeholders: string[] = [];
+
+            for (const gruppe of auswertungsgruppen) {
+                for (const schuelerId of gruppe.schuelerIds) {
+                    values.push(diagnostikId, gruppe.name, schuelerId);
+                    placeholders.push(`(?, ?, ?)`);
+                }
+            }
+
+            if (values.length > 0) {
+                await conn.execute(
+                    `INSERT INTO diagnostikverfahren_auswertungsgruppe (diagnostikverfahren_id, auswertungsgruppe, schueler_id) VALUES ${placeholders.join(', ')}`,
+                    values
+                );
+            }
+
+            await conn.commit();
+
+            return {
+                success: true,
+                message: 'Die Auswertungsgruppen wurden erfolgreich aktualisiert.'
+            };
+        } catch (error) {
+            console.error('Fehler beim Aktualisieren der Auswertungsgruppen:', error);
+            await conn.rollback();
+            return STANDARD_FEHLER;
+        } finally {
+            conn.release();
+        }
+    }
 
     async createDiagnostik(userId: number, diagnostik: Diagnostik) {
         if (!this.connection) {

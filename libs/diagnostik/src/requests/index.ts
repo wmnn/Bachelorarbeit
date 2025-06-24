@@ -1,5 +1,5 @@
 import { DIAGNOSTIK_ENDPOINT } from "../../../config/config";
-import { Sichtbarkeit, type Diagnostik, type DiagnostikTyp, type Ergebnis, type Row, type UploadedFile } from "../models";
+import { Sichtbarkeit, type Auswertungsgruppe, type Diagnostik, type DiagnostikTyp, type Ergebnis, type Row, type UploadedFile } from "../models";
 
 export type CreateDiagnostikRequestBody = {
     diagnostik: string,
@@ -60,6 +60,31 @@ export const copyDiagnostik = async (diagnostikId: string) => {
     }
 
 }
+
+export const updateAuswertungsgrupen = async (diagnostikId: string, auswertungsgruppen: Auswertungsgruppe[]) => {
+    try {
+        const res = await fetch(DIAGNOSTIK_ENDPOINT + `/auswertungsgruppen/${diagnostikId}`, {
+            method: 'POST',
+            body: JSON.stringify(auswertungsgruppen),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+
+        if (res.status === 403) {
+            window.location.href = '/login'
+        }
+    
+        return await res.json() as CreateDiagnostikResponseBody;
+        
+    } catch (e) {
+        return {
+            success: false,
+            message: 'Die Auswertungsgruppen konnten nicht aktualisiert werden.'
+        };
+    }
+}
+
 
 export const updateSichtbarkeit = async (diagnostikId: string, sichtbarkeit: Sichtbarkeit) => {
     

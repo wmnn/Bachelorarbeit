@@ -122,6 +122,13 @@ CREATE TABLE diagnostikverfahren_ergebnisse (
     PRIMARY KEY (diagnostikverfahren_id, datum, schueler_id)
 );
 
+CREATE TABLE diagnostikverfahren_auswertungsgruppe (
+    diagnostikverfahren_id INT,
+    auswertungsgruppe VARCHAR(25),
+    schueler_id INT,
+    PRIMARY KEY (diagnostikverfahren_id, auswertungsgruppe, schueler_id)
+);
+
 CREATE TABLE diagnostikverfahren_geteilt (
     diagnostikverfahren_id INT,
     user_id INT,

@@ -7,6 +7,10 @@ export enum Sichtbarkeit {
     PRIVAT,
     ÖFFENTLICH
 }
+export type Auswertungsgruppe = {
+    name: string,
+    schuelerIds: number[]
+}
 export type Diagnostik = {
     id?: number,
     name: string,
@@ -26,7 +30,8 @@ export type Diagnostik = {
     kategorien?: string[],
     sichtbarkeit?: Sichtbarkeit,
     files?: string[],
-    geteiltMit?: number[]
+    geteiltMit?: number[],
+    auswertungsgruppen?: Auswertungsgruppe[]
 }
 export type UploadedFile = {
   name: string;

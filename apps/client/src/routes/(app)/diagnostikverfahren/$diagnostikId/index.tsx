@@ -51,6 +51,9 @@ function RouteComponent() {
     <DiagnostikNav diagnostikId={diagnostikId} />
 
     <div className='p-2 xl:p-8'>
+      <label>
+        Diagramm:
+      </label>
       <Select 
           value={`${diagrammTyp}`}
           onValueChange={async (val) => {

@@ -73,7 +73,7 @@ export const KuchenDiagramm = ({ data: initialData, diagnostik }: { data: Row[],
                 }
             </SelectContent>
         </Select>    
-        <Filter initialData={initialData} data={data} setData={setData} />
+        <Filter initialData={initialData} data={data} setData={setData} diagnostik={diagnostik} />
         {/* <Filter diagnostik={diagnostik} dates={dates} initData={initData} setData={setData} /> */}
 
         <canvas id={id} className='max-w-full xl:max-h-[576px] px-8'></canvas>
