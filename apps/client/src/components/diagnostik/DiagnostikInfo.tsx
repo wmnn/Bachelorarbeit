@@ -1,8 +1,24 @@
 import type { Diagnostik } from "@thesis/diagnostik"
 import { ButtonLight } from "../ButtonLight"
 import { downloadDateien } from "./Diagramme/util"
+import { userContext } from "@/context/UserContext"
+import { use } from "react"
+import { Berechtigung } from "@thesis/rollen"
+import { useUserStore } from "../auth/UserStore"
+import { useAllUsers } from "../shared/useAllUsers"
 
 export const DiagnostikInfo = ({ diagnostik }: { diagnostik : Diagnostik }) => {
+
+    const { user } = use(userContext)
+    useAllUsers()
+    const users = useUserStore(store => store.users)
+    const entry = users.find(o => o.id == diagnostik.userId)
+    const nutzerLabel = entry ? `${entry?.vorname} ${entry?.nachname}` : diagnostik.userId
+
+    if (typeof user?.rolle === "string") {
+        return;
+    }
+    
     return <div className="flex flex-col gap-4">
         <div>
             <label>
@@ -10,6 +26,15 @@ export const DiagnostikInfo = ({ diagnostik }: { diagnostik : Diagnostik }) => {
             </label>
             <p>{diagnostik.name}</p>
         </div>
+
+        {
+            user?.rolle?.berechtigungen[Berechtigung.DiagnostikverfahrenRead] === "alle" && <div>
+                <label>
+                    Nutzer
+                </label>
+                <p>{nutzerLabel}</p>
+            </div>
+        }
         
         <div>
             <label>

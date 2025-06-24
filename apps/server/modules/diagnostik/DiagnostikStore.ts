@@ -17,7 +17,7 @@ export class DiagnostikStore {
 
         try {
             const [rows] = await conn.execute<RowDataPacket[]>(`
-                SELECT id, name, beschreibung, erstellungsdatum, obere_grenze AS obereGrenze, 
+                SELECT id, name, beschreibung, erstellungsdatum, obere_grenze AS obereGrenze, user_id as userId,
                     untere_grenze AS untereGrenze, typ, user_id AS userId, klassen_id AS klasseId, sichtbarkeit
                 FROM diagnostikverfahren
                 WHERE id = ?
@@ -44,7 +44,7 @@ export class DiagnostikStore {
                 obereGrenze: diag.obereGrenze,
                 untereGrenze: diag.untereGrenze,
                 speicherTyp: parseInt(diag.typ),
-                // userId: diag.userId,
+                userId: diag.userId,
                 klasseId: parseInt(diag.klasseId),
                 geeigneteKlassen,
                 kategorien,
@@ -370,8 +370,8 @@ export class DiagnostikStore {
             await conn.execute(`
                 UPDATE diagnostikverfahren
                 SET name = ?, beschreibung = ?, obere_grenze = ?, untere_grenze = ?, typ = ?, klassen_id = ?
-                WHERE id = ? AND user_id = ?
-            `, [name, beschreibung, obereGrenze, untereGrenze, speicherTyp, klasseId, id, userId]);
+                WHERE id = ?
+            `, [name, beschreibung, obereGrenze, untereGrenze, speicherTyp, klasseId, id]);
 
             await conn.execute(`DELETE FROM diagnostikverfahren_klassenstufen WHERE diagnostikverfahren_id = ?`, [id]);
             await conn.execute(`DELETE FROM diagnostikverfahren_kategorien WHERE diagnostikverfahren_id = ?`, [id]);

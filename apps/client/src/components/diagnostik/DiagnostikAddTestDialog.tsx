@@ -50,7 +50,7 @@ export function DiagnostikAddTestDialog({ closeDialog, klasseId, diagnostikId }:
 
     async function handleSubmit() {
         const res = await addErgebnisse(ergebnisse, `${diagnostikId}`, datum)
-        alert(JSON.stringify(res))
+        alert(JSON.stringify(res.message))
         if (res.success) {
             queryClient.invalidateQueries({
                 queryKey: [DIAGNOSTIKEN_QUERY_KEY + 'data', diagnostikId],

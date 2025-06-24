@@ -1,9 +1,11 @@
 import express from 'express';
 import { Request, Response } from 'express';
-import { AddErgebnisseResponseBody, CreateDiagnostikRequestBody, CreateDiagnostikResponseBody, Diagnostik, DiagnostikTyp, Ergebnis, Farbbereich, GetDiagnostikenResponseBody } from '@thesis/diagnostik';
+import { AddErgebnisseResponseBody, CreateDiagnostikRequestBody, CreateDiagnostikResponseBody, Diagnostik, DiagnostikTyp, Ergebnis, Farbbereich, GetDiagnostikenResponseBody, Sichtbarkeit } from '@thesis/diagnostik';
 import { getDiagnostikStore } from '../../singleton';
 import { getDiagnostikFiles, saveDiagnostikFiles } from '../files/util';
 import fileUpload from 'express-fileupload';
+import { Berechtigung, BerechtigungWert } from '@thesis/rollen';
+import { canEditDiagnostik, canUserAccessDiagnostik, canUserCreateDiagnostik, canUserDeleteDiagnostik } from '../auth/permissionsDiagnostikUtil';
 
 let router = express.Router();
 const SUCCESSFULL_VALIDATION_RES =  {
@@ -14,7 +16,13 @@ const SUCCESSFULL_VALIDATION_RES =  {
 router.get('/', async (
     req: Request<{}, {}, {}, { typ?: string }>,
     res: Response<GetDiagnostikenResponseBody>
-): Promise<any> => { 
+): Promise<any> => {
+    const permission = req.permissions?.[Berechtigung.DiagnostikverfahrenRead]
+    const allowed: BerechtigungWert<Berechtigung.DiagnostikverfahrenRead>[] = ['alle', 'eigene'] 
+    if (!permission || !allowed.includes(permission)) {
+        return res.status(401).json([]);
+    }
+
     let speicherTyp: DiagnostikTyp = DiagnostikTyp.LAUFENDES_VERFAHREN;
 
     if (req.query.typ) {
@@ -38,24 +46,41 @@ router.get('/', async (
     }
 
     let data = await getDiagnostikStore().getDiagnostiken(speicherTyp);
+    if (permission == 'eigene' && speicherTyp === DiagnostikTyp.LAUFENDES_VERFAHREN) {
+        data.data = data.data?.filter(o => o.userId == req.userId) ?? []
+    }
+    if (permission == 'eigene' && speicherTyp === DiagnostikTyp.VORLAGE) {
+        data.data = data.data?.filter(o => o.sichtbarkeit == Sichtbarkeit.ÖFFENTLICH || o.userId == req.userId) ?? []
+    }
     return res.status(data.success ? 200 : 400).json(data.data ?? []);
 });
 
-router.get('/:diagnostikId', async (req, res) => {
+router.get('/:diagnostikId', async (req, res): Promise<any> => {
     const { diagnostikId } = req.params
-    const diagnostik = await getDiagnostikStore().getDiagnostik(parseInt(diagnostikId))
-    res.status(diagnostik ? 200 : 400).json(diagnostik);
+    const { success, diagnostik } = await canUserAccessDiagnostik(diagnostikId, req)
+    if (!success) {
+        return res.status(401).json(undefined);
+    }
+    return res.status(success ? 200 : 400).json(diagnostik);
 });
 
-router.get('/:diagnostikId/data', async (req, res) => {
+router.get('/:diagnostikId/data', async (req, res): Promise<any> => {
     const { diagnostikId } = req.params
-    const diagnostik = await getDiagnostikStore().getErgebnisse(parseInt(diagnostikId))
-    res.status(diagnostik ? 200 : 400).json(diagnostik);
+    const { success, diagnostik } = await canUserAccessDiagnostik(diagnostikId, req)
+    if (!success) {
+        return res.status(401).json(undefined);
+    }
+    const ergebnisse = await getDiagnostikStore().getErgebnisse(parseInt(diagnostikId))
+    res.status(diagnostik ? 200 : 400).json(ergebnisse);
 });
 
 router.post('/auswertungsgruppen/:diagnostikId', async (req, res: Response<AddErgebnisseResponseBody>): Promise<any> => {
     let { diagnostikId: diagnostikIdString } = req.params
     const diagnostikId = parseInt(diagnostikIdString)
+    const { success } = await canUserAccessDiagnostik(`${diagnostikId}`, req)
+    if (!success) {
+        return res.status(401).json(undefined);
+    }
     const auswertungsgruppen = req.body
     const msg = await getDiagnostikStore().updateAuswertungsgruppen(diagnostikId, auswertungsgruppen)
     res.status(msg.success ? 200 : 400).json(msg);
@@ -64,6 +89,10 @@ router.post('/auswertungsgruppen/:diagnostikId', async (req, res: Response<AddEr
 router.post('/copy/:diagnostikId', async (req, res: Response<AddErgebnisseResponseBody>): Promise<any> => {
     let { diagnostikId: diagnostikIdString } = req.params
     const diagnostikId = parseInt(diagnostikIdString)
+    const { success } = await canUserAccessDiagnostik(`${diagnostikId}`, req)
+    if (!success) {
+        return res.status(401).json(undefined);
+    }
 
     let diagnostik = await getDiagnostikStore().getDiagnostik(diagnostikId)
     if (!req.userId) {
@@ -77,8 +106,6 @@ router.post('/copy/:diagnostikId', async (req, res: Response<AddErgebnisseRespon
         ...diagnostik,
         userId: req.userId
     }
-
-    console.log(diagnostik)
 
     const ergebnisse = await getDiagnostikStore().getErgebnisse(diagnostikId)
     if (!Array.isArray(ergebnisse)) {
@@ -106,6 +133,11 @@ router.post('/copy/:diagnostikId', async (req, res: Response<AddErgebnisseRespon
 
 router.post('/:diagnostikId', async (req, res: Response<AddErgebnisseResponseBody>): Promise<any> => {
     const { diagnostikId } = req.params
+    const { success } = await canUserAccessDiagnostik(`${diagnostikId}`, req)
+    if (!success) {
+        return res.status(401).json(undefined);
+    }
+
     let ergebnisse: Ergebnis[] = req.body ?? []
     let { datum } = req.query;
 
@@ -244,6 +276,10 @@ router.put('/sichtbarkeit', async (req, res): Promise<any> => {
         diagnostikId: string,
         sichtbarkeit: string
     }
+    const { success } = await canUserAccessDiagnostik(`${diagnostikId}`, req)
+    if (!success) {
+        return res.status(401).json(undefined);
+    }
 
     const msg = await getDiagnostikStore().updateSichtbarkeit(parseInt(diagnostikId), parseInt(sichtbarkeit));
     res.status(msg.success ? 200 : 400).json(msg);
@@ -272,6 +308,13 @@ router.post('/', async (
 ): Promise<any> => {
     if (!req.userId) {
         return;
+    }
+    const { success } = await canUserCreateDiagnostik(req)
+    if (!success) {
+        return res.status(401).json({
+                success: false,
+                message: 'Deine Berechtigungen reichen nicht aus.'
+        });
     }
     let diagnostik: Diagnostik = JSON.parse(req.body.diagnostik);
     const files = handleFileAttachments(req.files?.files)
@@ -315,6 +358,14 @@ router.put('/', async (
     res: Response<CreateDiagnostikResponseBody>
 ): Promise<any> => {
     let diagnostik: Diagnostik = JSON.parse(req.body.diagnostik);
+    const { success } = await canEditDiagnostik(`${diagnostik.id}`, req)
+
+    if (!success) {
+        return res.status(401).json({
+                success: false,
+                message: 'Deine Berechtigungen reichen nicht aus.'
+        });
+    }
     const files = handleFileAttachments(req.files?.files)
     diagnostik.files = [...diagnostik.files ?? [], ...files.map(file => file.name)]
 
@@ -397,6 +448,13 @@ function validierungFarbbereiche(diagnostik: Diagnostik): CreateDiagnostikRespon
 
 router.delete('/:diagnostikId', async (req, res: Response): Promise<any> => {
     const { diagnostikId } = req.params
+    const { success } = await canUserDeleteDiagnostik(diagnostikId, req)
+    if (!success) {
+        return res.status(401).json({
+            success: false,
+            message: 'Deine Berechtigungen reichen nicht aus.'
+        });
+    }
     const msg = await getDiagnostikStore().deleteDiagnostik(diagnostikId)
     res.status(msg.success ? 200 : 400).json(msg);
 });

@@ -1,11 +1,16 @@
 import express from 'express';
 import path from 'path';
 import fs from 'fs'
+import { canUserAccessDiagnostik } from '../auth/permissionsDiagnostikUtil';
 
 let router = express.Router();
 
 router.get('/diagnostik/:diagnostikId/:datei', async (req, res): Promise<any> => {
     const { diagnostikId, datei } = req.params;
+    const { success, diagnostik } = await canUserAccessDiagnostik(diagnostikId, req)
+    if (!success) {
+        return res.status(401).json(undefined);
+    }
 
     const filePath = path.resolve(__dirname, '../../protected/diagnostik', diagnostikId, datei);
 

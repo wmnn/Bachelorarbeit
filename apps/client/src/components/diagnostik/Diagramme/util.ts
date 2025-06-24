@@ -14,7 +14,6 @@ export const downloadDateien = async (diagnostikId: string, files: string[]) => 
     for (const fileName of files) {
         try {
             const res = await fetch(`${FILES_ENDPOINT}/diagnostik/${diagnostikId}/${fileName}`);
-            console.log(res.status)
             if (!res.ok) {
                 continue;
             }

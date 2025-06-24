@@ -132,6 +132,7 @@ export const editDiagnostik = async (diagnostik: Diagnostik, files: File[]) => {
         return await res.json() as CreateDiagnostikResponseBody;
         
     } catch (e) {
+        console.log(e)
         return {
             success: false,
             message: 'Die Diagnostik konnte nicht bearbeitet werden.'
