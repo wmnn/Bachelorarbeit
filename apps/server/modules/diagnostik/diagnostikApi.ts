@@ -5,7 +5,7 @@ import { getDiagnostikStore } from '../../singleton';
 import { getDiagnostikFiles, saveDiagnostikFiles } from '../files/util';
 import fileUpload from 'express-fileupload';
 import { Berechtigung, BerechtigungWert } from '@thesis/rollen';
-import { canEditDiagnostik, canUserAccessDiagnostik, canUserCreateDiagnostik, canUserDeleteDiagnostik } from '../auth/permissionsDiagnostikUtil';
+import { canEditDiagnostik, canUserAccessDiagnostik, canUserCreateDiagnostik, canUserDeleteDiagnostik, canUserUpdateSichtbarkeit } from '../auth/permissionsDiagnostikUtil';
 
 let router = express.Router();
 const SUCCESSFULL_VALIDATION_RES =  {
@@ -276,7 +276,7 @@ router.put('/sichtbarkeit', async (req, res): Promise<any> => {
         diagnostikId: string,
         sichtbarkeit: string
     }
-    const { success } = await canUserAccessDiagnostik(`${diagnostikId}`, req)
+    const { success } = await canUserUpdateSichtbarkeit(req)
     if (!success) {
         return res.status(401).json(undefined);
     }

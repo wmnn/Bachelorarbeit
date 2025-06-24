@@ -18,6 +18,20 @@ export async function canUserCreateDiagnostik(req: Request): Promise<{
         success: true
     }
 }
+export async function canUserUpdateSichtbarkeit(req: Request): Promise<{
+    success: boolean
+}> {
+    const isAdmin = req.permissions?.[Berechtigung.DiagnostikverfahrenRead] == 'alle'
+    if (!isAdmin) {
+        return {
+            success: false
+        }
+    }
+
+    return {
+        success: true
+    }
+}
 export async function canUserDeleteDiagnostik(diagnostikId: string, req: Request): Promise<{
     success: boolean
 }> {
