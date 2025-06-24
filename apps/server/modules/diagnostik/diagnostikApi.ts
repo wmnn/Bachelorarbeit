@@ -2,7 +2,7 @@ import express from 'express';
 import { Request, Response } from 'express';
 import { AddErgebnisseResponseBody, CreateDiagnostikRequestBody, CreateDiagnostikResponseBody, Diagnostik, DiagnostikTyp, Ergebnis, Farbbereich, GetDiagnostikenResponseBody } from '@thesis/diagnostik';
 import { getDiagnostikStore } from '../../singleton';
-import { saveDiagnostikFiles } from '../files/util';
+import { getDiagnostikFiles, saveDiagnostikFiles } from '../files/util';
 import fileUpload from 'express-fileupload';
 
 let router = express.Router();
@@ -51,6 +51,49 @@ router.get('/:diagnostikId/data', async (req, res) => {
     const { diagnostikId } = req.params
     const diagnostik = await getDiagnostikStore().getErgebnisse(parseInt(diagnostikId))
     res.status(diagnostik ? 200 : 400).json(diagnostik);
+});
+
+router.post('/copy/:diagnostikId', async (req, res: Response<AddErgebnisseResponseBody>): Promise<any> => {
+    let { diagnostikId: diagnostikIdString } = req.params
+    const diagnostikId = parseInt(diagnostikIdString)
+
+    let diagnostik = await getDiagnostikStore().getDiagnostik(diagnostikId)
+    if (!req.userId) {
+        return;
+    }
+    if (!diagnostik) {
+        return;
+    }
+
+    diagnostik = {
+        ...diagnostik,
+        userId: req.userId
+    }
+
+    console.log(diagnostik)
+
+    const ergebnisse = await getDiagnostikStore().getErgebnisse(diagnostikId)
+    if (!Array.isArray(ergebnisse)) {
+        return;
+    }
+    
+    const msg = await getDiagnostikStore().createDiagnostik(req.userId, diagnostik)
+    if (!msg.success) {
+        return;
+    }
+   
+    const files = await getDiagnostikFiles(diagnostik.id ?? -1)
+    const { success: copyErgebnisseSuccess } = await getDiagnostikStore().copyErgebnisse(diagnostik.id ?? -1, msg.diagnostikId ?? -1)
+    await saveDiagnostikFiles(msg.diagnostikId ?? -1, files)
+
+    if (!copyErgebnisseSuccess) {
+        return;
+    }
+
+    res.status(msg.success ? 200 : 400).json({
+        success: true,
+        message: 'Die Diagnostik wurde erfolgreich kopiert'
+    });
 });
 
 router.post('/:diagnostikId', async (req, res: Response<AddErgebnisseResponseBody>): Promise<any> => {

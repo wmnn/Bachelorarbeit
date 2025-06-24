@@ -39,6 +39,28 @@ export const createDiagnostik = async (diagnostik: Diagnostik, files: File[]) =>
 
 }
 
+export const copyDiagnostik = async (diagnostikId: string) => {
+    
+    try {
+        const res = await fetch(DIAGNOSTIK_ENDPOINT + `/copy/${diagnostikId}`, {
+            method: 'POST'
+        })
+
+        if (res.status === 403) {
+            window.location.href = '/login'
+        }
+    
+        return await res.json() as CreateDiagnostikResponseBody;
+        
+    } catch (e) {
+        return {
+            success: false,
+            message: 'Die Diagnostik konnte nicht kopiert werden.'
+        };
+    }
+
+}
+
 export const updateSichtbarkeit = async (diagnostikId: string, sichtbarkeit: Sichtbarkeit) => {
     
     try {

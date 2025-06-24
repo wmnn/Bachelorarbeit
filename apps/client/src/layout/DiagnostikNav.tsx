@@ -1,8 +1,8 @@
-import { Link, useRouter, useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { NavItem as ListItem } from "./NavItem";
 import { useDiagnostik } from "@/components/diagnostik/useDiagnostik";
 import { MoveLeft, Share2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { DiagnostikAddTestDialog } from "@/components/diagnostik/DiagnostikAddTestDialog";
 import { ButtonLight } from "@/components/ButtonLight";
 import { DialogWithButtons } from "@/components/dialog/DialogWithButtons";
@@ -13,6 +13,7 @@ import { useSelectedUserStore } from "@/components/shared/SelectedUserStore";
 import { DIAGNOSTIKEN_QUERY_KEY } from "@/reactQueryKeys";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAllUsers } from "@/components/shared/useAllUsers";
+import { userContext } from "@/context/UserContext";
 
 export const DiagnostikNav = ({ diagnostikId }: { diagnostikId: string }) => {
 
@@ -22,6 +23,7 @@ export const DiagnostikNav = ({ diagnostikId }: { diagnostikId: string }) => {
 
   const [isAddTestDataDialogShown, setIsAddTestDataDialogShown] = useState(false)
   const [isShareDialogShown, setIsShareDialogShown] = useState(false)
+  const { user } = use(userContext)
 
   const query = useDiagnostik(parseInt(diagnostikId))
   if (query.isPending) {
@@ -29,9 +31,11 @@ export const DiagnostikNav = ({ diagnostikId }: { diagnostikId: string }) => {
   }
   const diagnostik = query.data
 
-  if (!diagnostik) {
+  if (!diagnostik || !user) {
     return <p>Ein Fehler ist aufgetreten, kontaktieren Sie den Admin.</p>
   }
+
+  const isShared = (diagnostik.geteiltMit ?? []).includes(user.id ?? -1)
 
   return (
     <div className="w-full">
@@ -55,13 +59,17 @@ export const DiagnostikNav = ({ diagnostikId }: { diagnostikId: string }) => {
       </div>
 
       <div className="flex items-center gap-4">
-        <ButtonLight onClick={() => setIsAddTestDataDialogShown(true)}>
-          Ergebnisse aktualisieren
-        </ButtonLight>
+        {
+          !isShared && <>
+          <ButtonLight onClick={() => setIsAddTestDataDialogShown(true)}>
+            Ergebnisse aktualisieren
+          </ButtonLight>
 
-        <button onClick={() => setIsShareDialogShown(true)}>
-          <Share2 />
-        </button>
+          <button onClick={() => setIsShareDialogShown(true)}>
+            <Share2 />
+          </button>
+          </>
+        }   
       </div>
     </div>
 

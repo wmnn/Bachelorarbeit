@@ -199,10 +199,13 @@ export class DiagnostikStore {
             WHERE diagnostikverfahren_id = ?
         `, [diagnostikId]);
 
-        return rows.map(row => ({
-            hexFarbe: row.hexFarbe,
-            obereGrenze: parseInt(row.obereGrenze) ?? null
-        }));
+        return rows.map(row => {
+            const obereGrenze = row.obereGrenze
+            return {
+                hexFarbe: row.hexFarbe,
+                obereGrenze: obereGrenze ?? undefined
+            }
+        });
     }
 
 
@@ -386,6 +389,54 @@ export class DiagnostikStore {
         }
     }
 
+    async copyErgebnisse(prevDiagnostikId: number, targetDiagnostikId: number) {
+        if (!this.connection) return STANDARD_FEHLER;
+
+        const conn = await this.connection.getConnection();
+        try {
+            await conn.beginTransaction();
+
+            // Fix: Add `= ?` to WHERE clause
+            const [rows] = await conn.execute<any[]>(`
+                SELECT datum, schueler_id, ergebnis FROM diagnostikverfahren_ergebnisse 
+                WHERE diagnostikverfahren_id = ?
+            `, [prevDiagnostikId]);
+
+            if (!Array.isArray(rows) || rows.length === 0) {
+                await conn.rollback();
+                return {
+                    success: false,
+                    message: 'Keine Ergebnisse zum Kopieren gefunden.'
+                };
+            }
+
+            const values: any[] = [];
+            const placeholders = rows.map(row => {
+                values.push(targetDiagnostikId, row.datum, row.schueler_id, row.ergebnis);
+                return "(?, ?, ?, ?)";
+            }).join(", ");
+
+            await conn.execute(`
+                INSERT INTO diagnostikverfahren_ergebnisse 
+                    (diagnostikverfahren_id, datum, schueler_id, ergebnis)
+                VALUES ${placeholders}
+            `, values);
+
+            await conn.commit();
+
+            return {
+                success: true,
+                message: 'Die Ergebnisse wurden erfolgreich kopiert.'
+            };
+
+        } catch (e) {
+            console.error("Fehler beim Kopieren der Ergebnisse:", e);
+            await conn.rollback();
+            return STANDARD_FEHLER;
+        } finally {
+            conn.release();
+        }
+    }
 
     async addErgebnisse(ergebnisse: Ergebnis[], diagnostikId: number, datum: string): Promise<DatabaseMessage> {
         if (!this.connection) return STANDARD_FEHLER;

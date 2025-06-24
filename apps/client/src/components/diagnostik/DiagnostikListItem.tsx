@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router"
-import { DiagnostikTyp, Sichtbarkeit, updateSichtbarkeit, type Diagnostik } from "@thesis/diagnostik"
+import { copyDiagnostik, createDiagnostik, DiagnostikTyp, Sichtbarkeit, updateSichtbarkeit, type Diagnostik } from "@thesis/diagnostik"
 import { useState } from "react"
 import { DiagnostikListItemInfoDialog } from "./DiagnostikListItemInfoDialog"
 import { Edit2, Info, Trash2 } from "lucide-react"
@@ -15,7 +15,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { useQueryClient } from "@tanstack/react-query"
 import { DIAGNOSTIKEN_QUERY_KEY } from "@/reactQueryKeys"
 
-export const DiagnostikListItem = ({ diagnostik }: { diagnostik: Diagnostik }) => {
+type DiagnostikListItemProps = {
+  diagnostik: Diagnostik;
+  isShared?: boolean;
+};
+export const DiagnostikListItem = ({ diagnostik, isShared = false }: DiagnostikListItemProps) => {
 
     const [isInfoDialogShown, setIsInfoDialogShown] = useState(false)
     const [isDeleteDialogShown, setIsDeleteDialogShown] = useState(false)
@@ -29,6 +33,14 @@ export const DiagnostikListItem = ({ diagnostik }: { diagnostik: Diagnostik }) =
 
     async function handleSichtbarkeitChange(newValue: Sichtbarkeit) {
         const res = await updateSichtbarkeit(`${diagnostik?.id ?? -1}`, newValue)
+        setResponseMsg(res.message)
+        if (res.success) {
+            queryClient.invalidateQueries({ queryKey: [DIAGNOSTIKEN_QUERY_KEY]})
+        }
+    }
+
+    async function handleCopy() {
+        const res = await copyDiagnostik(`${diagnostik.id ?? -1}`)
         setResponseMsg(res.message)
         if (res.success) {
             queryClient.invalidateQueries({ queryKey: [DIAGNOSTIKEN_QUERY_KEY]})
@@ -114,28 +126,35 @@ export const DiagnostikListItem = ({ diagnostik }: { diagnostik: Diagnostik }) =
                         Benutzen
                     </ButtonLight>
                 }
+                {
+                    isShared && <ButtonLight onClick={() => handleCopy()}>
+                        Kopieren
+                    </ButtonLight>
+                }
                 <p>{klasse !== undefined && getTitle(klasse)}</p>
+                {
+                    !isShared && <>
+                    <Tooltip content={'Info'}>
+                        <button onClick={() => setIsInfoDialogShown(true)}>
+                            <Info />
+                        </button>
+                    </Tooltip>
+                    
 
-                <Tooltip content={'Info'}>
-                    <button onClick={() => setIsInfoDialogShown(true)}>
-                        <Info />
+                    <Tooltip content={'Bearbeiten'}>
+                        <button onClick={() => setIsEditDialogShown(true)}>
+                        <Edit2 />
                     </button>
-                </Tooltip>
-                
-
-                <Tooltip content={'Bearbeiten'}>
-                    <button onClick={() => setIsEditDialogShown(true)}>
-                    <Edit2 />
-                </button>
-                </Tooltip>
-                
-                <Tooltip content={'Löschen'}>
-                    <button onClick={() => setIsDeleteDialogShown(true)}>
-                        <Trash2 />
-                    </button>
-                </Tooltip>
+                    </Tooltip>
+                    
+                    <Tooltip content={'Löschen'}>
+                        <button onClick={() => setIsDeleteDialogShown(true)}>
+                            <Trash2 />
+                        </button>
+                    </Tooltip>
+                    </>
+                }
             </div>
-            
             
         </div>        
     
