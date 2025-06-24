@@ -1,8 +1,9 @@
 import { ButtonLight } from '@/components/ButtonLight';
 import { getDates, getMindeststandard, getMindeststandardResults, type Diagnostik, type Row } from '@thesis/diagnostik';
 import Chart from 'chart.js/auto'
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { download } from './util';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export const KuchenDiagramm = ({ data, diagnostik }: { data: Row[], diagnostik: Diagnostik }) => {
 
@@ -12,10 +13,12 @@ export const KuchenDiagramm = ({ data, diagnostik }: { data: Row[], diagnostik: 
     }
 
     const dates = getDates(data)
+    const [date, setDate] = useState(dates[dates.length - 1] ?? '');
+
     const {
         mindeststandardErreicht,
         mindeststandardNichtErreicht
-     } = getMindeststandardResults(mindeststandard, data, dates[dates.length - 1])
+     } = getMindeststandardResults(mindeststandard, data, date)
 
     const id = 'pie'
 
@@ -49,6 +52,26 @@ export const KuchenDiagramm = ({ data, diagnostik }: { data: Row[], diagnostik: 
     }, [])
     return <>
         <h1>Kuchendiagramm der letzten Auswertung</h1>
+        <Select 
+            value={`${date}`}
+            onValueChange={async (date: string) => {
+                setDate(date)
+            }}
+        >
+            <SelectTrigger className="xl:w-[200px] w-min">
+                <SelectValue placeholder="Keine Rolle"/>
+            </SelectTrigger>
+            <SelectContent>
+                {
+                    dates.map((date) => {
+                        return <SelectItem key={date} value={`${date}`}>
+                            {new Date(date).toLocaleDateString('de')}                    
+                        </SelectItem>                 
+                    })
+                }
+            </SelectContent>
+        </Select>    
+
         <canvas id={id} className='max-w-full xl:max-h-[576px] px-8'></canvas>
         <div className='flex justify-start my-8'>
             <ButtonLight onClick={() => download(id)} className='max-w-[360px]'>
