@@ -33,7 +33,6 @@ export function DiagnostikAddTestDialog({ closeDialog, klasseId, diagnostikId }:
     const data = ergebnisseQuery.data
 
     useEffect(() => {
-        console.log(data)
         const neueErgebnisse = schuelerIds?.map(schuelerId => {
             const found = data.find(o => o.schuelerId == schuelerId)
             const ergebnis = found?.ergebnisse.find(o => ergebnisDatumGleich(o, datum))

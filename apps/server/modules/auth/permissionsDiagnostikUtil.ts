@@ -77,6 +77,12 @@ export async function canEditDiagnostik(diagnostikId: string, req: Request): Pro
         }
     } 
 
+    if (diagnostikId != `${diagnostik?.userId ?? -1}`) {
+        return {
+            success: false
+        }
+    }
+
     if (
         diagnostik?.sichtbarkeit == Sichtbarkeit.ÖFFENTLICH && 
         diagnostik.userId != req.userId

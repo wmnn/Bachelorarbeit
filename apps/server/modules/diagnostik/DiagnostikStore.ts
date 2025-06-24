@@ -369,9 +369,9 @@ export class DiagnostikStore {
 
             await conn.execute(`
                 UPDATE diagnostikverfahren
-                SET name = ?, beschreibung = ?, obere_grenze = ?, untere_grenze = ?, typ = ?, klassen_id = ?
+                SET name = ?, beschreibung = ?, obere_grenze = ?, untere_grenze = ?, typ = ?, klassen_id = ?, user_id = ?
                 WHERE id = ?
-            `, [name, beschreibung, obereGrenze, untereGrenze, speicherTyp, klasseId, id]);
+            `, [name, beschreibung, obereGrenze, untereGrenze, speicherTyp, klasseId, diagnostik.userId, id]);
 
             await conn.execute(`DELETE FROM diagnostikverfahren_klassenstufen WHERE diagnostikverfahren_id = ?`, [id]);
             await conn.execute(`DELETE FROM diagnostikverfahren_kategorien WHERE diagnostikverfahren_id = ?`, [id]);

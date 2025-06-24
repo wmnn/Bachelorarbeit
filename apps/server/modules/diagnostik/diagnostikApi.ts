@@ -1,6 +1,6 @@
 import express from 'express';
 import { Request, Response } from 'express';
-import { AddErgebnisseResponseBody, CreateDiagnostikRequestBody, CreateDiagnostikResponseBody, Diagnostik, DiagnostikTyp, Ergebnis, Farbbereich, GetDiagnostikenResponseBody, Sichtbarkeit } from '@thesis/diagnostik';
+import { AddErgebnisseResponseBody, CreateDiagnostikRequestBody, CreateDiagnostikResponseBody, Diagnostik, DiagnostikTyp, Ergebnis, Farbbereich, getDiagnostik, GetDiagnostikenResponseBody, Sichtbarkeit } from '@thesis/diagnostik';
 import { getDiagnostikStore } from '../../singleton';
 import { deleteNotIncludedFiles, getDiagnostikFiles, saveDiagnostikFiles } from '../files/util';
 import fileUpload from 'express-fileupload';
