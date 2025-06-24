@@ -521,21 +521,32 @@ export class DiagnostikStore {
         try {
             await conn.beginTransaction();
 
-            const values: any[] = [];
-            const placeholders = ergebnisse.map(ergebnis => {
-                values.push(diagnostikId, datum, ergebnis.schuelerId, ergebnis.ergebnis);
-                return "(?, ?, ?, ?)";
-            }).join(", ");
+            const toBeDeleted = ergebnisse.filter(o => o.ergebnis === '');
+            const toBeInserted = ergebnisse.filter(o => o.ergebnis !== '');
 
-            const sql = `
-                INSERT INTO diagnostikverfahren_ergebnisse 
-                    (diagnostikverfahren_id, datum, schueler_id, ergebnis)
-                VALUES ${placeholders}
-                ON DUPLICATE KEY UPDATE
-                    ergebnis = VALUES(ergebnis)
-            `;
+            if (toBeDeleted.length > 0) {
+                const deletePlaceholders = toBeDeleted.map(() => "(?, ?, ?)").join(", ");
+                const deleteValues = toBeDeleted.flatMap(o => [diagnostikId, datum, o.schuelerId]);
 
-            await conn.execute(sql, values);
+                await conn.execute(`
+                    DELETE FROM diagnostikverfahren_ergebnisse 
+                    WHERE (diagnostikverfahren_id, datum, schueler_id) IN (${deletePlaceholders})
+                `, deleteValues);
+            }
+
+            // Insert/update non-empty results
+            if (toBeInserted.length > 0) {
+                const insertPlaceholders = toBeInserted.map(() => "(?, ?, ?, ?)").join(", ");
+                const insertValues = toBeInserted.flatMap(e => [diagnostikId, datum, e.schuelerId, e.ergebnis]);
+
+                await conn.execute(`
+                    INSERT INTO diagnostikverfahren_ergebnisse 
+                        (diagnostikverfahren_id, datum, schueler_id, ergebnis)
+                    VALUES ${insertPlaceholders}
+                    ON DUPLICATE KEY UPDATE ergebnis = VALUES(ergebnis)
+                `, insertValues);
+            }
+
             await conn.commit();
 
             return {

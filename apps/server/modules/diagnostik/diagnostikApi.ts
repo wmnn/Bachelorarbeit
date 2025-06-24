@@ -131,6 +131,9 @@ router.post('/copy/:diagnostikId', async (req, res: Response<AddErgebnisseRespon
     });
 });
 
+/**
+ * Update / add ergebnisse
+ */
 router.post('/:diagnostikId', async (req, res: Response<AddErgebnisseResponseBody>): Promise<any> => {
     const { diagnostikId } = req.params
     const { success } = await canUserAccessDiagnostik(`${diagnostikId}`, req)
@@ -178,7 +181,7 @@ router.post('/:diagnostikId', async (req, res: Response<AddErgebnisseResponseBod
         })
     }
 
-    ergebnisse = ergebnisse.filter(item => item.ergebnis !== '')
+    // ergebnisse = ergebnisse.filter(item => item.ergebnis !== '')
 
     const msg = await getDiagnostikStore().addErgebnisse(ergebnisse, parseInt(diagnostikId), datum)
     res.status(msg.success ? 200 : 400).json(msg);
