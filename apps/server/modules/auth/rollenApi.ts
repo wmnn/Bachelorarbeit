@@ -5,11 +5,12 @@ import {
     CreateRoleResponseBody,
     DeleteRoleRequestBody,
     DeleteRoleResponseBody,
-    ROLLE_ENDPOINT,
     UpdateRoleRequestBody,
 } from '@thesis/auth';
 import { Berechtigung } from '@thesis/rollen';
 import { getAuthStore } from '../../singleton';
+import { getErrorResponse, getInternalErrorResponse, getNoPermissionResponse, getNoSessionResponse } from './permissionsUtil';
+import { countUsersWithPermission, countUsersWithRole } from './util';
 
 let router = express.Router();
 
@@ -19,7 +20,13 @@ let router = express.Router();
 router.post('/',async (
     req: Request<{}, {}, CreateRoleRequestBody>,
     res: Response<CreateRoleResponseBody>
-) => {
+): Promise<any> => {
+    if(req.userId == undefined) {
+        return getNoSessionResponse(res);
+    }
+    if (!req.permissions?.[Berechtigung.RollenVerwalten]) {
+        return getNoPermissionResponse(res)
+    }
     const { rolle, berechtigungen } = req.body;
 
     if (rolle == '') {
@@ -44,10 +51,30 @@ router.post('/',async (
     res.status(200).json(dbMessage);
 });
 
-router.patch('/', async (req: Request<{}, {}, UpdateRoleRequestBody>, res) => {
+router.patch('/', async (req: Request<{}, {}, UpdateRoleRequestBody>, res): Promise<any> => {
+    if(req.userId == undefined) {
+        return getNoSessionResponse(res);
+    }
+    if (!req.permissions?.[Berechtigung.RollenVerwalten]) {
+        return getNoPermissionResponse(res)
+    }
     const { rollenbezeichnung, updated } = req.body;
+
+    // Mindestens eine Person muss über die Rolle zur Verwaltung von Rollen verfügen.
+
+    // 1. Zählen, wie viele Rollen diese Berechtigung haben.
+    const rolesWithPermission = (await getAuthStore().getRoles() ?? []).filter(role => role.berechtigungen[Berechtigung.RollenVerwalten] == true)
+    const countRolesWithPermission = rolesWithPermission.length
+
+    // 2. Wenn nur eine Rolle die Berechtigung hat und die Berechtigung verändert wird.
+    if (countRolesWithPermission == 1 && updated.rolle == rolesWithPermission[0].rolle) {
+        return res.status(400).json({
+             success: false,
+             message: 'Mindestens eine Person muss über die Rolle zur Verwaltung von Rollen verfügen.'
+        })
+    } 
+
     const dbMessage = await getAuthStore().updateRole(rollenbezeichnung, updated);
-    // TODO delete session with the role
     const sessions = await getAuthStore().getSessions()
     let success = true
     for (const session of sessions) {
@@ -62,15 +89,24 @@ router.patch('/', async (req: Request<{}, {}, UpdateRoleRequestBody>, res) => {
         message: dbMessage.message
     });
 });
-router.delete('/', async (req: Request<{}, {}, DeleteRoleRequestBody>, res: Response<DeleteRoleResponseBody>) => {
-    if (!req.permissions?.[Berechtigung.RollenVerwalten]) {
-        res.status(401).json({
-            success: false,
-            message: 'Du hast nicht die notwendigen Berechtigungen.'
-        });
-        return;
+router.delete('/', async (req: Request<{}, {}, DeleteRoleRequestBody>, res: Response<DeleteRoleResponseBody>): Promise<any> => {
+    if(req.userId == undefined) {
+        return getNoSessionResponse(res);
     }
+    if (!req.permissions?.[Berechtigung.RollenVerwalten]) {
+        return getNoPermissionResponse(res)
+    }
+    
     const { rolle } = req.body;
+    // Rollen die aktuell zugewiesen sind, können nicht gelöscht werden
+    const amountOfUsersWithAccordingRole = await countUsersWithRole(rolle)
+    if (amountOfUsersWithAccordingRole != 0) {
+        return res.status(400).json({
+            success: false,
+            message: 'Rollen die aktuell zugewiesen sind, können nicht gelöscht werden.'
+        })
+    }
+
     const dbMessage = await getAuthStore().deleteRole(rolle);
     res.status(200).json(dbMessage);
 });

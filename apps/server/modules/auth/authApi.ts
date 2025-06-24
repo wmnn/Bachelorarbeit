@@ -28,11 +28,11 @@ import fs from 'fs';
 import path from 'path';
 import jwt from 'jsonwebtoken'
 import { sendActivateAccountEmail } from './smtp';
-import { searchUser } from './util';
+import { countUsersWithPermission, searchUser } from './util';
 import { addRoleDataToUser } from '../auth/util';
 import { Berechtigung } from '@thesis/rollen';
 import { getAuthStore } from '../../singleton';
-import { getNoSessionResponse } from './permissionsUtil';
+import { getErrorResponse, getNoSessionResponse } from './permissionsUtil';
 
 const cookieKey = fs.readFileSync(
     path.join(__dirname, '../../../../cookie_signing.key'),
@@ -266,16 +266,18 @@ router.post(
     }
 );
 
-router.get('/users', async (req, res: Response<UsersResponseBody>) => {
+router.get('/users', async (req, res: Response<UsersResponseBody>): Promise<any> => {
+    if(req.userId == undefined) {
+        return getNoSessionResponse(res);
+    }
     let users = await getAuthStore().getUsers();
     const roles = await getAuthStore().getRoles();
 
     if (!users || !roles) {
-        res.status(500).json({
+        return res.status(500).json({
             users: [],
             rollen: [],
         });
-        return;
     }
 
     res.status(200).json({
@@ -284,7 +286,10 @@ router.get('/users', async (req, res: Response<UsersResponseBody>) => {
     });
 });
 
-router.post('/users/search', async (req: Request<{}, {}, SearchUserRequestBody<Berechtigung>>, res: Response<SearchUserResponseBody>) => {
+router.post('/users/search', async (req: Request<{}, {}, SearchUserRequestBody<Berechtigung>>, res: Response<SearchUserResponseBody>): Promise<any> => {
+    if(req.userId == undefined) {
+        return getNoSessionResponse(res);
+    }
     const { query, berechtigung, berechtigungValue} = req.body 
     const users = await searchUser(query, berechtigung, berechtigungValue);
     res.status(200).json({
@@ -294,46 +299,63 @@ router.post('/users/search', async (req: Request<{}, {}, SearchUserRequestBody<B
     });
 });
 
+async function updateRoleHandling(req: Request, updatedUser: User, res: Response): Promise<Response | undefined> {
+    const savedUser = (await getAuthStore().getUsers() ?? []).find(u => u.id == updatedUser.id)
+    if (savedUser?.rolle == updatedUser.rolle) {
+        return res.status(400).json({
+            success: false,
+            message: 'Der Nutzer besitzt bereits diese Rolle.'
+        })
+    }
+
+    // Mindestens eine Person muss über die Rolle zur Verwaltung von Rollen verfügen.
+    const berechtigung = Berechtigung.RollenVerwalten
+    const count = await countUsersWithPermission(berechtigung, true)
+    if (count == 1 && updatedUser.id == req.userId // Aktualisiert sich selber.
+        ) {
+        return res.status(400).json({
+            success: false,
+            message: 'Mindestens eine Person muss über die Rolle zur Verwaltung von Rollen verfügen.'
+        })
+    }
+    
+    const msg = await getAuthStore().updateUser(updatedUser.id ?? -1, undefined, undefined, undefined, undefined, updatedUser.rolle as string, undefined, undefined)
+    
+    const sessions = await getAuthStore().getSessions()
+    let success = msg.success
+    for (const session of sessions) {
+        if (session.user?.id === updatedUser.id) {
+            success = success && await getAuthStore().removeSession(session.sessionId)
+            break;
+        }
+    }
+
+    return res.status(200).json(msg);
+}
 router.patch('/user', async (req: Request<{}, {}, UpdateUserRequestBody>, res: Response<UpdateUserResponseBody>): Promise<any> => {
     const user = req.body.user
     const userId = user.id;
 
-    if (!userId) {
-        return res.status(400).json({
-            success: false,
-            message: 'Ein Fehler ist aufgetreten.'
-        });
-    }
-
-    if(req.userId == undefined) {
+    if (req.userId == undefined) {
         return getNoSessionResponse(res);
     }
 
+    if (userId == undefined) {
+        return getErrorResponse(res)
+    }
+
     // Admin changes a user
-    if (userId !== undefined && userId !== req.userId) {
+    if (userId !== req.userId || (user.rolle != undefined || user.isLocked != undefined)) {
 
         if (!req.permissions?.[Berechtigung.RollenVerwalten]) {
-            res.status(401).json({
+            return res.status(401).json({
                 success: false,
                 message: 'Du hast nicht die notwendigen Berechtigungen.'
             });
-            return;
         }
 
-        const rolle = req.body.user.rolle
-        if (typeof rolle == 'string') {
-            const msg = await getAuthStore().updateUser(userId, undefined, undefined, undefined, undefined, rolle, undefined, undefined)
-            
-            const sessions = await getAuthStore().getSessions()
-            let success = msg.success
-            for (const session of sessions) {
-                if (session.user?.id === userId) {
-                    success = success && await getAuthStore().removeSession(session.sessionId)
-                }
-            }
-     
-            res.status(200).json(msg);
-            return;
+        if (typeof user.rolle == 'string') {
+            return updateRoleHandling(req, user, res)
         }
 
         if (user.isLocked !== undefined) {
@@ -347,37 +369,29 @@ router.patch('/user', async (req: Request<{}, {}, UpdateUserRequestBody>, res: R
                 return;
             }
         }
-
-        res.status(400).json({
-            success: false,
-            message: 'Ein Fehler ist aufgetreten.'
-        });
-        return;
+        return getErrorResponse(res);
     }
 
     // Change email
     if (user.email) {
         const msg = await getAuthStore().updateUser(userId, user.email)
-        res.status(200).json(msg);
-        return;
+        return res.status(200).json(msg);
     }
 
     const vorname = user.vorname
     const nachname = user.nachname
     if (vorname && nachname) {
         const msg = await getAuthStore().updateUser(userId, undefined, undefined, vorname, nachname)
-        res.status(200).json({
+        return res.status(200).json({
             success: msg.success,
             message: msg.success ? 'Der Name wurde erfolgreich aktualisiert.' : 'Ein Fehler ist aufgetreten.'
         });
-        return;
     }
 
     res.status(500).json({
         success: false,
         message: 'Diese Funktion ist noch nicht implementiert.'
     });
-
 });
 
 router.delete('/user', async (req: Request<{}, {}, DeleteUserRequestBody>, res): Promise<any> => {
@@ -386,15 +400,23 @@ router.delete('/user', async (req: Request<{}, {}, DeleteUserRequestBody>, res):
         return getNoSessionResponse(res);
     }
 
+    // Mindestens eine Person muss über die Rolle zur Verwaltung von Rollen verfügen.
+    const usersWithPermission = await countUsersWithPermission(Berechtigung.RollenVerwalten, true)
+    if (usersWithPermission == 1 && req.permissions?.[Berechtigung.RollenVerwalten] == true) {
+        return res.status(400).json({
+            success: false,
+            message: 'Mindestens eine Person muss über die Rolle zur Verwaltung von Rollen verfügen.'
+        })
+    }
+
     const userId = req.body.userId
     if (req.permissions?.[Berechtigung.RollenVerwalten] == true || req.userId == userId) {
         const isDeleted = await getAuthStore().deleteUser(userId)
         if (!isDeleted) {
-            res.status(400).json({
+            return res.status(400).json({
                 success: false,
                 message: 'Das Konto konnte nicht gelöscht werden.'
             });
-            return;
         }
         if (req.userId == userId) {
             await getAuthStore().removeSession(req?.sessionId ?? '-1')
@@ -413,14 +435,16 @@ router.delete('/user', async (req: Request<{}, {}, DeleteUserRequestBody>, res):
     });
 });
 
-router.patch('/password', async (req: Request<{}, {}, UpdatePasswordRequestBody>, res: Response<UpdatePasswordResponseBody>) => {
-        const { userId, password, newPassword } = req.body;
+router.patch('/password', async (req: Request<{}, {}, UpdatePasswordRequestBody>, res: Response<UpdatePasswordResponseBody>): Promise<any> => {
+    if(req.userId == undefined) {
+        return getNoSessionResponse(res);
+    }    
+    const { userId, password, newPassword } = req.body;
         if (!req.userId || !req.sessionId || userId !== req.userId) {
-            res.status(403).json({
+            return res.status(403).json({
                 success: false,
                 message: 'Du kannst das Passwort nicht aktualisiern'
             })
-            return;
         }
 
         const sessionData = await getAuthStore().getSession(req.sessionId)

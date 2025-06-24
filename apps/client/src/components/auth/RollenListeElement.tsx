@@ -34,6 +34,7 @@ export function RollenListeElement({ rolle }: { rolle: Rolle }) {
                 });
             })
         }
+        alert(res.message)
         setIsEditDialogShown(false)
     }
 

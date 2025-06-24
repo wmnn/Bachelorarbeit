@@ -1,5 +1,5 @@
 import { User } from "@thesis/auth";
-import { Berechtigung, Berechtigungen } from "@thesis/rollen";
+import { Berechtigung, Berechtigungen, BerechtigungWert } from "@thesis/rollen";
 import { NextFunction } from "express";
 import { Request } from "express";
 import { getAuthStore } from "../../singleton";
@@ -69,6 +69,42 @@ export const getPermissions = async (rolle: string) => {
     
 };
 
+export const countUsersWithPermission = async <T extends Berechtigung> (berechtigung: T, berechtigungValue: BerechtigungWert<T>) => {
+    const [users, roles] = await Promise.all([
+        getAuthStore().getUsers(),
+        getAuthStore().getRoles()
+    ])
+    if (!users || !roles) {
+        return 0
+    }
+    const rolesWithAccordingPermission = roles.filter(role => role.berechtigungen[berechtigung] == berechtigungValue).map(role => role.rolle)
+    const usersWithAccordingRole = users?.filter(user => {
+        if (typeof user.rolle === 'string' && rolesWithAccordingPermission.includes(user.rolle)) {
+            return true
+        } 
+        if (typeof user.rolle === 'object' && rolesWithAccordingPermission.includes(user.rolle.rolle)) {
+            return true;
+        }
+        return false;
+    })
+    return usersWithAccordingRole.length
+}
+
+export const countUsersWithRole = async (rollenbezeichnung: string) => {
+    const users = await getAuthStore().getUsers()
+    if (!users) {
+        return 0
+    }
+    return users?.filter(user => {
+        if (typeof user.rolle === 'string' && user.rolle == rollenbezeichnung) {
+            return true
+        } 
+        if (typeof user.rolle === 'object' && user.rolle.rolle == rollenbezeichnung) {
+            return true;
+        }
+        return false;
+    }).length
+}
 export const rolleMiddleware = async (
     req: Request,
     res: Response,
