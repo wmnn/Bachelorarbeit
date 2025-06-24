@@ -24,7 +24,8 @@ export type Diagnostik = {
     geeigneteKlassen?: string[],
     kategorien?: string[],
     sichtbarkeit?: Sichtbarkeit,
-    files?: string[]
+    files?: string[],
+    geteiltMit?: number[]
 }
 export type UploadedFile = {
   name: string;

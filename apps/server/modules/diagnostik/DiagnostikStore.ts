@@ -27,11 +27,12 @@ export class DiagnostikStore {
 
             const diag = rows[0];
 
-            const [geeigneteKlassen, kategorien, farbbereiche, files] = await Promise.all([
+            const [geeigneteKlassen, kategorien, farbbereiche, files, geteiltMit] = await Promise.all([
                 this.getDiagnostikKlassenstufen(diag.id),
                 this.getDiagnostikKategorien(diag.id),
                 this.getDiagnostikFarbbereiche(diag.id),
-                this.getDiagnostikFiles(diag.id)
+                this.getDiagnostikFiles(diag.id),
+                this.getDiagnostikShared(diag.id)
             ]);
 
             return {
@@ -48,7 +49,8 @@ export class DiagnostikStore {
                 kategorien,
                 farbbereiche,
                 sichtbarkeit: parseInt(diag.sichtbarkeit),
-                files
+                files,
+                geteiltMit
             };
 
         } catch (e) {
@@ -118,6 +120,15 @@ export class DiagnostikStore {
             };
         }
         }
+
+    private async getDiagnostikShared(diagnostikId: number): Promise<number[]> {
+        const [rows] = await this.connection!.execute<RowDataPacket[]>(`
+            SELECT user_id FROM diagnostikverfahren_geteilt
+            WHERE diagnostikverfahren_id = ?
+        `, [diagnostikId]);
+
+        return rows.map(row => parseInt(row.user_id));
+    }
 
     private async getDiagnostikFiles(diagnostikId: number): Promise<string[]> {
         const [rows] = await this.connection!.execute<RowDataPacket[]>(`
@@ -253,6 +264,7 @@ export class DiagnostikStore {
             await conn.execute(`DELETE FROM diagnostikverfahren_kategorien WHERE diagnostikverfahren_id = ?`, [id]);
             await conn.execute(`DELETE FROM diagnostikverfahren_farbbereiche WHERE diagnostikverfahren_id = ?`, [id]);
             await conn.execute(`DELETE FROM diagnostikverfahren_dateien WHERE diagnostikverfahren_id = ?`, [id]);
+            await conn.execute(`DELETE FROM diagnostikverfahren_geteilt WHERE diagnostikverfahren_id = ?`, [id]);
 
             for (const element of diagnostik.geeigneteKlassen || []) {
                 await conn.execute(`
@@ -271,6 +283,13 @@ export class DiagnostikStore {
             for (const element of diagnostik.files || []) {
                 await conn.execute(`
                     INSERT INTO diagnostikverfahren_dateien (diagnostikverfahren_id, datei)
+                    VALUES (?, ?)
+                `, [id, element]);
+            }
+
+            for (const element of diagnostik.geteiltMit || []) {
+                await conn.execute(`
+                    INSERT INTO diagnostikverfahren_geteilt (diagnostikverfahren_id, user_id)
                     VALUES (?, ?)
                 `, [id, element]);
             }

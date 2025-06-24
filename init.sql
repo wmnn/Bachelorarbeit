@@ -122,6 +122,12 @@ CREATE TABLE diagnostikverfahren_ergebnisse (
     PRIMARY KEY (diagnostikverfahren_id, datum, schueler_id)
 );
 
+CREATE TABLE diagnostikverfahren_geteilt (
+    diagnostikverfahren_id INT,
+    user_id INT,
+    PRIMARY KEY (diagnostikverfahren_id, user_id)
+);
+
 CREATE TABLE ganztagsangebot_schueler (
     ganztagsangebot_id INT,
     schueler_id INT,

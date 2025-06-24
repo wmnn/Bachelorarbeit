@@ -29,6 +29,10 @@ export const DiagnostikenNav = () => {
           <ListItem isActive={pathname === `${base}/vorlagen`}>Vorlagen</ListItem>
         </Link>
 
+        <Link to="/diagnostikverfahren/shared">
+          <ListItem isActive={pathname === `${base}/shared`}>Mit dir geteilt</ListItem>
+        </Link>
+
       </ul>
       <hr className="h-[1px] border-gray-800" />
     </nav>
