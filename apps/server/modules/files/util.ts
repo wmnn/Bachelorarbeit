@@ -3,6 +3,25 @@ import { promises as fs, statSync } from 'fs';
 import path from 'path';
 import sanitize from 'sanitize-filename';
 
+export const deleteNotIncludedFiles = async (diagnostikId: number, files: string[]) => {
+  const dirPath = path.resolve(__dirname, '../../protected/diagnostik', diagnostikId.toString());
+
+  try {
+    const existingFiles = await fs.readdir(dirPath);
+
+    const toDelete = existingFiles.filter(file => !files.includes(file));
+
+    await Promise.all(
+      toDelete.map(async (file) => {
+        const filePath = path.join(dirPath, file);
+        await fs.unlink(filePath);
+      })
+    );
+  } catch (err) {
+    console.error(`Fehler beim Löschen nicht enthaltener Dateien für Diagnostik ${diagnostikId}:`, err);
+  }
+};
+
 export const saveDiagnostikFiles = async (diagnostikId: number, files: UploadedFile[]) => {
   const uploadDir = path.resolve(__dirname, '../../protected/diagnostik', diagnostikId.toString());
   await fs.mkdir(uploadDir, { recursive: true });

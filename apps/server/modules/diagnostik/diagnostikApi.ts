@@ -2,7 +2,7 @@ import express from 'express';
 import { Request, Response } from 'express';
 import { AddErgebnisseResponseBody, CreateDiagnostikRequestBody, CreateDiagnostikResponseBody, Diagnostik, DiagnostikTyp, Ergebnis, Farbbereich, GetDiagnostikenResponseBody, Sichtbarkeit } from '@thesis/diagnostik';
 import { getDiagnostikStore } from '../../singleton';
-import { getDiagnostikFiles, saveDiagnostikFiles } from '../files/util';
+import { deleteNotIncludedFiles, getDiagnostikFiles, saveDiagnostikFiles } from '../files/util';
 import fileUpload from 'express-fileupload';
 import { Berechtigung, BerechtigungWert } from '@thesis/rollen';
 import { canEditDiagnostik, canUserAccessDiagnostik, canUserCreateDiagnostik, canUserDeleteDiagnostik, canUserUpdateSichtbarkeit } from '../auth/permissionsDiagnostikUtil';
@@ -302,6 +302,9 @@ function handleFileAttachments(rawFiles: fileUpload.UploadedFile | fileUpload.Up
     }));
     return files;
 }
+/**
+ * Create diagnostik endpoint
+ */
 router.post('/', async (
     req: Request<{}, {}, CreateDiagnostikRequestBody>,
     res: Response<CreateDiagnostikResponseBody>
@@ -353,6 +356,9 @@ router.post('/', async (
     res.status(msg.success ? 200 : 400).json(msg);
 });
 
+/**
+ * Edit diagnostik endpoint
+ */
 router.put('/', async (
     req: Request<{}, {}, CreateDiagnostikRequestBody>,
     res: Response<CreateDiagnostikResponseBody>
@@ -380,6 +386,7 @@ router.put('/', async (
 
     const msg = await getDiagnostikStore().editDiagnostik(req.userId!, diagnostik);
     if (msg.success) {
+        await deleteNotIncludedFiles(diagnostik.id ?? -1, diagnostik.files ?? [])
         await saveDiagnostikFiles(diagnostik.id ?? -1, files)
     }
     return res.status(msg.success ? 200 : 400).json(msg);

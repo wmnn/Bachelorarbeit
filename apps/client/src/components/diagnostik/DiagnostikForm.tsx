@@ -40,6 +40,7 @@ export const DiagnostikForm = (props: DiagnostikFormProps) => {
     })
     const [isSichtbarkeitDialogShown, setIsSichtbarkeitDialogShown] = useState(false)
     const [files, setFiles] = useState<File[]>([])
+    const [deletedFiles, setDeletedFiles] = useState<string[]>([])
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const klassenQuery = useKlassen()
@@ -52,7 +53,10 @@ export const DiagnostikForm = (props: DiagnostikFormProps) => {
     const vorlagen = vorlagenQuery.data ?? []
 
     function handleSubmit() { 
-        onSubmit(diagnostik, files)
+        onSubmit({
+            ...diagnostik,
+            files: (diagnostik.files ?? []).filter(fileName => !deletedFiles.includes(fileName))
+        }, files)
     }
 
     function setFarbbereiche(values: Farbbereich[]) {
@@ -68,7 +72,7 @@ export const DiagnostikForm = (props: DiagnostikFormProps) => {
             speicherTyp: DiagnostikTyp.VORLAGE
         }
         setDiagnostik(newDiagnostik)
-        props.onSubmit(newDiagnostik, [])
+        onSubmit(newDiagnostik, [])
     }
     
     return <form className="flex flex-col gap-2">
@@ -218,12 +222,21 @@ export const DiagnostikForm = (props: DiagnostikFormProps) => {
                 {
                     initialDiagnostik !== undefined && <div>
                         <label>
-                            Hinterlegte Dateien
+                            Dateien löschen
                         </label>
                         {diagnostik.files != undefined && diagnostik.files?.length > 0 && (
-                            <ul className="mt-2 text-sm text-gray-700">
+                            <ul className="mt-2 text-sm text-gray-700 flex flex-col items-start gap-2">
                             {diagnostik.files.map((file, index) => (
-                                <li key={index}>File: {file}</li>
+                                <button key={index} type="button" className="flex gap-2 items-center" onClick={() => {
+                                    if (deletedFiles.includes(file)) {
+                                        setDeletedFiles(prev => prev.filter(path => path != file))
+                                    } else {
+                                        setDeletedFiles(prev => [...prev, file])
+                                    }
+                                }}>
+                                    <input type="checkbox" checked={deletedFiles.includes(file)} />
+                                    File: {file}
+                                </button>
                             ))}
                             </ul>
                         )}
