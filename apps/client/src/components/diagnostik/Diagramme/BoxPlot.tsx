@@ -8,15 +8,18 @@ import {
   Violin,
 } from '@sgratzl/chartjs-chart-boxplot';
 import { CategoryScale } from 'chart.js';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { download } from './util';
+import { Filter } from './Filter';
 
 // Register new controllers and elements
 Chart.register(BoxPlotController, BoxAndWiskers, ViolinController, Violin, CategoryScale);
 
-export const BoxPlot = ({ data, diagnostik }: { data: Row[], diagnostik: Diagnostik }) => {
+export const BoxPlot = ({ data: initialData, diagnostik }: { data: Row[], diagnostik: Diagnostik }) => {
 
     const mindeststandard = getMindeststandard(diagnostik)
+    const [data, setData] = useState(initialData)
+    
     if (!mindeststandard) {
         return;
     }
@@ -55,12 +58,34 @@ export const BoxPlot = ({ data, diagnostik }: { data: Row[], diagnostik: Diagnos
                             data: transformedData
                         },
                     ],
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                    y: {
+                        min: diagnostik.untereGrenze,
+                        max: diagnostik.obereGrenze,
+                        ticks: {
+                            stepSize: 10
+                        },
+                        title: {
+                            display: true,
+                            text: 'Ergebnis'
+                        }
+                    }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
                 }
                 
             });
         }
-    }, [])
+    }, [data])
     return <>
+        <Filter initialData={initialData} data={data} setData={setData} />
         <canvas id={id} className='max-w-full xl:max-h-[576px] px-8'></canvas>
         <div className='flex justify-start my-8'>
             <ButtonLight onClick={() => download(id)} className='max-w-[360px]'>

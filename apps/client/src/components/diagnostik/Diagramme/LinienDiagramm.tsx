@@ -3,14 +3,16 @@ import { useSchuelerStore } from '@/components/schueler/SchuelerStore';
 import { useAllSchueler } from '@/components/schueler/useSchueler';
 import { getDates, getMindeststandard, sortRowErgebnisseByDate, type Diagnostik, type Row } from '@thesis/diagnostik';
 import Chart from 'chart.js/auto'
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { download } from './util';
+import { Filter } from './Filter';
 
-export const Liniendiagramm = ({ data, diagnostik }: { data: Row[], diagnostik: Diagnostik }) => {
+export const Liniendiagramm = ({ data: initialData, diagnostik }: { data: Row[], diagnostik: Diagnostik }) => {
 
     const mindeststandard = getMindeststandard(diagnostik)
     useAllSchueler()
     const schueler = useSchuelerStore(store => store.schueler)
+    const [data, setData] = useState(initialData)
 
     if (!mindeststandard) {
         return;
@@ -65,8 +67,8 @@ export const Liniendiagramm = ({ data, diagnostik }: { data: Row[], diagnostik: 
                     responsive: true,
                     scales: {
                     y: {
-                        min: 0,
-                        max: 100,
+                        min: diagnostik.untereGrenze,
+                        max: diagnostik.obereGrenze,
                         ticks: {
                             stepSize: 10
                         },
@@ -85,8 +87,9 @@ export const Liniendiagramm = ({ data, diagnostik }: { data: Row[], diagnostik: 
 
             });
         }
-    }, [])
+    }, [data])
     return <>
+        <Filter initialData={initialData} data={data} setData={setData} />
         <canvas id={id} className='max-w-full xl:max-h-[576px] px-8'></canvas>
         <div className='flex justify-start my-8'>
             <ButtonLight onClick={() => download(id)} className='max-w-[360px]'>

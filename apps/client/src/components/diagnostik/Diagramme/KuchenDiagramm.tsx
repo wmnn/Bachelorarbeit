@@ -4,15 +4,16 @@ import Chart from 'chart.js/auto'
 import { useEffect, useState } from 'react';
 import { download } from './util';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Filter } from './Filter';
 
-export const KuchenDiagramm = ({ data: initData, diagnostik }: { data: Row[], diagnostik: Diagnostik }) => {
+export const KuchenDiagramm = ({ data: initialData, diagnostik }: { data: Row[], diagnostik: Diagnostik }) => {
 
     const mindeststandard = getMindeststandard(diagnostik)
     if (!mindeststandard) {
         return;
     }
 
-    const [data, setData] = useState(initData)
+    const [data, setData] = useState(initialData)
     const dates = getDates(data)
     const [date, setDate] = useState(dates[dates.length - 1] ?? '');
 
@@ -50,7 +51,7 @@ export const KuchenDiagramm = ({ data: initData, diagnostik }: { data: Row[], di
                 }
             });
         }
-    }, [date])
+    }, [date, data])
     return <>
         <h1>Kuchendiagramm der letzten Auswertung</h1>
         <Select 
@@ -72,6 +73,7 @@ export const KuchenDiagramm = ({ data: initData, diagnostik }: { data: Row[], di
                 }
             </SelectContent>
         </Select>    
+        <Filter initialData={initialData} data={data} setData={setData} />
         {/* <Filter diagnostik={diagnostik} dates={dates} initData={initData} setData={setData} /> */}
 
         <canvas id={id} className='max-w-full xl:max-h-[576px] px-8'></canvas>

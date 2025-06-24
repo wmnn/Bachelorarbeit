@@ -1,12 +1,14 @@
 import { ButtonLight } from '@/components/ButtonLight';
 import { getDates, getMindeststandard, getMindeststandardResults, sortRowErgebnisseByDate, type Diagnostik, type Row } from '@thesis/diagnostik';
 import Chart from 'chart.js/auto'
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { download } from './util';
+import { Filter } from './Filter';
 
-export const KlassenBalkenDiagramm = ({ data, diagnostik }: { data: Row[], diagnostik: Diagnostik }) => {
+export const KlassenBalkenDiagramm = ({ data: initialData, diagnostik }: { data: Row[], diagnostik: Diagnostik }) => {
 
     const mindeststandard = getMindeststandard(diagnostik)
+    const [data, setData] = useState(initialData)
 
     if (!mindeststandard) {
         return;
@@ -67,8 +69,9 @@ export const KlassenBalkenDiagramm = ({ data, diagnostik }: { data: Row[], diagn
 
             });
         }
-    }, [])
+    }, [data])
     return <>
+        <Filter initialData={initialData} data={data} setData={setData} />
         <canvas id={id} className='max-w-full xl:max-h-[576px] px-8'></canvas>
         <div className='flex justify-start my-8'>
             <ButtonLight onClick={() => download(id)} className='max-w-[360px]'>
