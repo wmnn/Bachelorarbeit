@@ -61,7 +61,7 @@ export const KuchenDiagramm = ({ data: initialData, diagnostik }: { data: Row[],
             }}
         >
             <SelectTrigger className="xl:w-[200px] w-min">
-                <SelectValue placeholder="Keine Rolle"/>
+                <SelectValue placeholder="Kein Datum verfügbar"/>
             </SelectTrigger>
             <SelectContent>
                 {
