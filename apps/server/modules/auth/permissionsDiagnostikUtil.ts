@@ -8,7 +8,7 @@ export async function canUserCreateDiagnostik(req: Request): Promise<{
 }> {
     const permission = req.permissions?.[Berechtigung.DiagnostikverfahrenRead]
     const allowed: BerechtigungWert<Berechtigung.DiagnostikverfahrenRead>[] = ['alle', 'eigene']
-    if (!permission || allowed.includes(permission)) {
+    if (!permission || !allowed.includes(permission)) {
         return {
             success: false
         }
@@ -77,7 +77,7 @@ export async function canEditDiagnostik(diagnostikId: string, req: Request): Pro
         }
     } 
 
-    if (diagnostikId != `${diagnostik?.userId ?? -1}`) {
+    if ((req.userId ?? -1) != (diagnostik?.userId ?? -1)) {
         return {
             success: false
         }
@@ -135,12 +135,7 @@ export async function canUserAccessDiagnostik(diagnostikId: string, req: Request
         }
     }
 
-    if (diagnostik?.speicherTyp == DiagnostikTyp.GETEILT) {
-        if (!diagnostik.geteiltMit?.includes(req.userId ?? -1)) {
-            return {
-                success: false // Diagnostik wurde nicht geteilt mit der Person
-            }
-        }
+    if (diagnostik?.geteiltMit?.includes(req.userId ?? -1)) {
         return {
             success: true,
             diagnostik

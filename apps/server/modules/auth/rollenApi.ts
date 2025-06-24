@@ -13,6 +13,9 @@ import { getAuthStore } from '../../singleton';
 
 let router = express.Router();
 
+/**
+ * Rolle erstellen Endpunkt
+ */
 router.post('/',async (
     req: Request<{}, {}, CreateRoleRequestBody>,
     res: Response<CreateRoleResponseBody>

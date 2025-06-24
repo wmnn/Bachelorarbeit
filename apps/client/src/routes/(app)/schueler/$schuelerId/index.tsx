@@ -40,7 +40,10 @@ function RouteComponent() {
     async function handleSubmit(newSchueler: Schueler) {
         const res = await editSchueler(newSchueler, schuelerId)
         setResponseMessage(res?.message)
-        queryClient.setQueryData([SCHUELER_QUERY_KEY, schuelerId], newSchueler);
+        if (res.success) {
+            queryClient.setQueryData([SCHUELER_QUERY_KEY, schuelerId], newSchueler);
+            queryClient.invalidateQueries({ queryKey: [SCHUELER_QUERY_KEY]})
+        }
     }
     
     return <div className='flex flex-col w-full'>

@@ -32,6 +32,7 @@ import { searchUser } from './util';
 import { addRoleDataToUser } from '../auth/util';
 import { Berechtigung } from '@thesis/rollen';
 import { getAuthStore } from '../../singleton';
+import { getNoSessionResponse } from './permissionsUtil';
 
 const cookieKey = fs.readFileSync(
     path.join(__dirname, '../../../../cookie_signing.key'),
@@ -293,24 +294,19 @@ router.post('/users/search', async (req: Request<{}, {}, SearchUserRequestBody<B
     });
 });
 
-router.patch('/user', async (req: Request<{}, {}, UpdateUserRequestBody>, res: Response<UpdateUserResponseBody>) => {
+router.patch('/user', async (req: Request<{}, {}, UpdateUserRequestBody>, res: Response<UpdateUserResponseBody>): Promise<any> => {
     const user = req.body.user
     const userId = user.id;
 
     if (!userId) {
-        res.status(400).json({
+        return res.status(400).json({
             success: false,
             message: 'Ein Fehler ist aufgetreten.'
         });
-        return;
     }
 
     if(req.userId == undefined) {
-        res.status(401).json({
-            success: false,
-            message: 'Es wurde keine Sitzung gefunden.'
-        })
-        return;
+        return getNoSessionResponse(res);
     }
 
     // Admin changes a user
@@ -384,10 +380,14 @@ router.patch('/user', async (req: Request<{}, {}, UpdateUserRequestBody>, res: R
 
 });
 
-router.delete('/user', async (req: Request<{}, {}, DeleteUserRequestBody>, res) => {
+router.delete('/user', async (req: Request<{}, {}, DeleteUserRequestBody>, res): Promise<any> => {
+
+    if(req.userId == undefined) {
+        return getNoSessionResponse(res);
+    }
 
     const userId = req.body.userId
-    if (req.permissions?.[Berechtigung.RollenVerwalten] || (req.userId !== undefined && req.userId == userId)) {
+    if (req.permissions?.[Berechtigung.RollenVerwalten] == true || req.userId == userId) {
         const isDeleted = await getAuthStore().deleteUser(userId)
         if (!isDeleted) {
             res.status(400).json({
@@ -396,14 +396,21 @@ router.delete('/user', async (req: Request<{}, {}, DeleteUserRequestBody>, res) 
             });
             return;
         }
-        res.status(200).json({
+        if (req.userId == userId) {
+            await getAuthStore().removeSession(req?.sessionId ?? '-1')
+        } else {
+            await getAuthStore().removeSessionForUser(userId)
+        }
+        return res.status(200).json({
             success: true,
             message: 'Das Konto wurde erfolgreich gelöscht.'
         });
-        return;
     }
 
-
+    return res.status(500).json({
+        success: false,
+        message: 'Ein unbekannter Fehler ist aufgetreten.'
+    });
 });
 
 router.patch('/password', async (req: Request<{}, {}, UpdatePasswordRequestBody>, res: Response<UpdatePasswordResponseBody>) => {

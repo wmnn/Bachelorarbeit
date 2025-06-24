@@ -6,6 +6,7 @@ import { deleteNotIncludedFiles, getDiagnostikFiles, saveDiagnostikFiles } from 
 import fileUpload from 'express-fileupload';
 import { Berechtigung, BerechtigungWert } from '@thesis/rollen';
 import { canEditDiagnostik, canUserAccessDiagnostik, canUserCreateDiagnostik, canUserDeleteDiagnostik, canUserUpdateSichtbarkeit } from '../auth/permissionsDiagnostikUtil';
+import { getNoSessionResponse } from '../auth/permissionsUtil';
 
 let router = express.Router();
 const SUCCESSFULL_VALIDATION_RES =  {
@@ -17,6 +18,9 @@ router.get('/', async (
     req: Request<{}, {}, {}, { typ?: string }>,
     res: Response<GetDiagnostikenResponseBody>
 ): Promise<any> => {
+    if (!req.userId) {
+        return getNoSessionResponse(res)
+    }
     const permission = req.permissions?.[Berechtigung.DiagnostikverfahrenRead]
     const allowed: BerechtigungWert<Berechtigung.DiagnostikverfahrenRead>[] = ['alle', 'eigene'] 
     if (!permission || !allowed.includes(permission)) {
@@ -57,6 +61,9 @@ router.get('/', async (
 
 router.get('/:diagnostikId', async (req, res): Promise<any> => {
     const { diagnostikId } = req.params
+    if (!req.userId) {
+        return getNoSessionResponse(res)
+    }
     const { success, diagnostik } = await canUserAccessDiagnostik(diagnostikId, req)
     if (!success) {
         return res.status(401).json(undefined);
@@ -66,6 +73,9 @@ router.get('/:diagnostikId', async (req, res): Promise<any> => {
 
 router.get('/:diagnostikId/data', async (req, res): Promise<any> => {
     const { diagnostikId } = req.params
+    if (!req.userId) {
+        return getNoSessionResponse(res)
+    }
     const { success, diagnostik } = await canUserAccessDiagnostik(diagnostikId, req)
     if (!success) {
         return res.status(401).json(undefined);
@@ -77,6 +87,9 @@ router.get('/:diagnostikId/data', async (req, res): Promise<any> => {
 router.post('/auswertungsgruppen/:diagnostikId', async (req, res: Response<AddErgebnisseResponseBody>): Promise<any> => {
     let { diagnostikId: diagnostikIdString } = req.params
     const diagnostikId = parseInt(diagnostikIdString)
+    if (!req.userId) {
+        return getNoSessionResponse(res)
+    }
     const { success } = await canUserAccessDiagnostik(`${diagnostikId}`, req)
     if (!success) {
         return res.status(401).json(undefined);
@@ -89,6 +102,9 @@ router.post('/auswertungsgruppen/:diagnostikId', async (req, res: Response<AddEr
 router.post('/copy/:diagnostikId', async (req, res: Response<AddErgebnisseResponseBody>): Promise<any> => {
     let { diagnostikId: diagnostikIdString } = req.params
     const diagnostikId = parseInt(diagnostikIdString)
+    if (!req.userId) {
+        return getNoSessionResponse(res)
+    }
     const { success } = await canUserAccessDiagnostik(`${diagnostikId}`, req)
     if (!success) {
         return res.status(401).json(undefined);
@@ -137,6 +153,9 @@ router.post('/copy/:diagnostikId', async (req, res: Response<AddErgebnisseRespon
 router.post('/:diagnostikId', async (req, res: Response<AddErgebnisseResponseBody>): Promise<any> => {
     const { diagnostikId } = req.params
     const { success } = await canUserAccessDiagnostik(`${diagnostikId}`, req)
+    if (!req.userId) {
+        return getNoSessionResponse(res)
+    }
     if (!success) {
         return res.status(401).json(undefined);
     }
@@ -279,6 +298,9 @@ router.put('/sichtbarkeit', async (req, res): Promise<any> => {
         diagnostikId: string,
         sichtbarkeit: string
     }
+    if (!req.userId) {
+        return getNoSessionResponse(res)
+    }
     const { success } = await canUserUpdateSichtbarkeit(req)
     if (!success) {
         return res.status(401).json(undefined);
@@ -313,7 +335,7 @@ router.post('/', async (
     res: Response<CreateDiagnostikResponseBody>
 ): Promise<any> => {
     if (!req.userId) {
-        return;
+        return getNoSessionResponse(res)
     }
     const { success } = await canUserCreateDiagnostik(req)
     if (!success) {

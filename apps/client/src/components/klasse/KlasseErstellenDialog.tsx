@@ -22,9 +22,9 @@ export function KlasseErstellenDialog({ closeDialog, setResponseMessage }: Klass
         queryClient.invalidateQueries({
             queryKey: [KLASSEN_QUERY_KEY]
         })
-        setTimeout(() => {
+        if (res.success) {
             closeDialog();
-        }, 1000)
+        }
     }
     return <Dialog className="p-8 overflow-auto!">
         <KlasseForm onSubmit={() => handleSubmit()} onAbort={() => closeDialog()} submitButtonText="Erstellen"/>
