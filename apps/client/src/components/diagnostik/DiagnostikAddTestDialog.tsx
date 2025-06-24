@@ -1,4 +1,4 @@
-import { addErgebnisse, type Ergebnis } from "@thesis/diagnostik";
+import { addErgebnisse, ergebnisDatumGleich, type Ergebnis } from "@thesis/diagnostik";
 import { DialogWithButtons } from "../dialog/DialogWithButtons";
 import { Input } from "../Input";
 import { useSchuelerStore } from "../schueler/SchuelerStore";
@@ -7,6 +7,7 @@ import { useKlasse } from "../shared/useKlasse";
 import { useEffect, useState } from "react";
 import { useQueryClient } from '@tanstack/react-query';
 import { DIAGNOSTIKEN_QUERY_KEY } from "@/reactQueryKeys";
+import { useErgebnisse } from "./useErgebnisse";
 
 interface DiagnostikAddTestDialogProps {
   closeDialog: () => void,
@@ -28,16 +29,30 @@ export function DiagnostikAddTestDialog({ closeDialog, klasseId, diagnostikId }:
         return [...prev, ...(acc.schueler ?? [])]
     }, [] as number[])
 
+    const ergebnisseQuery = useErgebnisse(diagnostikId)
+    const data = ergebnisseQuery.data
+
     useEffect(() => {
-        const neueErgebnisse = schuelerIds?.map(schuelerId => ({
+        console.log(data)
+        const neueErgebnisse = schuelerIds?.map(schuelerId => {
+            const found = data.find(o => o.schuelerId == schuelerId)
+            const ergebnis = found?.ergebnisse.find(o => ergebnisDatumGleich(o, datum))
+            if (!ergebnis) {
+                return {
+                    schuelerId,
+                    ergebnis: ''
+                }
+            }
+            return {
                 schuelerId,
-                ergebnis: ''
-        }));
+                ergebnis: ergebnis.ergebnis
+            }
+        });
 
         if (neueErgebnisse !== ergebnisse) {
             setErgebnisse(neueErgebnisse ?? []);
         }
-    }, [klasse])
+    }, [klasse, data, datum])
 
     if (klasseQuery.isPending) {
         return <p>...Loading</p>
