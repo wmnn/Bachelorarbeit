@@ -5,13 +5,14 @@ import { useEffect, useState } from 'react';
 import { download } from './util';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-export const KuchenDiagramm = ({ data, diagnostik }: { data: Row[], diagnostik: Diagnostik }) => {
+export const KuchenDiagramm = ({ data: initData, diagnostik }: { data: Row[], diagnostik: Diagnostik }) => {
 
     const mindeststandard = getMindeststandard(diagnostik)
     if (!mindeststandard) {
         return;
     }
 
+    const [data, setData] = useState(initData)
     const dates = getDates(data)
     const [date, setDate] = useState(dates[dates.length - 1] ?? '');
 
@@ -49,7 +50,7 @@ export const KuchenDiagramm = ({ data, diagnostik }: { data: Row[], diagnostik: 
                 }
             });
         }
-    }, [])
+    }, [date])
     return <>
         <h1>Kuchendiagramm der letzten Auswertung</h1>
         <Select 
@@ -71,6 +72,7 @@ export const KuchenDiagramm = ({ data, diagnostik }: { data: Row[], diagnostik: 
                 }
             </SelectContent>
         </Select>    
+        {/* <Filter diagnostik={diagnostik} dates={dates} initData={initData} setData={setData} /> */}
 
         <canvas id={id} className='max-w-full xl:max-h-[576px] px-8'></canvas>
         <div className='flex justify-start my-8'>
