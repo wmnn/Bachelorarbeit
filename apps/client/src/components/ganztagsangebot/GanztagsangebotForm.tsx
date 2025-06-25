@@ -66,7 +66,7 @@ export const GanztagsangebotForm = (props: GanztagsangebotFormProps) => {
         )
     }
  
-    return <div className="h-[60vh]">
+    return <div>
         <h1>{title ? title : 'Ganztagsangebot hinzufügen'}</h1>
 
 
