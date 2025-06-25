@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { DeleteGanztagsangebotRequestBody, DeleteGanztagsangebotResponseBody, Halbjahr, Schuljahr } from '@thesis/schule';
+import { DeleteGanztagsangebotRequestBody, DeleteGanztagsangebotResponseBody, Ganztagsangebot, Halbjahr, Schuljahr } from '@thesis/schule';
 import { CreateGanztagsangebotRequestBody, CreateGanztagsangebotResponseBody } from '@thesis/schule'
 import { getGanztagsangebotStore } from '../../singleton';
 
@@ -19,7 +19,8 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', async (req: Request<{}, {}, CreateGanztagsangebotRequestBody>, res: Response<CreateGanztagsangebotResponseBody>) => {
-    const ganztagsangebot = req.body
+    let ganztagsangebot = req.body
+    ganztagsangebot.schueler = ganztagsangebot.schueler?.filter(item => item !== -1)
     const msg = await getGanztagsangebotStore().createGanztagsangebot(ganztagsangebot)
     res.status(msg.success ? 200 : 400).json(msg);
 });
@@ -33,7 +34,8 @@ router.get('/:ganztagsangebotId', async (req, res) => {
 
 router.put('/:ganztagsangebotId', async (req, res) => {
     const { schuljahr, halbjahr } = req.query;
-    const ganztagsangebot = req.body
+    const ganztagsangebot = req.body as Ganztagsangebot
+    ganztagsangebot.schueler = ganztagsangebot.schueler?.filter(item => item !== -1)
     
     const msg = await getGanztagsangebotStore().editGanztagsangebot(schuljahr as Schuljahr, halbjahr as Halbjahr, ganztagsangebot)
     res.status(msg.success ? 200 : 500).json(msg);
