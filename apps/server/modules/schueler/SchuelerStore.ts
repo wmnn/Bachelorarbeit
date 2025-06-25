@@ -57,6 +57,27 @@ export class SchuelerStore {
             }
         }
 
+        // Medikamente
+        const [medikamente] = await conn.execute<RowDataPacket[]>(`
+            SELECT schueler_id as schuelerId, medikament FROM schueler_medikamente m
+        `);
+        if (Array.isArray(medikamente) && medikamente.length > 0) {
+            for (const medikament of medikamente) {
+                rows = rows.map((row: any) => {
+                    if (row.medikamente == undefined) {
+                        row.medikamente = []
+                    }
+                    if (medikament.schuelerId != row.id) {
+                        return row;
+                    }
+                    row.medikamente.push(medikament.medikament)
+                    return row
+                })
+            }
+        }
+
+
+
         return rows.map(row => handleSchuelerRow(row));
     }
 

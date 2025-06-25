@@ -7,7 +7,8 @@ export interface SchuelerSimple {
     nachname: string,
     hatSonderpaedagogischeKraft?: boolean,
     verlaesstSchuleAllein?: boolean,
-    derzeitigeKlasse?: string
+    derzeitigeKlasse?: string,
+    medikamente?: string[],
 }
 export type Schueler = {
     postleitzahl: string,
@@ -15,7 +16,6 @@ export type Schueler = {
     strasse: string,
     hausnummer: string,
     abholberechtigtePersonen: AbholberechtigtePerson[],
-    medikamente: string[],
     familiensprache: string,
     geburtsdatum: string,
     heutigerSchultagAnwesenheitsstatus?: Anwesenheiten,
