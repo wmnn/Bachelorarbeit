@@ -19,8 +19,7 @@ export function ChangePasswordDialog({ closeDialog }: ChangePasswordDialogProps)
     async function onSubmit() {
         const res = await updatePassword(user?.id ?? -1, passwort, neuesPasswort)
         setIsSuccess(res.success)
-        setResponseMessage(res.success ? 'Das Passwort wurde erfolgreich aktualisiert.' : 'Das Passwort konnte nicht aktualisiert werden.');
-
+        setResponseMessage(res.success ? 'Das Passwort wurde erfolgreich aktualisiert.' : res.message);
     }
 
     return <DialogWithButtons closeDialog={() => closeDialog()} onSubmit={() => onSubmit()} submitButtonText={"Hinzufügen"}>

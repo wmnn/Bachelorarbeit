@@ -10,8 +10,10 @@ import {
 } from '@thesis/config';
 import {
     DeleteUserRequestBody,
+    isValidPassword,
     LoginRequestBody,
     LoginResponseBody,
+    NOT_VALID_PASSWORD_MESSAGE,
     RegisterRequestBody,
     RegisterResponseBody,
     SearchUserRequestBody,
@@ -227,8 +229,16 @@ router.post(
     async (
         req: Request<RegisterRequestBody>,
         res: Response<RegisterResponseBody>
-    ) => {
+    ): Promise<any> => {
         const { vorname, nachname, email, passwort } = req.body;
+
+        if (!isValidPassword(passwort)) {
+            return res.status(400).json({
+                success: false,
+                message: NOT_VALID_PASSWORD_MESSAGE
+            })
+        }
+
         const user = await getAuthStore().createUser(
             email,
             passwort,
@@ -378,8 +388,7 @@ router.patch('/user', async (req: Request<{}, {}, UpdateUserRequestBody>, res: R
         return res.status(200).json(msg);
     }
 
-    const vorname = user.vorname
-    const nachname = user.nachname
+    const { vorname, nachname } = user
     if (vorname && nachname) {
         const msg = await getAuthStore().updateUser(userId, undefined, undefined, vorname, nachname)
         return res.status(200).json({
@@ -436,35 +445,39 @@ router.delete('/user', async (req: Request<{}, {}, DeleteUserRequestBody>, res):
 });
 
 router.patch('/password', async (req: Request<{}, {}, UpdatePasswordRequestBody>, res: Response<UpdatePasswordResponseBody>): Promise<any> => {
-    if(req.userId == undefined) {
+    if(req.userId == undefined || !req.sessionId) {
         return getNoSessionResponse(res);
     }    
     const { userId, password, newPassword } = req.body;
-        if (!req.userId || !req.sessionId || userId !== req.userId) {
-            return res.status(403).json({
-                success: false,
-                message: 'Du kannst das Passwort nicht aktualisiern'
-            })
-        }
-
-        const sessionData = await getAuthStore().getSession(req.sessionId)
-        if (!sessionData || !sessionData.user?.email) {
-            return;
-        }
-
-        const user = await getAuthStore().findUser(sessionData.user?.email, password)
-        if (!user) {
-            res.status(400).json({
-                success: false,
-                message: 'Das Passwort war nicht korrekt.'
-            })
-            return;
-        }
-
-        const dbMessage = await getAuthStore().updateUser(userId, undefined, newPassword);
-        res.status(200).json(dbMessage);
+    if (userId !== req.userId) {
+        return res.status(403).json({
+            success: false,
+            message: 'Du kannst das Passwort nicht aktualisiern'
+        })
     }
-);
+
+    const sessionData = await getAuthStore().getSession(req.sessionId)
+    if (!sessionData || !sessionData.user?.email) {
+        return getNoSessionResponse(res);
+    }
+
+    const user = await getAuthStore().findUser(sessionData.user?.email, password)
+    if (!user) {
+        return res.status(400).json({
+            success: false,
+            message: 'Das Passwort war nicht korrekt.'
+        })
+    }
+    if (!isValidPassword(newPassword)) {
+        return res.status(400).json({
+            success: false,
+            message: NOT_VALID_PASSWORD_MESSAGE
+        })
+    }
+
+    const dbMessage = await getAuthStore().updateUser(userId, undefined, newPassword);
+    res.status(200).json(dbMessage);
+});
 
 
 export { router };
