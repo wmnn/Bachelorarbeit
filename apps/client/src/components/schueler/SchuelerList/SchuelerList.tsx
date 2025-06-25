@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import Button from "@/components/Button"
 import { GeprüftDialog } from "@/components/anwesenheitsstatus/GeprüftDialog"
+import { SortOption, SortSelect } from "@/components/shared/SortSelect"
 
 interface SchuelerListProps {
     schueler: Schueler[],
@@ -29,7 +30,7 @@ export const SchuelerList = (props: SchuelerListProps ) => {
     const { showDerzeitigeKlasse = true, typ, ...rest } = props; 
 
     const [schueler, setSchueler] = useState(props.schueler)
-    const [selectedSortItem, setSelectedSortItem] = useState('');
+    const [selectedSortItem, setSelectedSortItem] = useState(SortOption.ABSTEIGEND);
     // Wenn ein Wert in filteredShown wahr ist, dann wird er angezeigt, sonst versteckt.
     const [filteredShown, setFilteredShown] = useState<Record<number, boolean>>(props.schueler.reduce((prev, current) => {
       prev[current.id ?? -1] = true
@@ -48,17 +49,8 @@ export const SchuelerList = (props: SchuelerListProps ) => {
       })
     }
 
-    const sortSelect = [
-      {
-        title: 'Nachname aufsteigend',
-      },
-      {
-        title: 'Nachname absteigend',
-      }
-    ];
-
-    const sort = (selectedSortItem: string, schueler: Schueler[]) => {
-      if (selectedSortItem == 'Nachname aufsteigend') {
+    const sort = (selectedSortItem: SortOption, schueler: Schueler[]) => {
+      if (selectedSortItem == SortOption.AUFSTEIGEND) {
         return schueler.sort((a, b) => {
           return a.nachname.localeCompare(b.nachname);
         });
@@ -72,11 +64,10 @@ export const SchuelerList = (props: SchuelerListProps ) => {
       }
     }
 
-    const handleSortChange = (value: string) => {
+    const handleSortChange = (value: SortOption) => {
         setSelectedSortItem(value);
         setSchueler(prev => sort(value, prev))
     };
-
 
     const rightHeader = <div className="flex gap-2 items-center">
       <div>
@@ -95,21 +86,7 @@ export const SchuelerList = (props: SchuelerListProps ) => {
       
 
       <Input placeholder="Suche" onChange={({ target }) => search(target.value)} className="max-h-[36px]"></Input>
-      <Select 
-        value={selectedSortItem}
-        onValueChange={handleSortChange}
-    >
-        <SelectTrigger className="xl:w-[180px] w-min">
-            <SelectValue placeholder="Sortieren"/>
-        </SelectTrigger>
-        <SelectContent>
-            {
-                sortSelect.map((item, index) => {
-                    return <SelectItem key={index} value={item.title}>{item.title}</SelectItem>                                                            
-                })
-            }
-        </SelectContent>
-      </Select>  
+      <SortSelect selectedSortItem={selectedSortItem} handleSortChange={handleSortChange} />
 
       <DropdownMenu>
         <DropdownMenuTrigger className="border-[1px] px-2 rounded-lg py-[6px] hover:bg-gray-200">Filtern</DropdownMenuTrigger>
