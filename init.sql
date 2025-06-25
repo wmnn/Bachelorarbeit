@@ -38,6 +38,7 @@ CREATE TABLE diagnostikverfahren (
     name VARCHAR(255),
     beschreibung VARCHAR(255),
     erstellungsdatum DATE,
+    aktualisiertAm DATE,
     obere_grenze FLOAT,
     untere_grenze FLOAT,
     sichtbarkeit VARCHAR(255),

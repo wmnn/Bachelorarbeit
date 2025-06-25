@@ -31,7 +31,8 @@ export type Diagnostik = {
     sichtbarkeit?: Sichtbarkeit,
     files?: string[],
     geteiltMit?: number[],
-    auswertungsgruppen?: Auswertungsgruppe[]
+    auswertungsgruppen?: Auswertungsgruppe[],
+    aktualisiertAm?: string
 }
 export type DiagnostikenSchuelerData = {
     ergebnisse?: Row[]

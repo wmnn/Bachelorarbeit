@@ -107,18 +107,26 @@ export const DiagnostikListItem = ({ diagnostik, isShared = false }: DiagnostikL
 
         {(responseMessage !== '') && <ErrorDialog message={responseMessage} closeDialog={() => setResponseMsg('')}/>}
         <div className="flex justify-between items-center">
-            <Link className="flex gap-2 w-full"
+            <Link className="flex gap-4 w-full items-center"
                 to="/diagnostikverfahren/$diagnostikId"
                 params={{
                     diagnostikId: `${diagnostik.id}`
                 }}
             >
-                <p>{diagnostik.name}</p>   
-                {
-                    diagnostik.erstellungsDatum && <label>
-                        Erstellt am: {new Date(diagnostik.erstellungsDatum).toLocaleDateString('de')}
-                    </label> 
-                }
+                <p>{diagnostik.name}</p>
+                <div className="flex flex-col">
+                    {
+                        diagnostik.erstellungsDatum && <label>
+                            Erstellt am: {new Date(diagnostik.erstellungsDatum).toLocaleDateString('de')}
+                        </label> 
+                    }
+                    {
+                        diagnostik.aktualisiertAm && <label>
+                            Zuletzt aktualisiert: {new Date(diagnostik.aktualisiertAm).toLocaleDateString('de')}
+                        </label> 
+                    }
+                </div>
+                
                 
             </Link>
             <div className="flex gap-4 items-center">

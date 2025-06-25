@@ -18,7 +18,7 @@ export class DiagnostikStore {
         try {
             const [rows] = await conn.execute<RowDataPacket[]>(`
                 SELECT id, name, beschreibung, erstellungsdatum, obere_grenze AS obereGrenze, user_id as userId,
-                    untere_grenze AS untereGrenze, typ, user_id AS userId, klassen_id AS klasseId, sichtbarkeit
+                    untere_grenze AS untereGrenze, typ, user_id AS userId, klassen_id AS klasseId, sichtbarkeit, aktualisiertAm
                 FROM diagnostikverfahren
                 WHERE id = ?
             `, [diagnostikId]);
@@ -52,7 +52,8 @@ export class DiagnostikStore {
                 sichtbarkeit: parseInt(diag.sichtbarkeit),
                 files,
                 geteiltMit,
-                auswertungsgruppen
+                auswertungsgruppen,
+                aktualisiertAm: diag.aktualisiertAm
             };
 
         } catch (e) {
@@ -109,7 +110,7 @@ export class DiagnostikStore {
         try {
             const [rows] = await conn.execute<RowDataPacket[]>(`
                 SELECT id, name, beschreibung, erstellungsdatum, obere_grenze AS obereGrenze, 
-                    untere_grenze AS untereGrenze, typ, user_id AS userId, klassen_id AS klasseId, sichtbarkeit
+                    untere_grenze AS untereGrenze, typ, user_id AS userId, klassen_id AS klasseId, sichtbarkeit, aktualisiertAm
                 FROM diagnostikverfahren
                 WHERE typ = ?
             `, [speicherTyp]);
@@ -140,7 +141,8 @@ export class DiagnostikStore {
                     farbbereiche,
                     sichtbarkeit: parseInt(diag.sichtbarkeit),
                     files,
-                    auswertungsgruppen
+                    auswertungsgruppen,
+                    aktualisiertAm: diag.aktualisiertAm
                 });
             }
 
@@ -269,6 +271,7 @@ export class DiagnostikStore {
                 );
             }
 
+            this.updateAktualisiertColumn(diagnostikId);
             await conn.commit();
 
             return {
@@ -335,6 +338,7 @@ export class DiagnostikStore {
                     VALUES (?, ?)
                 `, [id, path]);
             }    
+            this.updateAktualisiertColumn(id);
 
             await conn.commit();
 
@@ -418,6 +422,7 @@ export class DiagnostikStore {
             }
 
             await conn.commit();
+            this.updateAktualisiertColumn(diagnostik.id ?? -1);
 
             return {
                 success: true,
@@ -548,6 +553,7 @@ export class DiagnostikStore {
             }
 
             await conn.commit();
+            this.updateAktualisiertColumn(diagnostikId);
 
             return {
                 success: true,
@@ -659,6 +665,15 @@ export class DiagnostikStore {
         } finally {
             conn.release();
         }
+    }
+
+    async updateAktualisiertColumn(diagnostikId: number): Promise<void> {
+        if (!this.connection) throw new Error("Database connection not established");
+
+        await this.connection.execute(
+            `UPDATE diagnostikverfahren SET aktualisiertAm = CURDATE() WHERE id = ?`,
+            [diagnostikId]
+        );
     }
     
     // async getSchuelerData(schuelerId: number): Promise<any> {
