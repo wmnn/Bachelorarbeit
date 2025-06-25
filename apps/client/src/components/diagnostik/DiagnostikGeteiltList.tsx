@@ -1,7 +1,7 @@
-import { List } from "../List"
 import { DiagnostikListItem } from "./DiagnostikListItem"
 import { useDiagnostiken } from "../shared/useDiagnostiken"
 import { DiagnostikTyp } from "@thesis/diagnostik"
+import { DiagnostikList2 } from "./DiagnostikList2"
 
 export function DiagnostikGeteiltList() {
 
@@ -13,15 +13,11 @@ export function DiagnostikGeteiltList() {
 
     const diagnostiken = query.data
 
-    return <List 
-        createButonLabel="Diagnostik erstellen"
-        className="mt-8"
+    return <DiagnostikList2
+        initialDiagnostiken={diagnostiken ?? []}
     >
         {
-            diagnostiken != undefined && diagnostiken?.length == 0 && <h2 className="p-2">Es wurde keine Diagnostik mit dir geteilt.</h2>
+            ({diagnostiken}) => diagnostiken?.map((diagnostik, idx) => <DiagnostikListItem key={idx} diagnostik={diagnostik} isShared />)
         }
-        {
-            diagnostiken?.map((diagnostik, idx) => <DiagnostikListItem key={idx} diagnostik={diagnostik} isShared />)
-        }
-    </List> 
+    </DiagnostikList2>
 }
