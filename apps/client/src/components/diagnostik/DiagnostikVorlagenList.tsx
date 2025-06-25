@@ -1,40 +1,17 @@
 import { useEffect, useState } from "react"
-import { List } from "../List"
-import { DiagnostikErstellenDialog } from "./DiagnostikErstellenDialog"
 import { DiagnostikListItem } from "./DiagnostikListItem"
 import { useDiagnostiken } from "../shared/useDiagnostiken"
 import { type Diagnostik, DiagnostikTyp } from "@thesis/diagnostik"
-import { SortOption, SortSelect } from "../shared/SortSelect"
-import { Input } from "../Input"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
+import { DiagnostikList2 } from "./DiagnostikList2"
 
-const DiagnostikSortLabels: Record<SortOption, string> = {
-    [SortOption.AUFSTEIGEND]: 'Name aufsteigend',
-    [SortOption.ABSTEIGEND]: 'Name absteigend'
-}
-function sort(sortOption: SortOption, data: Diagnostik[]) {
-        if (sortOption === SortOption.AUFSTEIGEND) {
-            return ([...data].sort((a, b) => {
-                return b.name.localeCompare(a.name)
-            }))
-        } else {
-            return ([...data].sort((a, b) => {
-                return a.name.localeCompare(b.name)
-            }))
-        }
-    }
 export function DiagnostikVorlagenList() {
-    const [isCreateDialogShown, setIsCreateDialogShown] = useState(false)
-    const [sortOption, setSortOption] = useState<SortOption>(SortOption.ABSTEIGEND)
 
     const query = useDiagnostiken(DiagnostikTyp.VORLAGE)
     const [diagnostiken, setDiagnostiken] = useState<Diagnostik[]>([]);
 
-    const [searchQuery, setSearchQuery] = useState('')
-
     useEffect(() => {
         if (Array.isArray(query.data)) {
-            setDiagnostiken(sort(sortOption, query.data))
+            setDiagnostiken(query.data)
         }
     }, [query.data])
 
@@ -46,132 +23,11 @@ export function DiagnostikVorlagenList() {
         return;
     }
 
-    function handleSortChange(val: SortOption) {
-        setSortOption(val)
-        setDiagnostiken(sort(val, diagnostiken))
-    }
-
-    const header = <div>
-        <div className='flex justify-end mb-8'>
-            <div className='flex gap-2'>
-
-            <Input value={searchQuery} placeholder="Suche" onChange={(e) => {
-                const val = e.target.value
-                setSearchQuery(val)
-                setDiagnostiken(_ => sort(sortOption, (query.data ?? []).filter(item => item.name.includes(val))))
-            }}/>
-            <SortSelect selectedSortItem={sortOption} handleSortChange={handleSortChange} labels={DiagnostikSortLabels}/>
-    
-            <DiagnostikFilterButton sortOption={sortOption} diagnostiken={diagnostiken} initialData={query.data} setDiagnostiken={setDiagnostiken} />
-    
-            </div>
-        </div>
-        
-    </div>
-
-    return <List 
-        createButonLabel="Diagnostik erstellen"
-        setIsCreateDialogShown={setIsCreateDialogShown}
-        className="mt-8"
-        header={header}
+    return <DiagnostikList2 
+        initialDiagnostiken={diagnostiken}
     >
-        { isCreateDialogShown && <DiagnostikErstellenDialog closeDialog={() => setIsCreateDialogShown(false)}/>}
         {
-            diagnostiken?.map((diagnostik, idx) => <DiagnostikListItem key={idx} diagnostik={diagnostik} />)
+            ({ diagnostiken }) => diagnostiken?.map((diagnostik: Diagnostik, idx: number) => <DiagnostikListItem key={idx} diagnostik={diagnostik} />)
         }
-    </List> 
-}
-
-interface DiagnostikFilterButtonProps {
-    diagnostiken: Diagnostik[],
-    initialData: Diagnostik[],
-    setDiagnostiken: React.Dispatch<React.SetStateAction<Diagnostik[]>>,
-    sortOption: SortOption
-}
-const DiagnostikFilterButton = ({ diagnostiken, initialData, setDiagnostiken, sortOption }: DiagnostikFilterButtonProps) => {
-    
-    const [filteredKategorien, setFilteredKategorien] = useState<string[]>([])
-    const [filteredKlassenstufen, setFilteredKlassenstufen] = useState<string[]>([])
-    const kategorien = new Set(
-        initialData.flatMap(item => item.kategorien ?? [])
-    );
-
-    const klassenStufen = new Set(
-        initialData.flatMap(item => item.geeigneteKlassen ?? [])
-    );
-
-    function handleClickOnKlassenstufe(klassenstufe: string) {
-        let filtered = []
-        if (filteredKlassenstufen.includes(klassenstufe)) {
-            /*  
-                Versteckte wieder anzeigen durch initialData.
-                Wenn eine Diagnostik keine gefilterte Klassenstufe enthält, wird sie angezeigt.
-            */
-            filtered = filteredKlassenstufen.filter(item => item !== klassenstufe)
-        } else {
-            /*  
-                Aktuelle Diagnostiken werden gefiltert. Wenn eine Diagnostik nur die Klassenstufe enthält, die
-                angeklickt wurde, dann wird sie versteckt.
-            */
-            filtered = filteredKlassenstufen.includes(klassenstufe) ? filteredKlassenstufen : [...filteredKlassenstufen, klassenstufe]
-        }
-        filtern(filtered, filteredKategorien)
-        setFilteredKlassenstufen(filtered);
-    }
-    function filtern(filteredKlassenstufen: string[], filteredKategorien: string[]) {
-        // Wenn eine Diagnostik eine von der restlichen Stufen hat, wird sie angezeigt.
-        const shownKlassenstufen = Array.from(klassenStufen).filter(item => !filteredKlassenstufen.includes(item))
-        const shownKategorien = Array.from(kategorien).filter(item => !filteredKategorien.includes(item))
-
-        // Anwendung der Filterlogik
-        const filteredTmp = initialData.filter(item => {
-            const isSomeShownKlassenstufeInside = (item.geeigneteKlassen ?? []).some(stufe => shownKlassenstufen.includes(stufe));
-            const isSomeShownKategorieInside = (item.kategorien ?? []).some(kat => shownKategorien.includes(kat));
-            return isSomeShownKlassenstufeInside || isSomeShownKategorieInside;
-        });
-
-        setDiagnostiken(_ => sort(sortOption, filteredTmp));
-    }
-    function handleClickOnKategorie(kategorie: string) {
-        let filtered = []
-        if (filteredKategorien.includes(kategorie)) {
-            filtered = filteredKategorien.filter(item => item !== kategorie)
-        } else {
-            filtered = filteredKategorien.includes(kategorie) ? filteredKategorien : [...filteredKategorien, kategorie]
-        }
-        filtern(filteredKlassenstufen, filtered)
-        setFilteredKategorien(filtered);
-    }
-    return <DropdownMenu>
-        <DropdownMenuTrigger className="border-[1px] px-2 rounded-lg py-[6px] hover:bg-gray-200">Filtern</DropdownMenuTrigger>
-        <DropdownMenuContent>
-            <label>
-                Klassenstufen
-            </label>
-            
-            {
-                Array.from(klassenStufen).map((klassenStufe, idx) => <DropdownMenuItem 
-                    key={idx} 
-                    className="cursor-pointer" 
-                    onClick={() => handleClickOnKlassenstufe(klassenStufe)}
-                >
-                    <input type="checkbox" checked={!filteredKlassenstufen.includes(klassenStufe)} /> {klassenStufe}
-                </DropdownMenuItem>)
-            }
-
-            <hr className="my-2" />
-            <label>
-                Kategorien
-            </label>
-            {
-                Array.from(kategorien).map((kategorie, idx) => <DropdownMenuItem 
-                    key={idx} 
-                    className="cursor-pointer"
-                    onClick={() => handleClickOnKategorie(kategorie)}
-                >
-                    <input type="checkbox" checked={!filteredKategorien.includes(kategorie)}/> {kategorie}
-                </DropdownMenuItem>)
-            }
-        </DropdownMenuContent>
-    </DropdownMenu>
+    </DiagnostikList2>
 }

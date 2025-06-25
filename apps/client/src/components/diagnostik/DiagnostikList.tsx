@@ -1,12 +1,8 @@
-import { useState } from "react"
-import { List } from "../List"
-import { DiagnostikErstellenDialog } from "./DiagnostikErstellenDialog"
 import { DiagnostikListItem } from "./DiagnostikListItem"
 import { useDiagnostiken } from "../shared/useDiagnostiken"
+import { DiagnostikList2 } from "./DiagnostikList2"
 
 export function DiagnostikList() {
-    const [isCreateDialogShown, setIsCreateDialogShown] = useState(false)
-
     const query = useDiagnostiken()
 
     if (query.isPending) {
@@ -15,16 +11,11 @@ export function DiagnostikList() {
 
     const diagnostiken = query.data
 
-    return <List 
-        createButonLabel="Diagnostik erstellen"
-        setIsCreateDialogShown={setIsCreateDialogShown}
-        className="mt-8"
+    return <DiagnostikList2 
+        initialDiagnostiken={diagnostiken ?? []}
     >
-        { isCreateDialogShown && <DiagnostikErstellenDialog closeDialog={() => setIsCreateDialogShown(false)}/>}
-        <div className="overflow-y-scroll divide-y divide-gray-200">
-            {
-                diagnostiken?.map((diagnostik, idx) => <DiagnostikListItem key={idx} diagnostik={diagnostik} />)
-            }
-        </div>
-    </List> 
+        {
+            ({ diagnostiken }) => diagnostiken?.map((diagnostik, idx) => <DiagnostikListItem key={idx} diagnostik={diagnostik} />)
+        }
+    </DiagnostikList2>
 }
