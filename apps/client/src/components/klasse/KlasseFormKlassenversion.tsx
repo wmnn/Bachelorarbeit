@@ -5,6 +5,7 @@ import { Autocomplete } from "../shared/Autocomplete";
 import { useState } from "react";
 import { ButtonLight } from "../ButtonLight";
 import { useSchuelerStore } from "../schueler/SchuelerStore";
+import { Trash2 } from "lucide-react";
 
 export function KlasseErstellenDialogKlasse({ klasse, setKlasse }: { 
     klasse: KlassenVersion, 
@@ -46,6 +47,16 @@ export function KlasseErstellenDialogKlasse({ klasse, setKlasse }: {
         setKlasse({
             ...klasse,
             schueler: [...klasse.schueler ?? [], -1]
+        })
+    }
+
+    function removeSchueler(idx: number) {
+        setKlasse({
+            ...klasse,
+            schueler: (klasse.schueler ?? []).filter((_, i) => {
+                if (i == idx) return false;
+                return true
+            })
         })
     }
 
@@ -92,7 +103,8 @@ export function KlasseErstellenDialogKlasse({ klasse, setKlasse }: {
             </label>
             {
                 klasse.schueler?.map((schueler, idx) => {
-                    return <Autocomplete 
+                    return <div className="flex gap-2">
+                        <Autocomplete 
                         key={idx}
                         query={query}
                         setQuery={handleQueryChange}
@@ -101,7 +113,11 @@ export function KlasseErstellenDialogKlasse({ klasse, setKlasse }: {
                         getLabel={getLabel}
                         placeholder="Max Mustermann"
                         queryResults={queryResults as any}
-                    />
+                        />
+                        <button onClick={() => removeSchueler(idx)}>
+                            <Trash2 />
+                        </button>
+                    </div>
                 })
             }
             <ButtonLight onClick={() => addSchueler()}>
