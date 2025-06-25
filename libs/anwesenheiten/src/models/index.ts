@@ -22,3 +22,7 @@ export enum AnwesenheitTyp {
     UNTERRICHT,
     GANZTAG
 }
+export const AnwesenheitTypLabel = {
+    [AnwesenheitTyp.GANZTAG]: 'Ganztag',
+    [AnwesenheitTyp.UNTERRICHT]: 'Unterricht',
+}

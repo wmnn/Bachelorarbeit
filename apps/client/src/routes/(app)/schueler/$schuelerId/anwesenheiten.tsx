@@ -6,7 +6,7 @@ import { Tooltip } from '@/components/Tooltip';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { SchuelerNav } from '@/layout/SchuelerNav';
 import { createFileRoute } from '@tanstack/react-router'
-import { ANWESENHEITEN, Anwesenheiten, AnwesenheitenLabels, AnwesenheitTyp, type AnwesenheitResponseData } from '@thesis/anwesenheiten';
+import { ANWESENHEITEN, Anwesenheiten, AnwesenheitenLabels, AnwesenheitTyp, AnwesenheitTypLabel, type AnwesenheitResponseData } from '@thesis/anwesenheiten';
 import { getSchuljahr, type Schuljahr } from '@thesis/schule';
 import { useEffect, useState } from 'react';
 
@@ -118,6 +118,23 @@ const AnwesenheitenDisplay = ({ typ, schuelerId }: { typ: AnwesenheitTyp, schuel
     return <p>Fehler</p>
   }
 
+  const exportData = () => {
+    const jsonString = JSON.stringify(anwesenheiten?.map(anwesenheit => ({
+      datum: anwesenheit.datum.split('T')[0],
+      typ: AnwesenheitTypLabel[anwesenheit.typ],
+      status: AnwesenheitenLabels[anwesenheit.status]
+    })), null, 2); // pretty-printed
+    const blob = new Blob([jsonString], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "anwesenheiten.json";
+    a.click();
+
+    URL.revokeObjectURL(url); 
+  };
+
   return <div className='w-full'>
 
     {
@@ -147,6 +164,9 @@ const AnwesenheitenDisplay = ({ typ, schuelerId }: { typ: AnwesenheitTyp, schuel
       </div>
       
     </div>
+    <ButtonLight className='max-w-[360px] my-4' onClick={() => exportData()}>
+      Export
+    </ButtonLight>
     
 
     <DataDisplay 
