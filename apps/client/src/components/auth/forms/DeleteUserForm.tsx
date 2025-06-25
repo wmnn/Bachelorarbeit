@@ -27,11 +27,10 @@ export function DeleteUserForm() {
             onSubmit={async () => {
                 setIsLoading(true)
                 const res = await deleteUser(user?.id ?? -1)
-                if (res.success) {
-                setUser(undefined)
-                return;
-                }
                 setResponseMessage(res.message);
+                if (res.success) {
+                    return setUser(undefined);
+                }
                 setIsLoading(false);
                 closeDeleteDialog()
             }}
