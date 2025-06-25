@@ -1,3 +1,4 @@
+import { DiagnostikList2 } from '@/components/diagnostik/DiagnostikList2';
 import { DiagnostikListItem } from '@/components/diagnostik/DiagnostikListItem';
 import { List } from '@/components/List';
 import { useDiagnostiken } from '@/components/shared/useDiagnostiken';
@@ -24,13 +25,13 @@ function RouteComponent() {
 
   return <div className='w-full' >
     <KlasseNav klassenId={klassenId} />
-
-    <List className='px-8 mt-8'>
-      
-        { 
-          diagnostiken.filter(item => `${item.klasseId}` === `${klassenId}`).map(diagnostik => <DiagnostikListItem diagnostik={diagnostik} />)
-        }
-    
-    </List>
+    <div className='px-2 xl:px-8'>
+      <DiagnostikList2 initialDiagnostiken={diagnostiken}>
+        {({ diagnostiken}) => diagnostiken
+          .filter(item => `${item.klasseId}` === `${klassenId}`)
+          .map(diagnostik => <DiagnostikListItem diagnostik={diagnostik} />
+        )}
+      </DiagnostikList2>
+    </div>
   </div>
 }
