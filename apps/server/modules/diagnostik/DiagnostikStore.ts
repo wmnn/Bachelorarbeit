@@ -660,6 +660,29 @@ export class DiagnostikStore {
             conn.release();
         }
     }
+    
+    // async getSchuelerData(schuelerId: number): Promise<any> {
 
+    //     if (!this.connection) return [];
+
+    //     const conn = await this.connection.getConnection();
+
+    //     try {
+    //         const [rows] = await conn.query(
+    //             `SELECT diagnostikverfahren_id, datum, ergebnis
+    //             FROM diagnostikverfahren_ergebnisse
+    //             WHERE schueler_id = ?`,
+    //             [schuelerId]
+    //         );
+
+    //         return rows;
+    //     } catch (err) {
+    //         console.error('Fehler in getSchuelerData:', err);
+    //         return [];
+    //     } finally {
+    //         conn.release();
+    //     }
+        
+    // }
 
 }

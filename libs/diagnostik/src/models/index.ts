@@ -33,6 +33,10 @@ export type Diagnostik = {
     geteiltMit?: number[],
     auswertungsgruppen?: Auswertungsgruppe[]
 }
+export type DiagnostikenSchuelerData = {
+    ergebnisse?: Row[]
+} & Diagnostik
+
 export type UploadedFile = {
   name: string;
   mimetype: string;

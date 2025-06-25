@@ -89,3 +89,10 @@ export function ergebnisDatumGleich(ergebnis: Ergebnis, datum: string) {
   }
   return new Date(ergebnis.datum).toISOString().split('T')[0] == new Date(datum).toISOString().split('T')[0]
 }
+export function sortErgebnisse(ergebnisse: Ergebnis[]): Ergebnis[] {
+  return ergebnisse.sort((a, b) => {
+    const dateA = a.datum ? new Date(a.datum).getTime() : 0;
+    const dateB = b.datum ? new Date(b.datum).getTime() : 0;
+    return dateB - dateA;
+  });
+}

@@ -42,6 +42,11 @@ export function reduceKlassenversionenToKlassen(rows: any[]): Klasse[] {
     return klassen;
 }
 
+/**
+ * Diese Funktion fügt zu eine Array von Schülern jeweils die zugehörige Klasse hinzu.
+ * @param schueler Schüler Array
+ * @returns 
+ */
 export async function addCurrentClassToSchueler(schueler: Schueler[]): Promise<Schueler[]> {
 
     const schuljahr = getSchuljahr(new Date());
@@ -57,4 +62,13 @@ export async function addCurrentClassToSchueler(schueler: Schueler[]): Promise<S
         schueler.derzeitigeKlasse = getTitle(entry.klasse);
         return schueler;
     })  
+}
+
+/**
+ * Diese Funktion gibt alle KlassenIds des Schülers zurück.
+ * @param schuelerId 
+ * @returns 
+ */
+export async function getKlassenIdsVonSchueler(schuelerId: number): Promise<number[]> {
+    return getKlassenStore().getKlassenIdsVonSchueler(schuelerId)
 }

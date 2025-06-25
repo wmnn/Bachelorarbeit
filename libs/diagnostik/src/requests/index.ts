@@ -1,5 +1,5 @@
 import { DIAGNOSTIK_ENDPOINT } from "../../../config/config";
-import { Sichtbarkeit, type Auswertungsgruppe, type Diagnostik, type DiagnostikTyp, type Ergebnis, type Row, type UploadedFile } from "../models";
+import { Sichtbarkeit, type Auswertungsgruppe, type Diagnostik, type DiagnostikenSchuelerData, type DiagnostikTyp, type Ergebnis, type Row, type UploadedFile } from "../models";
 
 export type CreateDiagnostikRequestBody = {
     diagnostik: string,
@@ -237,6 +237,36 @@ export const getErgebnisse = async (diagnostikId: string) => {
         
     } catch (e) {
         return []
+    }
+
+}
+
+
+export interface GetSchuelerDataResponseBody {
+    success: boolean,
+    message: string,
+    data?: DiagnostikenSchuelerData[]
+}
+
+export const getDiagnostikSchuelerData = async (schuelerId: string) => {
+    
+    try {
+        const res = await fetch(DIAGNOSTIK_ENDPOINT + `/schueler?schuelerId=${schuelerId}`, {
+            method: 'GET',
+        })
+
+        if (res.status === 403) {
+            window.location.href = '/login'
+        }
+    
+        return await res.json() as GetSchuelerDataResponseBody;
+        
+    } catch (e) {
+        console.log(e)
+        return {
+            success: false,
+            message: 'Ein Fehler ist aufgetreten.'
+        }
     }
 
 }

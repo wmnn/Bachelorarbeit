@@ -138,7 +138,6 @@ export const authMiddleware = async (
     if (typeof user.rolle === 'string') {
         req.rolle = user.rolle
     }
-
     next();
 };
 

@@ -1,12 +1,14 @@
 import express from 'express';
 import { Request, Response } from 'express';
-import { AddErgebnisseResponseBody, CreateDiagnostikRequestBody, CreateDiagnostikResponseBody, Diagnostik, DiagnostikTyp, Ergebnis, Farbbereich, getDiagnostik, GetDiagnostikenResponseBody, Sichtbarkeit } from '@thesis/diagnostik';
+import { AddErgebnisseResponseBody, CreateDiagnostikRequestBody, CreateDiagnostikResponseBody, Diagnostik, DiagnostikenSchuelerData, DiagnostikTyp, Ergebnis, Farbbereich, getDiagnostik, GetDiagnostikenResponseBody, GetSchuelerDataResponseBody, Sichtbarkeit } from '@thesis/diagnostik';
 import { getDiagnostikStore } from '../../singleton';
 import { deleteNotIncludedFiles, getDiagnostikFiles, saveDiagnostikFiles } from '../files/util';
 import fileUpload from 'express-fileupload';
 import { Berechtigung, BerechtigungWert } from '@thesis/rollen';
 import { canEditDiagnostik, canUserAccessDiagnostik, canUserCreateDiagnostik, canUserDeleteDiagnostik, canUserUpdateSichtbarkeit } from '../auth/permissionsDiagnostikUtil';
 import { getNoSessionResponse } from '../auth/permissionsUtil';
+import { getKlassenIdsVonSchueler } from '../klassen/util';
+import { DiagnostikStore } from './DiagnostikStore';
 
 let router = express.Router();
 const SUCCESSFULL_VALIDATION_RES =  {
@@ -58,6 +60,36 @@ router.get('/', async (
     }
     return res.status(data.success ? 200 : 400).json(data.data ?? []);
 });
+
+router.get('/schueler', async (req, res: Response<GetSchuelerDataResponseBody>): Promise<any> => {
+    const { schuelerId: schuelerIdString } = req.query as {
+        schuelerId: string
+    }
+    const schuelerId = parseInt(schuelerIdString)
+    if (!req.userId) {
+        return getNoSessionResponse(res)
+    }
+    // Alle klassenIds von den Klassenversionen anfragen, bei denen der Schüler ein Teil von ist
+    const klassenIds = await getKlassenIdsVonSchueler(schuelerId)
+    // Alle Diagnostiken die für die Klassen erstellt wurden anfragen
+    let { data: unfilteredDiagnostiken } = await getDiagnostikStore().getDiagnostiken(DiagnostikTyp.LAUFENDES_VERFAHREN)
+    // unfilteredDiagnostiken = [...unfilteredDiagnostiken, await getDiagnostikStore().getDiagnostiken(DiagnostikTyp.)]
+    let filteredDiagnostiken: DiagnostikenSchuelerData[] = (unfilteredDiagnostiken?.filter(diagnostik => klassenIds.includes(diagnostik.klasseId)) ?? []) 
+
+    // Schülerdaten der Diagnostik anfragen
+    for (const diagnostik of filteredDiagnostiken) {
+        const getErgebnisseRes = await getDiagnostikStore().getErgebnisse(diagnostik.id ?? -1)
+        if (!Array.isArray(getErgebnisseRes)) return;
+        diagnostik.ergebnisse = getErgebnisseRes.filter(row => row.schuelerId == schuelerId)
+    }
+
+    return res.status(200).json({
+        success: true,
+        message: 'Erfolgreich die Daten des Schülers angefragt.',
+        data: filteredDiagnostiken,
+    })
+
+})
 
 router.get('/:diagnostikId', async (req, res): Promise<any> => {
     const { diagnostikId } = req.params

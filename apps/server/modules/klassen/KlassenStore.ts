@@ -409,4 +409,11 @@ export class KlassenStore {
 
         return results
     }
+
+    async getKlassenIdsVonSchueler(schuelerId: number): Promise<number[]> {
+        const [klassen] = await this.connection.execute<RowDataPacket[]>(`
+            SELECT klassen_id as klassenId FROM klassenversion_schueler WHERE schueler_id = ?
+        `, [schuelerId]);
+        return klassen.map(klasse => parseInt(klasse.klassenId))
+    }
 }
