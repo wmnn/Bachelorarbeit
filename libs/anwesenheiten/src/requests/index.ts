@@ -2,6 +2,11 @@ import { ANWESENHEITEN_ENDPOINT } from "../../../config/config";
 import type { Anwesenheiten, AnwesenheitTyp } from "../models";
 import type { Schuljahr } from "@thesis/schule";
 
+export interface AnwesenheitResponseData {
+    datum: string,
+    typ: AnwesenheitTyp,
+    status: Anwesenheiten
+}
 export const getAnwesenheiten = async (
     schuelerId: number,
     schuljahr: Schuljahr,
@@ -19,7 +24,7 @@ export const getAnwesenheiten = async (
             window.location.href = '/login'
         }
 
-        return await res.json() as any[];
+        return await res.json() as AnwesenheitResponseData[];
     } catch (e) {
         return undefined;
     }

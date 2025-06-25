@@ -2,13 +2,11 @@ import { AnwesenheitsstatusDialog } from '@/components/anwesenheitsstatus/Anwese
 import { useAnwesenheiten } from '@/components/anwesenheitsstatus/useUnterrichtAnwesenheiten';
 import { getColor } from '@/components/anwesenheitsstatus/util';
 import { ButtonLight } from '@/components/ButtonLight';
-import { useAllSchueler } from '@/components/schueler/useSchueler';
 import { Tooltip } from '@/components/Tooltip';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { SchuelerNav } from '@/layout/SchuelerNav';
-import { ANWESENHEITEN_QUERY_KEY } from '@/reactQueryKeys';
-import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router'
-import { ANWESENHEITEN, Anwesenheiten, AnwesenheitenLabels, AnwesenheitTyp, getAnwesenheiten } from '@thesis/anwesenheiten';
+import { ANWESENHEITEN, Anwesenheiten, AnwesenheitenLabels, AnwesenheitTyp, type AnwesenheitResponseData } from '@thesis/anwesenheiten';
 import { getSchuljahr, type Schuljahr } from '@thesis/schule';
 import { useEffect, useState } from 'react';
 
@@ -21,68 +19,146 @@ export const Route = createFileRoute(
 function RouteComponent() {
 
   const { schuelerId } = Route.useParams();
-  const [schuljahr, _] = useState<Schuljahr>(getSchuljahr(new Date()));
+  return <div className='w-full'>
+    <SchuelerNav schuelerId={schuelerId} />
+    <div className='flex flex-col px-8 w-full'>
+      <AnwesenheitenDisplay typ={AnwesenheitTyp.UNTERRICHT} schuelerId={schuelerId} />
+      <AnwesenheitenDisplay typ={AnwesenheitTyp.GANZTAG} schuelerId={schuelerId} />
+    </div>
+  </div>
+}
+
+enum FilterOption {
+  SCHULJAHR,
+  MONAT,
+  WOCHE
+}
+
+const AnwesenheitenFilter = ({ 
+  setFilteredAnwesenheiten, 
+  anwesenheiten,
+  selectedFilter,
+  setSelectedFilter
+}: { 
+    setFilteredAnwesenheiten: any, 
+    anwesenheiten: AnwesenheitResponseData[],
+    selectedFilter: any,
+    setSelectedFilter: any
+}) => {
+  
+  return <Select 
+      value={`${selectedFilter}`}
+      onValueChange={async (val) => {
+          const status = parseInt(val) as FilterOption
+          setSelectedFilter(status)
+          if (status == FilterOption.SCHULJAHR) {
+            setFilteredAnwesenheiten(anwesenheiten)
+          } else if (status == FilterOption.MONAT) {
+            const today = new Date();
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(today.getDate() - 30);
+
+            const filtered = anwesenheiten.filter(anwesenheit => {
+              const date = new Date(anwesenheit.datum);
+              return date >= thirtyDaysAgo && date <= today;
+            });
+            setFilteredAnwesenheiten(filtered)
+          } else {
+            const today = new Date();
+            const sevenDaysAgo = new Date();
+            sevenDaysAgo.setDate(today.getDate() - 7);
+
+            const filtered = anwesenheiten.filter(anwesenheit => {
+              const date = new Date(anwesenheit.datum);
+              return date >= sevenDaysAgo && date <= today;
+            });
+            setFilteredAnwesenheiten(filtered)
+          }
+      }}
+  >
+    <SelectTrigger className="xl:w-[200px] w-min">
+        <SelectValue placeholder="Keine Option ausgewählt."/>
+    </SelectTrigger>
+    <SelectContent>
+        <SelectItem value={`${FilterOption.SCHULJAHR}`}>
+          Schuljahr
+        </SelectItem> 
+        <SelectItem value={`${FilterOption.MONAT}`}>
+          Monat
+        </SelectItem> 
+        <SelectItem value={`${FilterOption.WOCHE}`}>
+          Woche
+        </SelectItem>                 
+    </SelectContent>
+  </Select>  
+
+
+}
+
+const AnwesenheitenDisplay = ({ typ, schuelerId }: { typ: AnwesenheitTyp, schuelerId: string }) => {
+
   const [isDialogShown, setIsDialogShown] = useState(false)
-  const [typ, setTyp] = useState(AnwesenheitTyp.GANZTAG)
+  const [schuljahr, _] = useState<Schuljahr>(getSchuljahr(new Date()));
+  const { query } = useAnwesenheiten(parseInt(schuelerId), typ)
+  const [selectedFilter, setSelectedFilter] = useState(FilterOption.SCHULJAHR)
 
-  const { query: unterrichtQuery } = useAnwesenheiten(parseInt(schuelerId), AnwesenheitTyp.UNTERRICHT)
-  const { query: ganztagQuery } = useAnwesenheiten(parseInt(schuelerId), AnwesenheitTyp.GANZTAG)
-
-  const schuelerQuery = useAllSchueler()
-
-  let schultagAnwesenheiten = unterrichtQuery.data;
-  let ganztagAnwesenheiten = ganztagQuery.data
+  let anwesenheiten = query.data;
+  const [filteredAnwesenheiten, setFilteredAnwesenheiten] = useState<undefined | AnwesenheitResponseData[]>(anwesenheiten)
 
   useEffect(() => {
-    schultagAnwesenheiten = unterrichtQuery.data
-  }, [unterrichtQuery.data])
+    anwesenheiten = query.data
+    setFilteredAnwesenheiten(anwesenheiten)
+  }, [query.data])
 
-  useEffect(() => {
-    ganztagAnwesenheiten = ganztagQuery.data
-  }, [ganztagQuery.data])
-
-  if (unterrichtQuery.isPending || ganztagQuery.isPending || schuelerQuery.isPending) {
+  if (query.isPending) {
     return <p>...Loading</p>
   }
   
-  if (!schultagAnwesenheiten || !ganztagAnwesenheiten) {
+  if (!anwesenheiten || !filteredAnwesenheiten) {
     return <p>Fehler</p>
   }
 
   return <div className='w-full'>
-    <SchuelerNav schuelerId={schuelerId} />
-    <div className='flex flex-col pl-8'>
-      {
-        isDialogShown && <AnwesenheitsstatusDialog 
-          closeDialog={() => setIsDialogShown(false)} 
-          schuelerId={parseInt(schuelerId)}
-          initial={ANWESENHEITEN[0]}
-          typ={typ}
-        />
-      }
 
-      <h2>Unterricht</h2>
-      <ButtonLight onClick={() => { 
-        setTyp(AnwesenheitTyp.UNTERRICHT)
+    {
+      isDialogShown && <AnwesenheitsstatusDialog 
+        closeDialog={() => setIsDialogShown(false)} 
+        schuelerId={parseInt(schuelerId)}
+        initial={ANWESENHEITEN[0]}
+        typ={typ}
+      />
+    }
+    <h2>{typ == AnwesenheitTyp.UNTERRICHT ? 'Unterricht' : 'Ganztag'}</h2>
+    <div className='flex gap-2 justify-between w-full'>
+      <ButtonLight 
+      className='max-w-[360px]'
+      onClick={() => { 
         setIsDialogShown(true)
       }}>
         Aktualisieren
       </ButtonLight>
-      <DataDisplay data={schultagAnwesenheiten}/>
-      <AnwesenheitenGrid data={schultagAnwesenheiten} schuljahr={schuljahr} />
-
-      <h2>Ganztag</h2>
-      <ButtonLight onClick={() => { 
-        setTyp(AnwesenheitTyp.GANZTAG)
-        setIsDialogShown(true)
-      }}>
-        Aktualisieren
-      </ButtonLight>
-      <DataDisplay data={ganztagAnwesenheiten}/>
-      <AnwesenheitenGrid data={ganztagAnwesenheiten} schuljahr={schuljahr} />
+      <div>
+        <AnwesenheitenFilter 
+          anwesenheiten={anwesenheiten} 
+          setFilteredAnwesenheiten={setFilteredAnwesenheiten} 
+          selectedFilter={selectedFilter}
+          setSelectedFilter={setSelectedFilter}
+        />  
+      </div>
+      
     </div>
     
-    </div>
+
+    <DataDisplay 
+      data={filteredAnwesenheiten}
+    />
+    <AnwesenheitenGrid 
+      data={filteredAnwesenheiten} 
+      schuljahr={schuljahr} 
+      selectedFilter={selectedFilter}
+    />
+
+  </div>
 }
 
 const DataDisplay = ({ data }: { data: any }) => {
@@ -111,7 +187,15 @@ const DataDisplay = ({ data }: { data: any }) => {
   </div>
 }
 
-const AnwesenheitenGrid = ({ data, schuljahr }: { data: any[], schuljahr: Schuljahr }) => {
+const AnwesenheitenGrid = ({ 
+  data, 
+  schuljahr,
+  selectedFilter
+}: { 
+  data: any[], 
+  schuljahr: Schuljahr,
+  selectedFilter: FilterOption
+}) => {
   const dateMap = new Map<string, number>();
   data.forEach(entry => {
     const date = new Date(entry.datum).toISOString().split('T')[0];
@@ -121,7 +205,14 @@ const AnwesenheitenGrid = ({ data, schuljahr }: { data: any[], schuljahr: Schulj
   const today = new Date();
   const [startYearStr,] = schuljahr.split('/');
   const startYear = parseInt(startYearStr);
-  const startDate = new Date(`${2000 + startYear}-08-01`);
+  let startDate = new Date(`${2000 + startYear}-08-01`);
+  if (selectedFilter == FilterOption.MONAT) {
+    startDate = new Date();
+    startDate.setDate(today.getDate() - 30);
+  } else if (selectedFilter == FilterOption.WOCHE) {
+    startDate = new Date();
+    startDate.setDate(today.getDate() - 7);
+  }
 
   const allRelevantDays: string[] = [];
   const tempDate = new Date(startDate);
@@ -164,7 +255,7 @@ const AnwesenheitenGrid = ({ data, schuljahr }: { data: any[], schuljahr: Schulj
 
 
   return (
-    <div className="gap-1 hidden md:flex">
+    <div className="gap-1 flex overflow-x-scroll">
       {weeks.map((week, wi) => (
         <div key={wi} className="flex flex-col gap-1">
           {week.map((day, di) => {

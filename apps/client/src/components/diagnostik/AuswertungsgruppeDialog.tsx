@@ -7,7 +7,6 @@ import { Autocomplete } from "../shared/Autocomplete"
 import { useSchuelerStore } from "../schueler/SchuelerStore"
 import { useAllSchueler } from "../schueler/useSchueler"
 import { Trash2 } from "lucide-react"
-import { useDiagnostik } from "./useDiagnostik"
 
 interface AuswertungsgruppeDialogProps { 
     closeDialog: () => void, 

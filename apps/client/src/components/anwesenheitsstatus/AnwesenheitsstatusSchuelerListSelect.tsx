@@ -1,7 +1,6 @@
 import { Anwesenheiten, ANWESENHEITEN, AnwesenheitTyp, updateStatus } from '@thesis/anwesenheiten'
 import { useEffect, useState } from "react";
 import { useSchuelerStore } from "../schueler/SchuelerStore";
-import type { Schueler } from "@thesis/schueler";
 import { AnwesenheitsstatusSelect } from "./AnwesenheitsstatusSelect";
 import { AnwesenheitsstatusDialog } from './AnwesenheitsstatusDialog';
 import { useQueryClient } from '@tanstack/react-query';
