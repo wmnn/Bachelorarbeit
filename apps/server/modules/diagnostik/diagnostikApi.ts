@@ -257,6 +257,19 @@ function validateDiagnostikInput(
         };
     }
 
+    if ((diagnostik.geeigneteKlassen ?? []).length == 0) {
+        return { 
+            success: false, 
+            message: 'Es müssen geeignete Klassenstufen definiert werden.' 
+        };
+    }
+    if ((diagnostik.kategorien ?? []).length == 0) {
+        return { 
+            success: false, 
+            message: 'Es müssen Kategorien definiert werden.' 
+        };
+    }
+
     if (!name || name.trim() === '') {
         return { 
             success: false, 
