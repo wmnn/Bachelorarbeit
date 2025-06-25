@@ -2,7 +2,7 @@ import { List } from "@/components/List"
 import { SchuelerErstellenDialog } from "../SchuelerErstellenDialog"
 import { SchuelerListItem } from "./SchuelerListItem"
 import { AnwesenheitTyp } from "@thesis/anwesenheiten"
-import { useState, type ReactNode } from "react"
+import { useEffect, useState, type ReactNode } from "react"
 import type { Schueler } from "@thesis/schueler"
 import { SchuelerListHeader } from "./SchuelerListHeader"
 import { Input } from "@/components/Input"
@@ -35,6 +35,10 @@ export const SchuelerList = (props: SchuelerListProps ) => {
       prev[current.id ?? -1] = true
       return prev;
     }, {} as Record<number, boolean>));
+
+    useEffect(() => {
+      setSchueler(props.schueler)
+    }, [props.schueler])
  
     function search(query: string) {
       setSchueler((_) => {

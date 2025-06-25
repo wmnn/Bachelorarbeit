@@ -1,6 +1,5 @@
 import { ANWESENHEITEN, AnwesenheitTyp, deleteStatus, updateStatus } from "@thesis/anwesenheiten";
 import { useSchuelerStore } from "../schueler/SchuelerStore";
-import type { Schueler } from "@thesis/schueler";
 import { Tooltip } from "../Tooltip";
 import { useQueryClient } from "@tanstack/react-query";
 import { SCHUELER_QUERY_KEY } from "@/reactQueryKeys";
@@ -8,7 +7,6 @@ import { SCHUELER_QUERY_KEY } from "@/reactQueryKeys";
 export function GeprüftCheckbox ({ schuelerId, typ }: { schuelerId: number, typ: AnwesenheitTyp }) {
 
     const getSchueler = useSchuelerStore(store => store.getSchueler)
-    const setSingleSchueler = useSchuelerStore(store => store.setSingleSchueler)
     const schueler = getSchueler(schuelerId)
     const queryClient = useQueryClient()
     if (!schueler) return <p>Fehler</p>
@@ -25,35 +23,13 @@ export function GeprüftCheckbox ({ schuelerId, typ }: { schuelerId: number, typ
         if (isChecked) {
             const res = await deleteStatus(schuelerId, typ, date);
             if (res?.success) {
-                queryClient.invalidateQueries({ queryKey: [SCHUELER_QUERY_KEY]}) // TODO
-                // if (typ === AnwesenheitTyp.GANZTAG) {
-                //     setSingleSchueler(schuelerId, {
-                //         ...schueler,
-                //         heutigerGanztagAnwesenheitsstatus: undefined
-                //     } as Schueler)
-                // } else {
-                //     setSingleSchueler(schuelerId, {
-                //         ...schueler,
-                //         heutigerSchultagAnwesenheitsstatus: undefined
-                //     } as Schueler)
-                // }
+                queryClient.invalidateQueries({ queryKey: [SCHUELER_QUERY_KEY]})
             }
         } else {
             const status = ANWESENHEITEN[0]
             const res = await updateStatus(schuelerId, status, typ, date, date)
             if (res?.success) {
-                queryClient.invalidateQueries({ queryKey: [SCHUELER_QUERY_KEY]}) // TODO
-                // if (typ === AnwesenheitTyp.GANZTAG) {
-                //     setSingleSchueler(schuelerId, {
-                //         ...schueler,
-                //         heutigerGanztagAnwesenheitsstatus: status
-                //     } as Schueler)
-                // } else {
-                //     setSingleSchueler(schuelerId, {
-                //         ...schueler,
-                //         heutigerSchultagAnwesenheitsstatus: status
-                //     } as Schueler)
-                // }
+                queryClient.invalidateQueries({ queryKey: [SCHUELER_QUERY_KEY]})
             }
         }
     }

@@ -3,7 +3,7 @@ import { Table, TableBody, TableHead, TableHeader, TableRow } from "../ui/table"
 import { useRollenStore } from "./RollenStore";
 import { UserTableEntry } from "./UserTableEntry";
 import { Description } from "../Description";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "../Input";
 
 interface UserTableProps {
@@ -16,6 +16,10 @@ export function UserTable({ users: initialUsers }: UserTableProps) {
     const rollen = useRollenStore((state) => state.rollen);
     const [users, setUsers] = useState(initialUsers);
     const [query, setQuery] = useState('');
+
+    useEffect(() => {
+      setUsers(initialUsers)
+    }, [initialUsers])
 
     if (!rollen) return;
 

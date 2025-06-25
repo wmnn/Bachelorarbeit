@@ -4,6 +4,8 @@ import { useSchuelerStore } from "../schueler/SchuelerStore";
 import type { Schueler } from "@thesis/schueler";
 import { AnwesenheitsstatusSelect } from "./AnwesenheitsstatusSelect";
 import { AnwesenheitsstatusDialog } from './AnwesenheitsstatusDialog';
+import { useQueryClient } from '@tanstack/react-query';
+import { SCHUELER_QUERY_KEY } from '@/reactQueryKeys';
 
 interface AnwesenheitsstatusSchuelerListSelectProps { 
     schuelerId: number, 
@@ -14,9 +16,9 @@ export function AnwesenheitsstatusSchuelerListSelect ({ schuelerId, typ }: Anwes
     const [_, setIsLoading] = useState(false);
  
     const schueler = useSchuelerStore(store => store.getSchueler(schuelerId))
-    const setSingleSchueler = useSchuelerStore(store => store.setSingleSchueler)
     const [selected, setSelected] = useState(getInitialAnwesenheit());
     const startDatum = new Date().toISOString().split('T')[0];
+    const queryClient = useQueryClient()
     
     const [isFehltEntschuldigtDialogShown, setIsFehltEntschuldigtDialogShown] = useState(false);
 
@@ -39,17 +41,7 @@ export function AnwesenheitsstatusSchuelerListSelect ({ schuelerId, typ }: Anwes
 
         if (res?.success) {
             setSelected(status)
-            if (typ === AnwesenheitTyp.GANZTAG) {
-                setSingleSchueler(schuelerId, {
-                    ...schueler,
-                    heutigerGanztagAnwesenheitsstatus: (status)
-                } as Schueler)
-            } else {
-                setSingleSchueler(schuelerId, {
-                    ...schueler,
-                    heutigerSchultagAnwesenheitsstatus: (status)
-                } as Schueler)
-            }
+            queryClient.invalidateQueries({ queryKey: [SCHUELER_QUERY_KEY]})
         }
         
         setIsLoading(false)

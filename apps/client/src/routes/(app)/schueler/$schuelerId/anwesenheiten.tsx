@@ -1,11 +1,16 @@
+import { AnwesenheitsstatusDialog } from '@/components/anwesenheitsstatus/AnwesenheitsstatusDialog';
+import { useAnwesenheiten } from '@/components/anwesenheitsstatus/useUnterrichtAnwesenheiten';
 import { getColor } from '@/components/anwesenheitsstatus/util';
+import { ButtonLight } from '@/components/ButtonLight';
+import { useAllSchueler } from '@/components/schueler/useSchueler';
 import { Tooltip } from '@/components/Tooltip';
 import { SchuelerNav } from '@/layout/SchuelerNav';
+import { ANWESENHEITEN_QUERY_KEY } from '@/reactQueryKeys';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router'
-import { Anwesenheiten, AnwesenheitenLabels, AnwesenheitTyp, getAnwesenheiten } from '@thesis/anwesenheiten';
+import { ANWESENHEITEN, Anwesenheiten, AnwesenheitenLabels, AnwesenheitTyp, getAnwesenheiten } from '@thesis/anwesenheiten';
 import { getSchuljahr, type Schuljahr } from '@thesis/schule';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export const Route = createFileRoute(
   '/(app)/schueler/$schuelerId/anwesenheiten',
@@ -17,30 +22,29 @@ function RouteComponent() {
 
   const { schuelerId } = Route.useParams();
   const [schuljahr, _] = useState<Schuljahr>(getSchuljahr(new Date()));
+  const [isDialogShown, setIsDialogShown] = useState(false)
+  const [typ, setTyp] = useState(AnwesenheitTyp.GANZTAG)
 
-  const { isPending, data: schultagAnwesenheiten } = useQuery({
-      queryKey: ['sadnkajsd', schuelerId, schuljahr, AnwesenheitTyp.UNTERRICHT],
-      queryFn: ({ queryKey }) => {
-      const [_key, schuelerId, schuljahr, typ] = queryKey as [string, string, Schuljahr, AnwesenheitTyp];
-          return getAnwesenheiten(parseInt(schuelerId), schuljahr as Schuljahr, typ);
-      },
-      initialData: undefined,
-      staleTime: 0
-  });
+  const { query: unterrichtQuery } = useAnwesenheiten(parseInt(schuelerId), AnwesenheitTyp.UNTERRICHT)
+  const { query: ganztagQuery } = useAnwesenheiten(parseInt(schuelerId), AnwesenheitTyp.GANZTAG)
 
-  const { isPending: isPending2, data: ganztagAnwesenheiten } = useQuery({
-      queryKey: ['sadnkajsdsad', schuelerId, schuljahr, AnwesenheitTyp.GANZTAG],
-      queryFn: ({ queryKey }) => {
-      const [_key, schuelerId, schuljahr, typ] = queryKey as [string, string, Schuljahr, AnwesenheitTyp];
-          return getAnwesenheiten(parseInt(schuelerId), schuljahr as Schuljahr, typ);
-      },
-      initialData: undefined,
-      staleTime: 0
-  });
+  const schuelerQuery = useAllSchueler()
 
-  if (isPending || isPending2) {
+  let schultagAnwesenheiten = unterrichtQuery.data;
+  let ganztagAnwesenheiten = ganztagQuery.data
+
+  useEffect(() => {
+    schultagAnwesenheiten = unterrichtQuery.data
+  }, [unterrichtQuery.data])
+
+  useEffect(() => {
+    ganztagAnwesenheiten = ganztagQuery.data
+  }, [ganztagQuery.data])
+
+  if (unterrichtQuery.isPending || ganztagQuery.isPending || schuelerQuery.isPending) {
     return <p>...Loading</p>
   }
+  
   if (!schultagAnwesenheiten || !ganztagAnwesenheiten) {
     return <p>Fehler</p>
   }
@@ -48,13 +52,32 @@ function RouteComponent() {
   return <div className='w-full'>
     <SchuelerNav schuelerId={schuelerId} />
     <div className='flex flex-col pl-8'>
+      {
+        isDialogShown && <AnwesenheitsstatusDialog 
+          closeDialog={() => setIsDialogShown(false)} 
+          schuelerId={parseInt(schuelerId)}
+          initial={ANWESENHEITEN[0]}
+          typ={typ}
+        />
+      }
 
       <h2>Unterricht</h2>
-
+      <ButtonLight onClick={() => { 
+        setTyp(AnwesenheitTyp.UNTERRICHT)
+        setIsDialogShown(true)
+      }}>
+        Aktualisieren
+      </ButtonLight>
       <DataDisplay data={schultagAnwesenheiten}/>
       <AnwesenheitenGrid data={schultagAnwesenheiten} schuljahr={schuljahr} />
 
       <h2>Ganztag</h2>
+      <ButtonLight onClick={() => { 
+        setTyp(AnwesenheitTyp.GANZTAG)
+        setIsDialogShown(true)
+      }}>
+        Aktualisieren
+      </ButtonLight>
       <DataDisplay data={ganztagAnwesenheiten}/>
       <AnwesenheitenGrid data={ganztagAnwesenheiten} schuljahr={schuljahr} />
     </div>

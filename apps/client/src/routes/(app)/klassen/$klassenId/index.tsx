@@ -9,6 +9,7 @@ import { useSchuelerStore } from '@/components/schueler/SchuelerStore';
 import { AnwesenheitTyp } from '@thesis/anwesenheiten';
 import { useKlasse } from '@/components/shared/useKlasse';
 import { useAllSchueler } from '@/components/schueler/useSchueler';
+import { memo, useMemo } from 'react';
 
 export const Route = createFileRoute('/(app)/klassen/$klassenId/')({
   component: RouteComponent,
@@ -23,12 +24,12 @@ function RouteComponent() {
   const klasseQuery = useKlasse(parseInt(klassenId))
   const schuelerQuery = useAllSchueler()
 
+  const klasse = useMemo(() => klasseQuery.data, [klasseQuery.data])
+  console.log(klasse)
 
   if (klasseQuery.isPending || schuelerQuery.isPending) {
     return <p>Loading...</p>
   }
-
-  const klasse = klasseQuery.data
 
   const BackButton = <button onClick={() => router.history.back()}>
     <MoveLeft />

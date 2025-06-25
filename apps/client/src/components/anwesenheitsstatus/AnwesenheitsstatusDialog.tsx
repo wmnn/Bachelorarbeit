@@ -3,8 +3,10 @@ import { DialogWithButtons } from "../dialog/DialogWithButtons"
 import { Input } from "../Input"
 import { AnwesenheitsstatusSelect } from "./AnwesenheitsstatusSelect"
 import { useSchuelerStore } from "../schueler/SchuelerStore"
-import { useState } from "react"
-import type { Schueler } from "@thesis/schueler"
+import { useEffect, useState } from "react"
+import { useQueryClient } from "@tanstack/react-query"
+import { SCHUELER_QUERY_KEY } from "@/reactQueryKeys"
+import { useAnwesenheiten } from "./useUnterrichtAnwesenheiten"
 
 export const AnwesenheitsstatusDialog = ({
     closeDialog,
@@ -19,15 +21,20 @@ export const AnwesenheitsstatusDialog = ({
 }) => {
 
     const heute = new Date().toISOString().split('T')[0];
-    const [selected, setSelected] = useState(getInitialAnwesenheit());
+    const [selected, setSelected] = useState(ANWESENHEITEN[0]);
     const [startDatum, setStartDatum] = useState(heute);
     const [endDatum, setEndDatum] = useState(heute);
-    const setSingleSchueler = useSchuelerStore(store => store.setSingleSchueler)
     const schueler = useSchuelerStore(store => store.getSchueler(schuelerId))
+    const { invalidate } = useAnwesenheiten(schuelerId, typ)
+    const queryClient = useQueryClient()
 
-    // useEffect(() => {
-    //         setSelected(getInitialAnwesenheit())
-    //     }, [schueler?.heutigerGanztagAnwesenheitsstatus, schueler?.heutigerSchultagAnwesenheitsstatus])
+    useEffect(() => {
+        if (!schueler) {
+            return;
+        }
+        setSelected(getInitialAnwesenheit())
+
+    }, [schueler])
 
     function getInitialAnwesenheit() {
         if (initial) {
@@ -43,18 +50,13 @@ export const AnwesenheitsstatusDialog = ({
     async function handleSubmit() {
         const res = await updateStatus(schuelerId, selected, typ, startDatum, endDatum)
         const isTodayInDateRange = heute >= startDatum && heute <= endDatum;
-        if (res?.success && isTodayInDateRange) {
-            if (typ === AnwesenheitTyp.GANZTAG) {
-                setSingleSchueler(schuelerId, {
-                    ...schueler as Schueler,
-                    heutigerGanztagAnwesenheitsstatus: (selected)
-                })
-            } else {
-                setSingleSchueler(schuelerId, {
-                    ...schueler as Schueler,
-                    heutigerSchultagAnwesenheitsstatus: (selected)
-                })
-            }
+
+        if (isTodayInDateRange) {
+            queryClient.invalidateQueries({ queryKey: [SCHUELER_QUERY_KEY]})
+        }
+    
+        if (res?.success) {
+            invalidate()
         }
         closeDialog()
     }

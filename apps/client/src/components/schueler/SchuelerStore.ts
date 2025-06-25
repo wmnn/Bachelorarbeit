@@ -6,7 +6,6 @@ import { persist, createJSONStorage } from 'zustand/middleware'
 type SchuelerStoreData = {
 	schueler: Schueler[],
     setSchueler: (fn: (prev: Schueler[]) => Schueler[]) => void,
-    setSingleSchueler: (schuelerId: number, schueler: Schueler) => void,
     getSchueler: (schuelerId: number) => Schueler | undefined
 }
 
@@ -19,11 +18,6 @@ export const useSchuelerStore = create<SchuelerStoreData>()(persist(
         getSchueler: (schuelerId) => {
             return get().schueler.find(o => o.id === schuelerId)
         },
-        setSingleSchueler: (schuelerId, updatedSchueler) => set(() => {
-            return {
-                schueler: [...get().schueler.filter(o => o.id !== schuelerId), updatedSchueler]
-            }
-        })
     }), {
         name: SCHUELER_QUERY_KEY, 
         storage: createJSONStorage(() => sessionStorage),
