@@ -16,7 +16,7 @@ export function List(props: ListProps ) {
 
         { header }
 
-        <ul className='flex flex-col gap-2 border-[1px] border-gray-200 rounded-2xl divide-y divide-gray-200 w-full overflow-visible max-h-[80vh]'>
+        <ul className='flex flex-col gap-2 border-[1px] border-gray-200 rounded-2xl divide-y divide-gray-200 w-full overflow-y-scroll max-h-[80vh]'>
           { children }
         </ul>
 
