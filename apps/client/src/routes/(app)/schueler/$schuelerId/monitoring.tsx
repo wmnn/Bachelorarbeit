@@ -29,6 +29,10 @@ function RouteComponent() {
         <ul className='flex flex-col gap-8 w-full'>
           {
             diagnostiken.map(diagnostik => {
+
+              if ((diagnostik.ergebnisse ?? []).length == 0) {
+                return;
+              }
               return <li className='border-black border-[1px] rounded-xl p-4 flex flex-col gap-4'>
 
                   <h2>Diagnostik: {diagnostik.name}</h2>
