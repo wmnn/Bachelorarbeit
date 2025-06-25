@@ -16,15 +16,14 @@ export const KuchenDiagramm = ({ data: initialData, diagnostik }: { data: Row[],
     const [data, setData] = useState(initialData)
     const dates = getDates(data)
     const [date, setDate] = useState(dates[dates.length - 1] ?? '');
-
-    const {
-        mindeststandardErreicht,
-        mindeststandardNichtErreicht
-     } = getMindeststandardResults(mindeststandard, data, date)
-
     const id = 'pie'
 
     useEffect(() => {
+
+        const {
+            mindeststandardErreicht,
+            mindeststandardNichtErreicht
+        } = getMindeststandardResults(mindeststandard, data, date)
 
         let chart = Chart.getChart(id); 
         if (chart != undefined) {
