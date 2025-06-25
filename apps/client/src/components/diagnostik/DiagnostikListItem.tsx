@@ -192,13 +192,7 @@ export const DiagnostikListItem = ({ diagnostik, isShared = false }: DiagnostikL
                                 }).map(user => <SelectItem value={`${user.id}`}>
                                     {user.vorname} {user.nachname}    
                                 </SelectItem>)
-                            }
-                            <SelectItem value={`${Sichtbarkeit.PRIVAT}`}>
-                                privat    
-                            </SelectItem>  
-                            <SelectItem value={`${Sichtbarkeit.ÖFFENTLICH}`}>
-                                öffentlich
-                            </SelectItem>                 
+                            }             
                         </SelectContent>
                     </Select>  
                 }
