@@ -51,7 +51,7 @@ export const KuchenDiagramm = ({ data: initialData, diagnostik }: { data: Row[],
                 }
             });
         }
-    }, [date, data])
+    }, [date, data, initialData])
     return <>
         <h1>Kuchendiagramm der letzten Auswertung</h1>
         <Select 
