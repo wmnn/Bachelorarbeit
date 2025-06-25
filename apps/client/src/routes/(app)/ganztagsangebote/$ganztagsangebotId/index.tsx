@@ -4,6 +4,7 @@ import { GanztagsangebotLoeschenDialog } from '@/components/ganztagsangebot/Ganz
 import { DeleteIcon } from '@/components/icons/DeleteIcon'
 import { SchuelerList } from '@/components/schueler/SchuelerList/SchuelerList'
 import { useSchuelerStore } from '@/components/schueler/SchuelerStore'
+import { useAllSchueler } from '@/components/schueler/useSchueler'
 import { useSchuljahrStore } from '@/components/schuljahr/SchuljahrStore'
 import { GANZTAGSANGEBOT_QUERY_KEY } from '@/reactQueryKeys'
 import { useQuery } from '@tanstack/react-query'
@@ -26,6 +27,7 @@ function RouteComponent() {
   
   const schuljahr = useSchuljahrStore(state => state.ausgewaeltesSchuljahr)
   const schueler = useSchuelerStore(state => state.schueler)
+  useAllSchueler()
   const users = useUserStore(state => state.users)
   const setUsers = useUserStore(state => state.setUsers)
   const halbjahr = useSchuljahrStore(state => state.ausgewaeltesHalbjahr)
@@ -115,8 +117,6 @@ function RouteComponent() {
               typ={AnwesenheitTyp.GANZTAG}
               schueler={schueler.filter((item) => ganztagsangebot?.schueler?.includes(item.id ?? -1))}
             />
-          
-    
           </div>
           
     

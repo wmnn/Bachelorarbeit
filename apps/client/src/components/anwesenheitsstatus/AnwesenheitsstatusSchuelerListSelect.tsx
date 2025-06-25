@@ -48,7 +48,7 @@ export function AnwesenheitsstatusSchuelerListSelect ({ schuelerId, typ }: Anwes
 
     useEffect(() => {
         setSelected(getInitialAnwesenheit())
-    }, [schueler?.heutigerGanztagAnwesenheitsstatus, schueler?.heutigerSchultagAnwesenheitsstatus])
+    }, [schueler?.heutigerGanztagAnwesenheitsstatus, schueler?.heutigerSchultagAnwesenheitsstatus, schueler])
     
 
     return <>
