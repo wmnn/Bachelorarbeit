@@ -7,6 +7,7 @@ import { userContext } from "@/context/UserContext";
 
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { login } from "@thesis/auth"
+import { Berechtigung } from "@thesis/rollen";
 import { useContext, useState } from "react";
 
 export const Route = createFileRoute('/(auth)/login/')({
@@ -35,14 +36,20 @@ export default function Login () {
             return;
         }
   
-        if (user.rolle && typeof user.rolle === "string") {
+        if (user.rolle !== undefined && typeof user.rolle === "string") {
             return;
         }
         setUser(user);
 
-        navigate({
-            to: "/diagnostikverfahren"
-        })
+        if (user.rolle !== undefined && user.rolle.berechtigungen[Berechtigung.DiagnostikverfahrenRead] != 'keine') {
+            navigate({
+                to: "/diagnostikverfahren"
+            })
+        } else {
+            navigate({
+                to: "/settings"
+            })
+        }
     }
     return <AuthForm>
             <label>Email</label>

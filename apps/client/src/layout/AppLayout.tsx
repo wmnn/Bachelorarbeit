@@ -16,7 +16,7 @@ export const AppLayout = () => {
     const { user } = useContext(userContext)
 
     if (typeof user?.rolle === "string") {
-        return;
+        return <p>Ein Fehler ist aufgetreten. Kontaktieren Sie den Admin. (Fehler: AppLayout)</p>;
     }
 
     async function handleLogout() {

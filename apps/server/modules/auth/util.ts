@@ -29,12 +29,15 @@ export async function searchUser<T extends Berechtigung>(query: string, berechti
 }
 
 export const addRoleDataToUser = async (user: User) => {
-    if (!user.rolle) {
+    if (user.rolle == undefined || typeof user.rolle !== 'string') {
         return user;
     }
-
-    if (typeof user.rolle !== 'string') {
-        return user;
+    if (user.rolle == '') {
+        let tmp = {
+            ...user
+        }
+        delete tmp['rolle']
+        return tmp;
     }
 
     const roles = await getAuthStore().getRoles();

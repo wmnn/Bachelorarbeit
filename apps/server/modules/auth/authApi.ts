@@ -34,7 +34,7 @@ import { countUsersWithPermission, searchUser } from './util';
 import { addRoleDataToUser } from '../auth/util';
 import { Berechtigung } from '@thesis/rollen';
 import { getAuthStore } from '../../singleton';
-import { getErrorResponse, getNoSessionResponse } from './permissionsUtil';
+import { getErrorResponse, getInternalErrorResponse, getNoSessionResponse } from './permissionsUtil';
 
 const cookieKey = fs.readFileSync(
     path.join(__dirname, '../../../../cookie_signing.key'),
@@ -192,7 +192,6 @@ router.post(
 
         res = await createSession(res, user);
         user = await addRoleDataToUser(user);
-
         res.status(200).json({
             success: true,
             user,
@@ -319,11 +318,13 @@ async function updateRoleHandling(req: Request, updatedUser: User, res: Response
 
     // Rolle entfernen handling
     if (parseInt(updatedUser?.rolle as string ?? '-1') == -1) {
-        const msg = await getAuthStore().updateUser(updatedUser.id ?? -1, undefined, undefined, undefined, undefined, '', undefined, undefined)
-        return res.status(200).json({
+        const { success } = await getAuthStore().updateUser(updatedUser.id ?? -1, undefined, undefined, undefined, undefined, '', undefined, undefined)
+        const { success: success2 } = await getAuthStore().removeSessionForUser(updatedUser.id ?? -1)
+        if (success && success2) return res.status(200).json({
             success: true,
             message: 'Die Rolle wurde erfolgreich entfernt.'
         });
+        return getInternalErrorResponse(res)
     }
 
     // Mindestens eine Person muss über die Rolle zur Verwaltung von Rollen verfügen.
@@ -338,7 +339,8 @@ async function updateRoleHandling(req: Request, updatedUser: User, res: Response
     }
     
     const msg = await getAuthStore().updateUser(updatedUser.id ?? -1, undefined, undefined, undefined, undefined, updatedUser.rolle as string, undefined, undefined)
-    
+    await getAuthStore().removeSessionForUser(updatedUser.id ?? -1)
+    /*
     const sessions = await getAuthStore().getSessions()
     let success = msg.success
     for (const session of sessions) {
@@ -346,7 +348,7 @@ async function updateRoleHandling(req: Request, updatedUser: User, res: Response
             success = success && await getAuthStore().removeSession(session.sessionId)
             break;
         }
-    }
+    }*/
 
     return res.status(200).json(msg);
 }
