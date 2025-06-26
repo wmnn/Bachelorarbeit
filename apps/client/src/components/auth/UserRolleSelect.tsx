@@ -17,7 +17,6 @@ export function UserRolleSelect({ user, rollen, setIsLoading }: UserDialogProps)
     const [msg, setMsg] = useState('')
 
     return <div className="grow">
-
         {
             isDialogShown && <ErrorDialog message={msg} closeDialog={() => setIsDialogShown(false)}/>
         }
@@ -42,6 +41,14 @@ export function UserRolleSelect({ user, rollen, setIsLoading }: UserDialogProps)
                         return <SelectItem key={user.email + rolle.rolle} value={rolle.rolle == '' ? 'FEHLER' : rolle.rolle}>{rolle.rolle}</SelectItem>                                                            
                     })
                 }
+                {
+                    user.rolle && user.rolle !== undefined 
+                    && (
+                        (typeof user.rolle == 'string' &&  user.rolle != '') || 
+                        (user.rolle as Rolle).rolle != ''
+                    ) 
+                    && <SelectItem value={'-1'}>Rolle entfernen</SelectItem>   
+                }                                                       
             </SelectContent>
         </Select>     
     </div>

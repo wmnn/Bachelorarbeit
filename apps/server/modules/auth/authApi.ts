@@ -317,6 +317,15 @@ async function updateRoleHandling(req: Request, updatedUser: User, res: Response
         })
     }
 
+    // Rolle entfernen handling
+    if (parseInt(updatedUser?.rolle as string ?? '-1') == -1) {
+        const msg = await getAuthStore().updateUser(updatedUser.id ?? -1, undefined, undefined, undefined, undefined, '', undefined, undefined)
+        return res.status(200).json({
+            success: true,
+            message: 'Die Rolle wurde erfolgreich entfernt.'
+        });
+    }
+
     // Mindestens eine Person muss über die Rolle zur Verwaltung von Rollen verfügen.
     const berechtigung = Berechtigung.RollenVerwalten
     const count = await countUsersWithPermission(berechtigung, true)
