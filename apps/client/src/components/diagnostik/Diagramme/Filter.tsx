@@ -116,7 +116,7 @@ export const Filter = ({ initialData, data, setData, diagnostik}: {
                         })
                     }
                 </DropdownMenuContent>
-              </DropdownMenu>
+        </DropdownMenu>
 
 
     </div>

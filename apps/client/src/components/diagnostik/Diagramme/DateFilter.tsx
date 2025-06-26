@@ -13,10 +13,22 @@ export const DateFilter = (props: DateFilterProps) => {
         <label>
             Max. datum:
         </label>
-        <Input type='date' value={minDate} onChange={(e) => setMinDate(e.target.value)} />
+        <Input type='date' value={minDate} onChange={(e) => {
+            const newVal = e.target.value
+            if (newVal !== undefined && maxDate !== undefined && new Date(newVal) > new Date(maxDate)) {
+                return alert('Das Datum darf nicht größer sein als max. Datum.')
+            } 
+            setMinDate(e.target.value)}
+        } />
         <label>
             Min. datum:
         </label>
-        <Input type='date' value={maxDate} onChange={(e) => setMaxDate(e.target.value)} />
+        <Input type='date' value={maxDate} onChange={(e) => {
+            const newVal = e.target.value
+            if (newVal !== undefined && minDate !== undefined && new Date(newVal) < new Date(minDate)) {
+                return alert('Das Datum darf nicht kleiner sein als min. Datum.')
+            } 
+            setMaxDate(e.target.value)
+        }} />
     </div>
 }
