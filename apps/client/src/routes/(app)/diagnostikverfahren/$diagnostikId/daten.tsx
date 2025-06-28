@@ -119,29 +119,37 @@ const Table = ({ data }: { data: Row[]}) => {
     </div> */}
 
   
-    <div className="overflow-x-scroll mb-8">
-      <table className="min-w-full table-auto ">
-        <tbody>
-          <tr className='text-nowrap'>
-            {header.map(item => <th key={item}>{item.includes('-') ? new Date(item).toLocaleDateString('de') : item}</th>)}
-        
+    <div className="overflow-x-auto mb-8">
+      <table className="min-w-full table-fixed border border-gray-300 text-sm">
+        <thead>
+          <tr className="bg-gray-100">
+            {header.map(item => (
+              <th
+                key={item}
+                className="border border-gray-300 px-4 py-2 text-center font-medium"
+              >
+                {item.includes('-') ? new Date(item).toLocaleDateString('de') : item}
+              </th>
+            ))}
           </tr>
-
-        
-          {
-            rows.map(row => <tr key={row.schuelerId}>
-              { row.ergebnisse.map((ergebnis, idx) => {
-                if (idx == 0) {
-                  return <td key={idx}>{ergebnis.ergebnis}</td>
-                }
-                return <td key={idx} className=''><p className='w-[100px] text-center'>{ergebnis.ergebnis}</p></td>
-                // return <td key={idx}><Input className='w-[100px]' value={ergebnis.ergebnis} /></td>
-              }) }
-            </tr>)
-          } 
+        </thead>
+        <tbody>
+          {rows.map((row, rowIndex) => (
+            <tr key={row.schuelerId} className={rowIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+              {row.ergebnisse.map((ergebnis, idx) => (
+                <td
+                  key={idx}
+                  className="border border-gray-300 px-4 py-2 text-center"
+                >
+                  {ergebnis.ergebnis}
+                </td>
+              ))}
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
+
 
     <ButtonLight onClick={handleDownload}>Export</ButtonLight>
   
