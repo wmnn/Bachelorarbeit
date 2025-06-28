@@ -1,4 +1,4 @@
-import { KLASSEN_ENDPOINT } from '@thesis/config'
+import { handleRedirection, KLASSEN_ENDPOINT } from '@thesis/config'
 import type { Halbjahr, Klasse, KlassenVersion, Schuljahr } from '../models';
 import type { User } from '@thesis/auth'
 
@@ -11,11 +11,13 @@ export const getKlasse = async (schuljahr: Schuljahr, halbjahr: Halbjahr, klasse
             },
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+                
+        if (res.status === 401) {
+            handleRedirection(data.redirect)
         }
     
-        return await res.json() as Klasse;
+        return data as Klasse;
         
     } catch (e) {
         return undefined
@@ -32,11 +34,13 @@ export const getKlassen = async (schuljahr: Schuljahr, halbjahr: Halbjahr) => {
             },
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+        
+        if (res.status === 401) {
+            handleRedirection(data.redirect)
         }
     
-        return await res.json() as Klasse[];
+        return data as Klasse[];
         
     } catch (e) {
         return [];
@@ -66,11 +70,13 @@ export const createKlasse = async (klassen: KlassenVersion[], klassenlehrer: Use
             } as CreateClassRequestBody)
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+        
+        if (res.status === 401) {
+            handleRedirection(data.redirect)
         }
     
-        return await res.json() as CreateClassResponseBody;
+        return data as CreateClassResponseBody;
         
     } catch (e) {
         return {
@@ -93,11 +99,13 @@ export const editKlasse = async (klassen: KlassenVersion[], klassenlehrer: User[
             } as CreateClassRequestBody)
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+        
+        if (res.status === 401) {
+            handleRedirection(data.redirect)
         }
     
-        return await res.json() as CreateClassResponseBody;
+        return data as CreateClassResponseBody;
         
     } catch (e) {
         return {
@@ -133,11 +141,13 @@ export const deleteKlasse = async (klassenId: number, schuljahr: Schuljahr, halb
             },
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+        
+        if (res.status === 401) {
+            handleRedirection(data.redirect)
         }
     
-        return await res.json() as DeleteKlasseResponseBody;
+        return data as DeleteKlasseResponseBody;
         
     } catch (e) {
         return {
@@ -174,11 +184,13 @@ export const importKlassen = async (klassen: ImportKlasse[], schuljahr: Schuljah
             body: JSON.stringify(klassen)
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+        
+        if (res.status === 401) {
+            handleRedirection(data.redirect)
         }
     
-        return await res.json();
+        return data
         
     } catch (e) {
         return [];

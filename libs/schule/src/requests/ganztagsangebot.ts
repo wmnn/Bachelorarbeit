@@ -1,4 +1,4 @@
-import { GANZTAGSANGEBOT_ENDPOINT } from '@thesis/config'
+import { GANZTAGSANGEBOT_ENDPOINT, handleRedirection } from '@thesis/config'
 import { type Ganztagsangebot } from '../models/ganztagsangebot';
 import type { Halbjahr, Schuljahr } from '../models';
 
@@ -12,11 +12,13 @@ export const getGanztagsangebot = async (schuljahr: Schuljahr, halbjahr: Halbjah
             },
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+                
+        if (res.status === 401) {
+            handleRedirection(data.redirect)
         }
     
-        return await res.json() as Ganztagsangebot | undefined;
+        return data as Ganztagsangebot | undefined;
         
     } catch (e) {
         return undefined
@@ -32,11 +34,13 @@ export const getGanztagsangebote = async (schuljahr: Schuljahr, halbjahr: Halbja
             }
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+        
+        if (res.status === 401) {
+            handleRedirection(data.redirect)
         }
     
-        return await res.json() as Ganztagsangebot[];
+        return data as Ganztagsangebot[];
         
     } catch (e) {
         return []
@@ -61,11 +65,13 @@ export const createGanztagsangebot = async (ganztagsangebot: Ganztagsangebot) =>
             body: JSON.stringify(ganztagsangebot)
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+        
+        if (res.status === 401) {
+            handleRedirection(data.redirect)
         }
     
-        return await res.json() as CreateGanztagsangebotResponseBody;
+        return data as CreateGanztagsangebotResponseBody;
         
     } catch (e) {
         return {
@@ -85,11 +91,13 @@ export const editGanztagsangebot = async (ganztagsangebot: Ganztagsangebot, schu
             body: JSON.stringify(ganztagsangebot)
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+        
+        if (res.status === 401) {
+            handleRedirection(data.redirect)
         }
     
-        return await res.json();
+        return data
         
     } catch (e) {
         return {
@@ -121,11 +129,13 @@ export const deleteGanztagsangebot = async (ganztagsangebotId: number) => {
             },
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+        
+        if (res.status === 401) {
+            handleRedirection(data.redirect)
         }
     
-        return await res.json() as DeleteGanztagsangebotResponseBody;
+        return data as DeleteGanztagsangebotResponseBody;
         
     } catch (e) {
         return {

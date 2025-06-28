@@ -1,4 +1,5 @@
 import { LoginRedirectAction } from "../../../auth/src"
+import { handleRedirection } from "../../../config/config"
 import { type Rolle } from "../models/role"
 
 export const ROLLE_ENDPOINT = '/api/role'
@@ -19,11 +20,13 @@ export const createRole = async (rolle: Rolle) => {
             },
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+                
+        if (res.status === 401) {
+            handleRedirection(data.redirect)
         }
     
-        return await res.json() as CreateRoleResponseBody;
+        return data as CreateRoleResponseBody;
         
     } catch (e) {
         return {
@@ -54,11 +57,13 @@ export const deleteRole = async (rolle: string) => {
             },
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+        
+        if (res.status === 401) {
+            handleRedirection(data.redirect)
         }
     
-        return await res.json() as DeleteRoleResponseBody;
+        return data as DeleteRoleResponseBody;
         
     } catch (e) {
         return {
@@ -95,11 +100,13 @@ export const updateRole = async (rollenbezeichnung: string, updated: Rolle) => {
             },
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+        
+        if (res.status === 401) {
+            handleRedirection(data.redirect)
         }
     
-        return await res.json() as UpdateRoleResponseBody;
+        return data as UpdateRoleResponseBody;
         
     } catch (e) {
         return {

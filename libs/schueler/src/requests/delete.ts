@@ -1,4 +1,4 @@
-import { SCHUELER_ENDPOINT } from "@thesis/config";
+import { handleRedirection, SCHUELER_ENDPOINT } from "@thesis/config";
 
 export interface DeleteSchuelerRequestBody {
    schuelerId: number
@@ -22,11 +22,13 @@ export const deleteSchueler = async (schuelerId: number) => {
             },
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+                
+        if (res.status === 401) {
+            handleRedirection(data.redirect)
         }
     
-        return await res.json() as DeleteSchuelerResponseBody;
+        return data as DeleteSchuelerResponseBody;
         
     } catch (e) {
         return {

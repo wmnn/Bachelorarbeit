@@ -27,7 +27,7 @@ export const createDiagnostik = async (diagnostik: Diagnostik, files: File[]) =>
         const data = await res.json();
 
         if (res.status === 401) {
-            return handleRedirection(data.redirect)
+            handleRedirection(data.redirect)
         }
     
         return data as CreateDiagnostikResponseBody
@@ -55,7 +55,7 @@ export const copyDiagnostik = async (diagnostikId: string) => {
         const data = await res.json();
 
         if (res.status === 401) {
-            return handleRedirection(data.redirect)
+            handleRedirection(data.redirect)
         }
     
         return data as CreateDiagnostikResponseBody
@@ -82,7 +82,7 @@ export const updateAuswertungsgrupen = async (diagnostikId: string, auswertungsg
         const data = await res.json();
 
         if (res.status === 401) {
-            return handleRedirection(data.redirect)
+            handleRedirection(data.redirect)
         }
     
         return data as CreateDiagnostikResponseBody
@@ -109,7 +109,7 @@ export const updateSichtbarkeit = async (diagnostikId: string, sichtbarkeit: Sic
         const data = await res.json();
 
         if (res.status === 401) {
-            return handleRedirection(data.redirect)
+            handleRedirection(data.redirect)
         }
     
         return data as CreateDiagnostikResponseBody
@@ -140,7 +140,7 @@ export const editDiagnostik = async (diagnostik: Diagnostik, files: File[]) => {
         const data = await res.json();
 
         if (res.status === 401) {
-            return handleRedirection(data.redirect)
+            handleRedirection(data.redirect)
         }
     
         return data as CreateDiagnostikResponseBody
@@ -170,7 +170,7 @@ export const getDiagnostiken = async (speicherTyp: DiagnostikTyp) => {
         const data = await res.json();
 
         if (res.status === 401) {
-            return handleRedirection(data.redirect)
+            handleRedirection(data.redirect)
         }
     
         return data as GetDiagnostikenResponseBody

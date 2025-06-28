@@ -1,4 +1,4 @@
-import { AUTH_API_ENDPOINT } from "@thesis/config"
+import { AUTH_API_ENDPOINT, handleRedirection } from "@thesis/config"
 import type { User } from "../models";
 import type { Rolle } from "@thesis/rollen";
 
@@ -18,11 +18,13 @@ export const getUsers = async () => {
             },
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+        
+        if (res.status === 401) {
+            handleRedirection(data.redirect)
         }
     
-        return await res.json() as UsersResponseBody;
+        return data as UsersResponseBody;
         
     } catch (e) {
         return undefined;
@@ -50,11 +52,13 @@ export const deleteUser = async (userId: number) => {
             },
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+        
+        if (res.status === 401) {
+            handleRedirection(data.redirect)
         }
     
-        return await res.json() as DeleteUserResponseBody;
+        return data as DeleteUserResponseBody;
         
     } catch (e) {
         return {
@@ -85,11 +89,13 @@ export const updateUser = async (user: User) => {
             },
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+        
+        if (res.status === 401) {
+            handleRedirection(data.redirect)
         }
     
-        return await res.json() as UpdateUserResponseBody;
+        return data as UpdateUserResponseBody;
         
     } catch (e) {
         return {
@@ -125,11 +131,13 @@ export const updatePassword = async (userId: number, password: string, newPasswo
             },
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+        
+        if (res.status === 401) {
+            handleRedirection(data.redirect)
         }
     
-        return await res.json() as UpdateUserResponseBody;
+        return data as UpdateUserResponseBody;
         
     } catch (e) {
         return {

@@ -1,4 +1,4 @@
-import { AUTH_API_ENDPOINT } from "@thesis/config"
+import { AUTH_API_ENDPOINT, handleRedirection } from "@thesis/config"
 import { Berechtigung, type Berechtigungen } from "@thesis/rollen"
 import { type User } from "../models"
 
@@ -32,11 +32,13 @@ export const searchUser = async <T extends Berechtigung>(
             },
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+        
+        if (res.status === 401) {
+            handleRedirection(data.redirect)
         }
     
-        return await res.json() as SearchUserResponseBody;
+        return data as SearchUserResponseBody;
         
     } catch (e) {
         return {

@@ -1,4 +1,4 @@
-import { SCHUELER_ENDPOINT } from "@thesis/config";
+import { handleRedirection, SCHUELER_ENDPOINT } from "@thesis/config";
 import type { Schueler } from "../models";
 
 export type EditSchuelerRequestBody = { } & Schueler
@@ -23,11 +23,13 @@ export const editSchueler = async (
             },
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+                
+        if (res.status === 401) {
+            handleRedirection(data.redirect)
         }
-
-        return await res.json() as EditSchuelerResponseBody;
+    
+        return data as EditSchuelerResponseBody;
     } catch (e) {
         return {
             success: false,

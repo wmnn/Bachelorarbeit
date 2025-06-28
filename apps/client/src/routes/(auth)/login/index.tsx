@@ -6,8 +6,7 @@ import { MainButton } from "@/components/MainButton";
 import { userContext } from "@/context/UserContext";
 
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { login, LoginRedirectAction } from "@thesis/auth"
-import { Berechtigung } from "@thesis/rollen";
+import { login } from "@thesis/auth"
 import { useContext, useState } from "react";
 import { handleRedirection } from "../../../../../../libs/config/config";
 
@@ -17,7 +16,6 @@ export const Route = createFileRoute('/(auth)/login/')({
 
 export default function Login () {
 
-    const navigate = useNavigate();
     const [email, setEmail] = useState<string>("")
     const [passwort, setPasswort] = useState<string>("")
     const [message, setMessage] = useState<string>("")

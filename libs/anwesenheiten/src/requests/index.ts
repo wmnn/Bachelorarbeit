@@ -1,4 +1,4 @@
-import { ANWESENHEITEN_ENDPOINT } from "../../../config/config";
+import { ANWESENHEITEN_ENDPOINT, handleRedirection } from "../../../config/config";
 import type { Anwesenheiten, AnwesenheitTyp } from "../models";
 import type { Schuljahr } from "@thesis/schule";
 
@@ -20,11 +20,13 @@ export const getAnwesenheiten = async (
             },
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+        
+        if (res.status === 401) {
+            handleRedirection(data.redirect)
         }
-
-        return await res.json() as AnwesenheitResponseData[];
+    
+        return data as AnwesenheitResponseData[];
     } catch (e) {
         return undefined;
     }
@@ -67,11 +69,13 @@ export const updateStatus = async (
             },
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+        
+        if (res.status === 401) {
+            handleRedirection(data.redirect)
         }
-
-        return await res.json() as UpdateStatusResBody;
+    
+        return data as UpdateStatusResBody;
     } catch (e) {
         return undefined;
     }
@@ -100,11 +104,13 @@ export const updateStatusBatch = async (
             },
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+        
+        if (res.status === 401) {
+            handleRedirection(data.redirect)
         }
-
-        return await res.json() as UpdateStatusResBody;
+    
+        return data as UpdateStatusResBody;
     } catch (e) {
         return undefined;
     }
@@ -135,11 +141,13 @@ export const deleteStatus = async (
             },
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+        
+        if (res.status === 401) {
+            handleRedirection(data.redirect)
         }
-
-        return await res.json() as UpdateStatusResBody;
+    
+        return data as UpdateStatusResBody;
     } catch (e) {
         return undefined;
     }

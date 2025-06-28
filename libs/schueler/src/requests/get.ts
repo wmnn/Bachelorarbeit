@@ -1,4 +1,4 @@
-import { SCHUELER_ENDPOINT } from "@thesis/config";
+import { handleRedirection, SCHUELER_ENDPOINT } from "@thesis/config";
 import type { Schueler } from '../models'
 
 export const getSchueler = async () => {
@@ -10,11 +10,13 @@ export const getSchueler = async () => {
             },
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+                
+        if (res.status === 401) {
+            handleRedirection(data.redirect)
         }
     
-        return await res.json() as Schueler[];
+        return data as Schueler[];
         
     } catch (e) {
         return [];
@@ -30,11 +32,13 @@ export const getSchuelerComplete = async (schuelerId: number) => {
             },
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+        
+        if (res.status === 401) {
+            handleRedirection(data.redirect)
         }
     
-        return await res.json() as Schueler | undefined;
+        return data as Schueler | undefined;
         
     } catch (e) {
         return undefined;

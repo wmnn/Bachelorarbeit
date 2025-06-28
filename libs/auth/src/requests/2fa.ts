@@ -17,11 +17,13 @@ export const setup2FactorAuthentication = async (): Promise<Setup2FactorAuthenti
             },
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+        
+        if (res.status === 401) {
+            handleRedirection(data.redirect)
         }
-
-        return await res.json() as Setup2FactorAuthenticationResponseBody;
+    
+        return data as Setup2FactorAuthenticationResponseBody;
         
     } catch (e) {
         return {
@@ -49,11 +51,13 @@ export const verify2FactorAuthentication = async (token: string): Promise<Verify
             })
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+        
+        if (res.status === 401) {
+            handleRedirection(data.redirect)
         }
-
-        return await res.json() as VerifyValidate2FactorAuthenticationResponseBody;
+    
+        return data as VerifyValidate2FactorAuthenticationResponseBody;
         
     } catch (e) {
         return {

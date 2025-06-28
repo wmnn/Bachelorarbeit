@@ -416,7 +416,6 @@ export class AuthStore {
             sessionData.createdAt,
             sessionData.expiresAt
         ]);
-        // console.log(result.affectedRows > 0)
 
         return result.affectedRows > 0;
     }

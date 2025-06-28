@@ -1,4 +1,4 @@
-import { AUTH_API_ENDPOINT, LOGOUT_ENDOINT } from "@thesis/config";
+import { AUTH_API_ENDPOINT, handleRedirection, LOGOUT_ENDOINT } from "@thesis/config";
 
 export const logout = async (): Promise<boolean> => {
 
@@ -10,11 +10,12 @@ export const logout = async (): Promise<boolean> => {
             },
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+        
+        if (res.status === 401) {
+            handleRedirection(data.redirect)
         }
-
-
+    
         return res.status === 200;
         
     } catch (e) {
