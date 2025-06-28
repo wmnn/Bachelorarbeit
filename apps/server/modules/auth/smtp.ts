@@ -39,3 +39,21 @@ export async function sendActivateAccountEmail(to: string, cbEndpoint: string) {
     }
 }
 
+export async function sendResetPasswordEmail(to: string, link: string) {
+    try {
+        // await getSmtpTransporter().sendMail({
+        //     from,
+        //     to,
+        //     subject: "Passwort zurücksetzen",
+        //     text: `Klick auf den Link um dein Passwort zurückzusetzen: ${link}`,
+        //     html: `<span>Klick auf den Link um dein Passwort zurückzusetzen: ${link}</span>`,
+        // });
+        console.log(link)
+
+        return true;
+    } catch (err) {
+        console.error("Error while sending mail", err);
+        return false;
+    }
+}
+

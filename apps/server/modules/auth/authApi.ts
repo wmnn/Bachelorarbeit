@@ -31,7 +31,7 @@ import { createHmac, randomUUID, timingSafeEqual } from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import jwt from 'jsonwebtoken'
-import { sendActivateAccountEmail } from './smtp';
+import { sendActivateAccountEmail, sendResetPasswordEmail } from './smtp';
 import { countUsersWithPermission, searchUser } from './util';
 import { addRoleDataToUser } from '../auth/util';
 import { Berechtigung } from '@thesis/rollen';
@@ -123,7 +123,11 @@ export const authMiddleware = async (
         });
     }
 
-    if (!sessionData.is2FaVerified && !req.originalUrl.startsWith(AUTH_2_FACTOR_API_ENDPOINT) && !req.originalUrl.startsWith(AUTH_API_ENDPOINT + LOGIN_ENDPOINT)) {
+    if (!sessionData.is2FaVerified 
+        && !req.originalUrl.startsWith(AUTH_2_FACTOR_API_ENDPOINT) 
+        && !req.originalUrl.startsWith(AUTH_API_ENDPOINT + LOGIN_ENDPOINT)
+        && !req.originalUrl.startsWith(AUTH_API_ENDPOINT + `/reset-password`)
+    ) {
         return res.status(401).json({
             success: false,
             message: 'Der 2-Faktor Authentifizierungscode wurde noch nicht überprüft.',
@@ -504,5 +508,82 @@ router.patch('/password', async (req: Request<{}, {}, UpdatePasswordRequestBody>
     res.status(200).json(dbMessage);
 });
 
+router.get('/reset-password', async (req: Request<{}, {}, any>, res: Response<any>): Promise<any> => {
+    const { email } = req.query
+    if (!email) return;
+
+    const token = jwt.sign({ email }, registerKey, { expiresIn: '10m'})
+    const link = `${req.get('host')}` + `/reset-password?token=${token}`
+    const success = await sendResetPasswordEmail(email as string, link)
+
+    if (success) {
+        res.status(200).json({
+            success: true,
+            message: 'Die Email wurde erfolgreich versendet.'
+        })
+    } else {
+        res.status(500).json({
+            success: false,
+            message: 'Ein Fehler beim Senden der Email ist aufgetreten.'
+        })
+    }
+})
+
+router.post('/reset-password', async (req: Request<{}, {}, any>, res: Response<any>): Promise<any> => {
+    const { token, neuesPasswort, neuesPasswortWiederholt } = req.body;
+
+    if (!token) {
+        return res.status(400).json({
+            success: false,
+            message: 'Token fehlt.'
+        });
+    }
+
+    if (!isValidPassword(neuesPasswort)) {
+        return res.status(400).json({
+            success: false,
+            message: 'Das Passwort erfüllt nicht die erforderlichen Kriterien.'
+        });
+    }
+
+    if (neuesPasswort !== neuesPasswortWiederholt) {
+        return res.status(400).json({
+            success: false,
+            message: 'Die Passwörter stimmen nicht überein.'
+        });
+    }
+
+    let decoded: any;
+    try {
+        decoded = jwt.verify(token, registerKey);
+    } catch (err) {
+        return res.status(401).json({
+            success: false,
+            message: 'Ungültiger oder abgelaufener Token.'
+        });
+    }
+
+    if (!decoded?.email) {
+        return res.status(400).json({
+            success: false,
+            message: 'Der Token enthält keine gültige E-Mail-Adresse.'
+        });
+    }
+
+    const user = await getAuthStore().getUser(decoded.email);
+    if (!user) {
+        return res.status(404).json({
+            success: false,
+            message: 'Der Benutzer wurde nicht gefunden.'
+        });
+    }
+
+    await getAuthStore().updateUser(user.id ?? -1, undefined, neuesPasswort);
+
+    return res.status(200).json({
+        success: true,
+        message: 'Das Passwort wurde erfolgreich zurückgesetzt.'
+    });
+});
 
 export { router };

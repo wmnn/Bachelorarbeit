@@ -13,6 +13,7 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as appRouteImport } from './routes/(app)/route'
 import { Route as IndexImport } from './routes/index'
+import { Route as authResetPasswordIndexImport } from './routes/(auth)/reset-password/index'
 import { Route as authRegisterIndexImport } from './routes/(auth)/register/index'
 import { Route as authLoginIndexImport } from './routes/(auth)/login/index'
 import { Route as auth2faVerifyIndexImport } from './routes/(auth)/2fa-verify/index'
@@ -20,7 +21,6 @@ import { Route as auth2faSetupIndexImport } from './routes/(auth)/2fa-setup/inde
 import { Route as appSettingsIndexImport } from './routes/(app)/settings/index'
 import { Route as appSchuelerIndexImport } from './routes/(app)/schueler/index'
 import { Route as appRollenmanagementIndexImport } from './routes/(app)/rollenmanagement/index'
-import { Route as appResetPasswordIndexImport } from './routes/(app)/reset-password/index'
 import { Route as appKlassenIndexImport } from './routes/(app)/klassen/index'
 import { Route as appGanztagsangeboteIndexImport } from './routes/(app)/ganztagsangebote/index'
 import { Route as appDiagnostikverfahrenIndexImport } from './routes/(app)/diagnostikverfahren/index'
@@ -51,6 +51,12 @@ const appRouteRoute = appRouteImport.update({
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const authResetPasswordIndexRoute = authResetPasswordIndexImport.update({
+  id: '/(auth)/reset-password/',
+  path: '/reset-password/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -93,12 +99,6 @@ const appSchuelerIndexRoute = appSchuelerIndexImport.update({
 const appRollenmanagementIndexRoute = appRollenmanagementIndexImport.update({
   id: '/rollenmanagement/',
   path: '/rollenmanagement/',
-  getParentRoute: () => appRouteRoute,
-} as any)
-
-const appResetPasswordIndexRoute = appResetPasswordIndexImport.update({
-  id: '/reset-password/',
-  path: '/reset-password/',
   getParentRoute: () => appRouteRoute,
 } as any)
 
@@ -284,13 +284,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appKlassenIndexImport
       parentRoute: typeof appRouteImport
     }
-    '/(app)/reset-password/': {
-      id: '/(app)/reset-password/'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof appResetPasswordIndexImport
-      parentRoute: typeof appRouteImport
-    }
     '/(app)/rollenmanagement/': {
       id: '/(app)/rollenmanagement/'
       path: '/rollenmanagement'
@@ -338,6 +331,13 @@ declare module '@tanstack/react-router' {
       path: '/register'
       fullPath: '/register'
       preLoaderRoute: typeof authRegisterIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/(auth)/reset-password/': {
+      id: '/(auth)/reset-password/'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof authResetPasswordIndexImport
       parentRoute: typeof rootRoute
     }
     '/(app)/diagnostikverfahren/$diagnostikId/daten': {
@@ -449,7 +449,6 @@ interface appRouteRouteChildren {
   appDiagnostikverfahrenIndexRoute: typeof appDiagnostikverfahrenIndexRoute
   appGanztagsangeboteIndexRoute: typeof appGanztagsangeboteIndexRoute
   appKlassenIndexRoute: typeof appKlassenIndexRoute
-  appResetPasswordIndexRoute: typeof appResetPasswordIndexRoute
   appRollenmanagementIndexRoute: typeof appRollenmanagementIndexRoute
   appSchuelerIndexRoute: typeof appSchuelerIndexRoute
   appSettingsIndexRoute: typeof appSettingsIndexRoute
@@ -475,7 +474,6 @@ const appRouteRouteChildren: appRouteRouteChildren = {
   appDiagnostikverfahrenIndexRoute: appDiagnostikverfahrenIndexRoute,
   appGanztagsangeboteIndexRoute: appGanztagsangeboteIndexRoute,
   appKlassenIndexRoute: appKlassenIndexRoute,
-  appResetPasswordIndexRoute: appResetPasswordIndexRoute,
   appRollenmanagementIndexRoute: appRollenmanagementIndexRoute,
   appSchuelerIndexRoute: appSchuelerIndexRoute,
   appSettingsIndexRoute: appSettingsIndexRoute,
@@ -512,7 +510,6 @@ export interface FileRoutesByFullPath {
   '/diagnostikverfahren': typeof appDiagnostikverfahrenIndexRoute
   '/ganztagsangebote': typeof appGanztagsangeboteIndexRoute
   '/klassen': typeof appKlassenIndexRoute
-  '/reset-password': typeof appResetPasswordIndexRoute
   '/rollenmanagement': typeof appRollenmanagementIndexRoute
   '/schueler': typeof appSchuelerIndexRoute
   '/settings': typeof appSettingsIndexRoute
@@ -520,6 +517,7 @@ export interface FileRoutesByFullPath {
   '/2fa-verify': typeof auth2faVerifyIndexRoute
   '/login': typeof authLoginIndexRoute
   '/register': typeof authRegisterIndexRoute
+  '/reset-password': typeof authResetPasswordIndexRoute
   '/diagnostikverfahren/$diagnostikId/daten': typeof appDiagnostikverfahrenDiagnostikIdDatenRoute
   '/diagnostikverfahren/$diagnostikId/info': typeof appDiagnostikverfahrenDiagnostikIdInfoRoute
   '/ganztagsangebote/$ganztagsangebotId/edit': typeof appGanztagsangeboteGanztagsangebotIdEditRoute
@@ -543,7 +541,6 @@ export interface FileRoutesByTo {
   '/diagnostikverfahren': typeof appDiagnostikverfahrenIndexRoute
   '/ganztagsangebote': typeof appGanztagsangeboteIndexRoute
   '/klassen': typeof appKlassenIndexRoute
-  '/reset-password': typeof appResetPasswordIndexRoute
   '/rollenmanagement': typeof appRollenmanagementIndexRoute
   '/schueler': typeof appSchuelerIndexRoute
   '/settings': typeof appSettingsIndexRoute
@@ -551,6 +548,7 @@ export interface FileRoutesByTo {
   '/2fa-verify': typeof auth2faVerifyIndexRoute
   '/login': typeof authLoginIndexRoute
   '/register': typeof authRegisterIndexRoute
+  '/reset-password': typeof authResetPasswordIndexRoute
   '/diagnostikverfahren/$diagnostikId/daten': typeof appDiagnostikverfahrenDiagnostikIdDatenRoute
   '/diagnostikverfahren/$diagnostikId/info': typeof appDiagnostikverfahrenDiagnostikIdInfoRoute
   '/ganztagsangebote/$ganztagsangebotId/edit': typeof appGanztagsangeboteGanztagsangebotIdEditRoute
@@ -576,7 +574,6 @@ export interface FileRoutesById {
   '/(app)/diagnostikverfahren/': typeof appDiagnostikverfahrenIndexRoute
   '/(app)/ganztagsangebote/': typeof appGanztagsangeboteIndexRoute
   '/(app)/klassen/': typeof appKlassenIndexRoute
-  '/(app)/reset-password/': typeof appResetPasswordIndexRoute
   '/(app)/rollenmanagement/': typeof appRollenmanagementIndexRoute
   '/(app)/schueler/': typeof appSchuelerIndexRoute
   '/(app)/settings/': typeof appSettingsIndexRoute
@@ -584,6 +581,7 @@ export interface FileRoutesById {
   '/(auth)/2fa-verify/': typeof auth2faVerifyIndexRoute
   '/(auth)/login/': typeof authLoginIndexRoute
   '/(auth)/register/': typeof authRegisterIndexRoute
+  '/(auth)/reset-password/': typeof authResetPasswordIndexRoute
   '/(app)/diagnostikverfahren/$diagnostikId/daten': typeof appDiagnostikverfahrenDiagnostikIdDatenRoute
   '/(app)/diagnostikverfahren/$diagnostikId/info': typeof appDiagnostikverfahrenDiagnostikIdInfoRoute
   '/(app)/ganztagsangebote/$ganztagsangebotId/edit': typeof appGanztagsangeboteGanztagsangebotIdEditRoute
@@ -609,7 +607,6 @@ export interface FileRouteTypes {
     | '/diagnostikverfahren'
     | '/ganztagsangebote'
     | '/klassen'
-    | '/reset-password'
     | '/rollenmanagement'
     | '/schueler'
     | '/settings'
@@ -617,6 +614,7 @@ export interface FileRouteTypes {
     | '/2fa-verify'
     | '/login'
     | '/register'
+    | '/reset-password'
     | '/diagnostikverfahren/$diagnostikId/daten'
     | '/diagnostikverfahren/$diagnostikId/info'
     | '/ganztagsangebote/$ganztagsangebotId/edit'
@@ -639,7 +637,6 @@ export interface FileRouteTypes {
     | '/diagnostikverfahren'
     | '/ganztagsangebote'
     | '/klassen'
-    | '/reset-password'
     | '/rollenmanagement'
     | '/schueler'
     | '/settings'
@@ -647,6 +644,7 @@ export interface FileRouteTypes {
     | '/2fa-verify'
     | '/login'
     | '/register'
+    | '/reset-password'
     | '/diagnostikverfahren/$diagnostikId/daten'
     | '/diagnostikverfahren/$diagnostikId/info'
     | '/ganztagsangebote/$ganztagsangebotId/edit'
@@ -670,7 +668,6 @@ export interface FileRouteTypes {
     | '/(app)/diagnostikverfahren/'
     | '/(app)/ganztagsangebote/'
     | '/(app)/klassen/'
-    | '/(app)/reset-password/'
     | '/(app)/rollenmanagement/'
     | '/(app)/schueler/'
     | '/(app)/settings/'
@@ -678,6 +675,7 @@ export interface FileRouteTypes {
     | '/(auth)/2fa-verify/'
     | '/(auth)/login/'
     | '/(auth)/register/'
+    | '/(auth)/reset-password/'
     | '/(app)/diagnostikverfahren/$diagnostikId/daten'
     | '/(app)/diagnostikverfahren/$diagnostikId/info'
     | '/(app)/ganztagsangebote/$ganztagsangebotId/edit'
@@ -702,6 +700,7 @@ export interface RootRouteChildren {
   auth2faVerifyIndexRoute: typeof auth2faVerifyIndexRoute
   authLoginIndexRoute: typeof authLoginIndexRoute
   authRegisterIndexRoute: typeof authRegisterIndexRoute
+  authResetPasswordIndexRoute: typeof authResetPasswordIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -711,6 +710,7 @@ const rootRouteChildren: RootRouteChildren = {
   auth2faVerifyIndexRoute: auth2faVerifyIndexRoute,
   authLoginIndexRoute: authLoginIndexRoute,
   authRegisterIndexRoute: authRegisterIndexRoute,
+  authResetPasswordIndexRoute: authResetPasswordIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -728,7 +728,8 @@ export const routeTree = rootRoute
         "/(auth)/2fa-setup/",
         "/(auth)/2fa-verify/",
         "/(auth)/login/",
-        "/(auth)/register/"
+        "/(auth)/register/",
+        "/(auth)/reset-password/"
       ]
     },
     "/": {
@@ -742,7 +743,6 @@ export const routeTree = rootRoute
         "/(app)/diagnostikverfahren/",
         "/(app)/ganztagsangebote/",
         "/(app)/klassen/",
-        "/(app)/reset-password/",
         "/(app)/rollenmanagement/",
         "/(app)/schueler/",
         "/(app)/settings/",
@@ -782,10 +782,6 @@ export const routeTree = rootRoute
       "filePath": "(app)/klassen/index.tsx",
       "parent": "/(app)"
     },
-    "/(app)/reset-password/": {
-      "filePath": "(app)/reset-password/index.tsx",
-      "parent": "/(app)"
-    },
     "/(app)/rollenmanagement/": {
       "filePath": "(app)/rollenmanagement/index.tsx",
       "parent": "/(app)"
@@ -809,6 +805,9 @@ export const routeTree = rootRoute
     },
     "/(auth)/register/": {
       "filePath": "(auth)/register/index.tsx"
+    },
+    "/(auth)/reset-password/": {
+      "filePath": "(auth)/reset-password/index.tsx"
     },
     "/(app)/diagnostikverfahren/$diagnostikId/daten": {
       "filePath": "(app)/diagnostikverfahren/$diagnostikId/daten.tsx",

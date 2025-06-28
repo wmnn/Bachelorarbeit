@@ -44,6 +44,36 @@ export class AuthStore {
         return user;
     }
 
+    async getUser(email: string): Promise<undefined | User> {
+        if (!this.connection) {
+            return undefined;
+        }
+
+        const [rows] = await this.connection.execute(
+            'SELECT * FROM users WHERE email = ?',
+            [email]
+        );
+
+        if (!Array.isArray(rows) || rows.length !== 1) {
+            return undefined;
+        }
+
+        const result: any = rows[0];
+        
+        const user: User = {
+            id: result.id,
+            email: result.email,
+            vorname: result.vorname,
+            nachname: result.nachname,
+            rolle: result.rolle,
+            isVerified: result.is_verified,
+            isLocked: result.is_locked
+        };
+
+        return user;
+    }
+
+
     async getUsers(): Promise<undefined | User[]> {
         if (!this.connection) {
             return undefined;

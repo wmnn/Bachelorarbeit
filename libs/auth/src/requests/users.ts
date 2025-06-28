@@ -147,3 +147,51 @@ export const updatePassword = async (userId: number, password: string, newPasswo
     }
 
 }
+
+export const getResetPasswordEmail = async (email: string) => {
+    
+    try {
+        const res = await fetch(AUTH_API_ENDPOINT + `/reset-password?email=${email}`, {
+            method: 'GET',
+        })
+
+        const data = await res.json();
+    
+        return data as any;
+        
+    } catch (e) {
+        return {
+            success: false,
+            message: 'Ein Fehler ist aufgetreten.'
+        };
+    }
+
+}
+
+export const resetPassword = async (neuesPasswort: string, neuesPasswortWiederholt: string, token: string) => {
+    
+    try {
+        const res = await fetch(AUTH_API_ENDPOINT + `/reset-password`, {
+            method: 'POST',
+            body: JSON.stringify({
+                neuesPasswort,
+                neuesPasswortWiederholt,
+                token
+            }),
+            headers: {
+                'content-type': 'application/json'
+            },
+        })
+
+        const data = await res.json();
+    
+        return data as any;
+        
+    } catch (e) {
+        return {
+            success: false,
+            message: 'Ein Fehler ist aufgetreten.'
+        };
+    }
+
+}
