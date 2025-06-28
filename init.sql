@@ -206,5 +206,13 @@ CREATE TABLE session_store (
     session_id VARCHAR(128),
     session_data VARCHAR(1024),
     created_at     TIMESTAMP NOT NULL,
-    expires_at     TIMESTAMP
+    expires_at     TIMESTAMP,
+    PRIMARY KEY (session_id)
+)
+
+CREATE TABLE users_2_factor_authentication (
+    user_id INT,
+    secret VARCHAR(64),
+    tmp VARCHAR(64),
+    PRIMARY KEY (user_id)
 )

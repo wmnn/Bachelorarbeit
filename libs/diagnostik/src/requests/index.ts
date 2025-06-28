@@ -1,4 +1,4 @@
-import { DIAGNOSTIK_ENDPOINT } from "../../../config/config";
+import { DIAGNOSTIK_ENDPOINT, handleRedirection } from "../../../config/config";
 import { Sichtbarkeit, type Auswertungsgruppe, type Diagnostik, type DiagnostikenSchuelerData, type DiagnostikTyp, type Ergebnis, type Row, type UploadedFile } from "../models";
 
 export type CreateDiagnostikRequestBody = {
@@ -24,11 +24,13 @@ export const createDiagnostik = async (diagnostik: Diagnostik, files: File[]) =>
             body: formData
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+
+        if (res.status === 401) {
+            return handleRedirection(data.redirect)
         }
     
-        return await res.json() as CreateDiagnostikResponseBody;
+        return data as CreateDiagnostikResponseBody
         
     } catch (e) {
         return {
@@ -50,7 +52,13 @@ export const copyDiagnostik = async (diagnostikId: string) => {
             window.location.href = '/login'
         }
     
-        return await res.json() as CreateDiagnostikResponseBody;
+        const data = await res.json();
+
+        if (res.status === 401) {
+            return handleRedirection(data.redirect)
+        }
+    
+        return data as CreateDiagnostikResponseBody
         
     } catch (e) {
         return {
@@ -71,12 +79,14 @@ export const updateAuswertungsgrupen = async (diagnostikId: string, auswertungsg
             },
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+
+        if (res.status === 401) {
+            return handleRedirection(data.redirect)
         }
     
-        return await res.json() as CreateDiagnostikResponseBody;
-        
+        return data as CreateDiagnostikResponseBody
+
     } catch (e) {
         return {
             success: false,
@@ -96,11 +106,13 @@ export const updateSichtbarkeit = async (diagnostikId: string, sichtbarkeit: Sic
             },
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+
+        if (res.status === 401) {
+            return handleRedirection(data.redirect)
         }
     
-        return await res.json() as CreateDiagnostikResponseBody;
+        return data as CreateDiagnostikResponseBody
         
     } catch (e) {
         return {
@@ -125,11 +137,13 @@ export const editDiagnostik = async (diagnostik: Diagnostik, files: File[]) => {
             body: formData
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+
+        if (res.status === 401) {
+            return handleRedirection(data.redirect)
         }
     
-        return await res.json() as CreateDiagnostikResponseBody;
+        return data as CreateDiagnostikResponseBody
         
     } catch (e) {
         console.log(e)
@@ -153,11 +167,13 @@ export const getDiagnostiken = async (speicherTyp: DiagnostikTyp) => {
             },
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+
+        if (res.status === 401) {
+            return handleRedirection(data.redirect)
         }
     
-        return await res.json() as GetDiagnostikenResponseBody;
+        return data as GetDiagnostikenResponseBody
         
     } catch (e) {
         return []
@@ -176,11 +192,13 @@ export const getDiagnostik = async (diagnostikId: number) => {
             },
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+
+        if (res.status === 401) {
+            return handleRedirection(data.redirect)
         }
     
-        return await res.json() as Diagnostik | undefined;
+        return data as Diagnostik | undefined
         
     } catch (e) {
         return undefined
@@ -204,11 +222,13 @@ export const addErgebnisse = async (ergebnisse: Ergebnis[], diagnostikId: string
             body: JSON.stringify(ergebnisse)
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+
+        if (res.status === 401) {
+            return handleRedirection(data.redirect)
         }
     
-        return await res.json() as AddErgebnisseResponseBody;
+        return data as AddErgebnisseResponseBody
         
     } catch (e) {
         return {
@@ -229,11 +249,13 @@ export const getErgebnisse = async (diagnostikId: string) => {
             },
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+
+        if (res.status === 401) {
+            return handleRedirection(data.redirect)
         }
     
-        return await res.json() as Row[];
+        return data as Row[];
         
     } catch (e) {
         return []
@@ -255,11 +277,13 @@ export const getDiagnostikSchuelerData = async (schuelerId: string) => {
             method: 'GET',
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+
+        if (res.status === 401) {
+            return handleRedirection(data.redirect)
         }
     
-        return await res.json() as GetSchuelerDataResponseBody;
+        return data as GetSchuelerDataResponseBody
         
     } catch (e) {
         console.log(e)
@@ -282,11 +306,13 @@ export const deleteDiagnostik = async (diagnostikId: string) => {
             },
         })
 
-        if (res.status === 403) {
-            window.location.href = '/login'
+        const data = await res.json();
+
+        if (res.status === 401) {
+            return handleRedirection(data.redirect)
         }
     
-        return await res.json() as CreateDiagnostikResponseBody;
+        return data as CreateDiagnostikResponseBody
         
     } catch (e) {
         return {

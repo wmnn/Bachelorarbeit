@@ -6,9 +6,10 @@ import { MainButton } from "@/components/MainButton";
 import { userContext } from "@/context/UserContext";
 
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { login } from "@thesis/auth"
+import { login, LoginRedirectAction } from "@thesis/auth"
 import { Berechtigung } from "@thesis/rollen";
 import { useContext, useState } from "react";
+import { handleRedirection } from "../../../../../../libs/config/config";
 
 export const Route = createFileRoute('/(auth)/login/')({
   component: Login,
@@ -31,6 +32,7 @@ export default function Login () {
         if (!res.success) {
             setMessage(res.message ?? '')
         }
+
         const user = res.user
         if (!user) {
             return;
@@ -41,14 +43,8 @@ export default function Login () {
         }
         setUser(user);
 
-        if (user.rolle !== undefined && user.rolle.berechtigungen[Berechtigung.DiagnostikverfahrenRead] != 'keine') {
-            navigate({
-                to: "/diagnostikverfahren"
-            })
-        } else {
-            navigate({
-                to: "/settings"
-            })
+        if (res.redirect !== undefined) {
+            return handleRedirection(res.redirect)
         }
     }
     return <AuthForm>

@@ -7,7 +7,7 @@ export const getNoSessionResponse = (res: Response) => {
     })
 } 
 export const getNoPermissionResponse = (res: Response) => {
-    return res.status(401).json({
+    return res.status(403).json({
             success: false,
             message: 'Du hast nicht die notwendigen Berechtigungen.'
     });

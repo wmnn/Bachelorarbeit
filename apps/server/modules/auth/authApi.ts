@@ -1,6 +1,7 @@
 import express, { NextFunction } from 'express';
 import { Request, Response } from 'express';
 import {
+    AUTH_2_FACTOR_API_ENDPOINT,
     AUTH_API_ENDPOINT,
     LOGIN_ENDPOINT,
     LOGOUT_ENDOINT,
@@ -11,6 +12,7 @@ import {
 import {
     DeleteUserRequestBody,
     isValidPassword,
+    LoginRedirectAction,
     LoginRequestBody,
     LoginResponseBody,
     NOT_VALID_PASSWORD_MESSAGE,
@@ -35,6 +37,7 @@ import { addRoleDataToUser } from '../auth/util';
 import { Berechtigung } from '@thesis/rollen';
 import { getAuthStore } from '../../singleton';
 import { getErrorResponse, getInternalErrorResponse, getNoSessionResponse } from './permissionsUtil';
+import { is2FASetup } from './Auth2FactorUtil';
 
 const cookieKey = fs.readFileSync(
     path.join(__dirname, '../../../../cookie_signing.key'),
@@ -52,6 +55,7 @@ export type SessionData = {
     user?: User;
     createdAt: Date;
     expiresAt: Date;
+    is2FaVerified: boolean
 };
 
 async function createSession(res: Response, user: User): Promise<Response> {
@@ -73,8 +77,9 @@ async function createSession(res: Response, user: User): Promise<Response> {
         user,
         createdAt: new Date(),
         expiresAt: new Date(Date.now() + SESSION_MAX_AGE),
+        is2FaVerified: false
     };
-    getAuthStore().createSession(sessionId, sessionData);
+    getAuthStore().setSessionData(sessionId, sessionData);
     return res;
 }
 
@@ -86,8 +91,7 @@ export const authMiddleware = async (
     // Middleware to verify and add session cookie
     const cookie = req.cookies[SESSION_COOKIE_NAME];
     if (!cookie || !cookie.includes('.')) {
-        next();
-        return;
+        return next();
     }
 
     const [sessionId, signature] = cookie.split('.');
@@ -101,37 +105,44 @@ export const authMiddleware = async (
 
     if (!valid) {
         res.clearCookie(SESSION_COOKIE_NAME, { path: '/' });
-        res.status(403).json({
+        return res.status(401).json({
             success: false,
-            message: 'Die Sitzung ist abgelaufen.'
+            message: 'Die Sitzung ist abgelaufen.',
+            redirect: LoginRedirectAction.REDIRECT_TO_LOGIN
         });
-        return;
     }
 
     req.sessionId = sessionId;
     const sessionData = await getAuthStore().getSession(sessionId);
     if (!sessionData) {
         res.clearCookie(SESSION_COOKIE_NAME, { path: '/' });
-        res.status(403).json({
+        return res.status(401).json({
             success: false,
-            message: 'Es wurde keine Sitzung gefunden.'
+            message: 'Es wurde keine Sitzung gefunden.',
+            redirect: LoginRedirectAction.REDIRECT_TO_LOGIN
         });
-        return;
+    }
+
+    if (!sessionData.is2FaVerified && !req.originalUrl.startsWith(AUTH_2_FACTOR_API_ENDPOINT) && !req.originalUrl.startsWith(AUTH_API_ENDPOINT + LOGIN_ENDPOINT)) {
+        return res.status(401).json({
+            success: false,
+            message: 'Der 2-Faktor Authentifizierungscode wurde noch nicht überprüft.',
+            redirect: LoginRedirectAction.VERIFY_2_FACTOR_CODE
+        })
     }
 
     const user = sessionData.user;
     if (!user) {
-        next();
-        return;
+        return next();
     }
     if (user.isLocked) {
         res.clearCookie(SESSION_COOKIE_NAME, { path: '/' });
         // Unreachable, because the session is removed on locking a user.
-        res.status(403).json({
+        return res.status(403).json({
             success: false,
-            message: 'Dieser Nutzer ist gesperrt.'
+            message: 'Dieser Nutzer ist gesperrt.',
+            redirect: LoginRedirectAction.REDIRECT_TO_LOGIN
         });
-        return;
     }
     
     req.userId = user.id
@@ -161,61 +172,65 @@ router.post(
     async (
         req: Request<{}, {}, LoginRequestBody>,
         res: Response<LoginResponseBody>
-    ) => {
+    ): Promise<any> => {
         const { email, passwort } = req.body;
         let user = await getAuthStore().findUser(email, passwort);
 
         if (!user) {
-            res.status(401).json({
+            return res.status(400).json({
                 success: false,
                 message:
                     'Es konnte kein Nutzer mit diesen Daten gefunden werden.',
             });
-            return;
         }
 
         if (user.isLocked) {
-            res.status(403).json({
+            return res.status(403).json({
                 success: false,
                 message: 'Dieser Nutzer ist gesperrt.'
             });
-            return;
         }
 
         if (!user.isVerified) {
-            res.status(403).json({
+            return res.status(403).json({
                 success: false,
                 message: 'Dieser Nutzer ist noch nicht aktiviert. Schau in dein Email Postfach.'
             });
-            return;
         }
 
         res = await createSession(res, user);
         user = await addRoleDataToUser(user);
+
+        if (!await is2FASetup(user?.id ?? -1)) {
+            return res.status(401).json({
+                success: true,
+                user,
+                redirect: LoginRedirectAction.SETUP_2_FACTOR_AUTHENTICATION
+            });
+        }
+
         res.status(200).json({
             success: true,
             user,
+            redirect: LoginRedirectAction.VERIFY_2_FACTOR_CODE
         });
     }
 );
 
-router.get(REGISTER_CALLBACK_ENDPOINT, async (req, res) => {
+router.get(REGISTER_CALLBACK_ENDPOINT, async (req, res): Promise<any> => {
     const token = req.query.token
     if (!token) {
-        res.status(400).send('Das Konto konnte nicht aktiviert werden.')
-        return
+        return res.status(400).send('Das Konto konnte nicht aktiviert werden.')
     }
     try {
         const decoded: any = jwt.verify(token as string, registerKey)
         if (!decoded.userId || decoded.userId === -1) {
-            res.status(400).send('Das Konto konnte nicht aktiviert werden.')
-            return;
+            return res.status(400).send('Das Konto konnte nicht aktiviert werden.')
         }
         const success = await getAuthStore().updateUser(decoded.userId, undefined, undefined, undefined, undefined, undefined, undefined, true)
 
         if (success) {
-            res.status(200).redirect('/login')
-            return;
+            return res.status(200).redirect('/login')
         }
 
     } catch (_) { }

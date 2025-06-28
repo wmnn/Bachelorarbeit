@@ -1,3 +1,4 @@
+import { LoginRedirectAction } from "../../../auth/src"
 import { type Rolle } from "../models/role"
 
 export const ROLLE_ENDPOINT = '/api/role'

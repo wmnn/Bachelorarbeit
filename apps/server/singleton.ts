@@ -6,6 +6,7 @@ import { AnwesenheitenStore } from './modules/anwesenheiten/AnwesenheitenStore';
 import { DiagnostikStore } from './modules/diagnostik/DiagnostikStore';
 import { GanztagsangebotStore } from './modules/ganztagsangebot/GanztagsangebotStore';
 import dotenv from 'dotenv';
+import { Auth2FactorStore } from './modules/auth/Auth2FactorStore';
 dotenv.config({
     path: '../../.env'
 });
@@ -27,6 +28,7 @@ let klassenStore: KlassenStore | undefined
 let anwesenheitenStore: AnwesenheitenStore | undefined
 let diagnostikStore: DiagnostikStore | undefined
 let ganztagsangebotStore: GanztagsangebotStore | undefined
+let auth2FactorStore: Auth2FactorStore | undefined
 let roles : undefined 
 
 export function getAuthStore() {
@@ -34,6 +36,12 @@ export function getAuthStore() {
         authStore = new AuthStore(pool);
     }
     return authStore
+}
+export function getAuth2FactorStore() {
+    if (!auth2FactorStore) {
+        auth2FactorStore = new Auth2FactorStore(pool);
+    }
+    return auth2FactorStore
 }
 export function getSchuelerStore() {
     if (!schuelerStore) {

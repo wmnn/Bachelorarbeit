@@ -1,4 +1,4 @@
-import { AUTH_API_ENDPOINT, LOGIN_ENDPOINT } from "@thesis/config"
+import { AUTH_API_ENDPOINT, handleRedirection, LOGIN_ENDPOINT } from "@thesis/config"
 import type { User } from "../models";
 
 export interface LoginRequestBody {
@@ -10,6 +10,14 @@ export interface LoginResponseBody {
     success: boolean;
     message?: string;
     user?: User;
+    redirect?: LoginRedirectAction
+}
+
+export enum LoginRedirectAction {
+    SETUP_2_FACTOR_AUTHENTICATION,
+    LOGIN_SUCCESS,
+    REDIRECT_TO_LOGIN,
+    VERIFY_2_FACTOR_CODE
 }
 
 export const login = async (email: string, passwort: string): Promise<LoginResponseBody> => {

@@ -10,7 +10,9 @@ import { router as rollenRouter } from './modules/auth/rollenApi'
 import { router as ganztagsangebotRouter } from './modules/ganztagsangebot/api'
 import { router as diagnostikRouter } from './modules/diagnostik/diagnostikApi'
 import { router as filesApi } from './modules/files/api'
-import { ANWESENHEITEN_ENDPOINT, AUTH_API_ENDPOINT, DIAGNOSTIK_ENDPOINT, FILES_ENDPOINT, GANZTAGSANGEBOT_ENDPOINT, KLASSEN_ENDPOINT, SCHUELER_ENDPOINT } from "@thesis/config"
+import { router as twoFactorAuthApi } from './modules/auth/Auth2FactorApi'
+
+import { ANWESENHEITEN_ENDPOINT, AUTH_2_FACTOR_API_ENDPOINT, AUTH_API_ENDPOINT, DIAGNOSTIK_ENDPOINT, FILES_ENDPOINT, GANZTAGSANGEBOT_ENDPOINT, KLASSEN_ENDPOINT, SCHUELER_ENDPOINT } from "@thesis/config"
 import cookieParser from "cookie-parser"
 import https from 'https';
 import fs from 'fs'
@@ -71,7 +73,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.json());
 app.use(fileUpload());
-app.use(authMiddleware)
+app.use(authMiddleware as any)
 app.use(rolleMiddleware as any)
 app.use(AUTH_API_ENDPOINT, authRouter);
 app.use(SCHUELER_ENDPOINT, schuelerRouter);
@@ -79,6 +81,7 @@ app.use(KLASSEN_ENDPOINT, klassenRouter);
 app.use(ANWESENHEITEN_ENDPOINT, anwesenheitenRouter);
 app.use(GANZTAGSANGEBOT_ENDPOINT, ganztagsangebotRouter);
 app.use(DIAGNOSTIK_ENDPOINT, diagnostikRouter);
+app.use(AUTH_2_FACTOR_API_ENDPOINT, twoFactorAuthApi);
 app.use(FILES_ENDPOINT, filesApi);
 app.use(ROLLE_ENDPOINT, rollenRouter);
 app.use(express.static('../client/dist'))

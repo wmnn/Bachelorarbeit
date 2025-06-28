@@ -379,32 +379,48 @@ export class AuthStore {
         const row = rows[0] as any
         let user = undefined
         try {
-            user = JSON.parse(row.session_data)
-        } catch (_) { }
-        return {
-            sessionId: row.session_id,
-            user: user,
-            createdAt: row.created_at,
-            expiresAt: row.expires_at
-        } as SessionData;
-    }
-    async createSession(sessionId: string, sessionData: SessionData) {
+            const parsedData = JSON.parse(row.session_data)
+            user = parsedData.user
 
+            const sessionData = {
+                sessionId: row.session_id,
+                user: user,
+                createdAt: row.created_at,
+                expiresAt: row.expires_at,
+                is2FaVerified: parsedData.is2FaVerified
+            } as SessionData;
+
+            return sessionData
+        } catch (_) { 
+            return undefined
+        }
+    }
+    async setSessionData(sessionId: string, sessionData: SessionData): Promise<boolean> {
         if (!this.connection) {
             return false;
         }
-  
+
         const [result] = await this.connection.execute<ResultSetHeader>(`
             INSERT INTO session_store (session_id, session_data, created_at, expires_at)
             VALUES (?, ?, ?, ?)
-        `, [sessionId , JSON.stringify(sessionData.user), sessionData.createdAt, sessionData.expiresAt]);
+            ON DUPLICATE KEY UPDATE 
+                session_data = VALUES(session_data),
+                created_at = VALUES(created_at),
+                expires_at = VALUES(expires_at)
+        `, [
+            sessionId,
+            JSON.stringify({
+                user: sessionData.user,
+                is2FaVerified: sessionData.is2FaVerified
+            }),
+            sessionData.createdAt,
+            sessionData.expiresAt
+        ]);
+        // console.log(result.affectedRows > 0)
 
-        if (result.affectedRows !== 1) {
-            return false;
-        }
-
-        return true;
+        return result.affectedRows > 0;
     }
+
 
     async removeSession(sessionId: string): Promise<boolean> {
         if (!this.connection) {

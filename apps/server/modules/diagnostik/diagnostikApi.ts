@@ -26,7 +26,7 @@ router.get('/', async (
     const permission = req.permissions?.[Berechtigung.DiagnostikverfahrenRead]
     const allowed: BerechtigungWert<Berechtigung.DiagnostikverfahrenRead>[] = ['alle', 'eigene'] 
     if (!permission || !allowed.includes(permission)) {
-        return res.status(401).json([]);
+        return res.status(403).json([]);
     }
 
     let speicherTyp: DiagnostikTyp = DiagnostikTyp.LAUFENDES_VERFAHREN;
@@ -98,7 +98,7 @@ router.get('/:diagnostikId', async (req, res): Promise<any> => {
     }
     const { success, diagnostik } = await canUserAccessDiagnostik(diagnostikId, req)
     if (!success) {
-        return res.status(401).json(undefined);
+        return res.status(403).json(undefined);
     }
     return res.status(success ? 200 : 400).json(diagnostik);
 });
@@ -110,7 +110,7 @@ router.get('/:diagnostikId/data', async (req, res): Promise<any> => {
     }
     const { success, diagnostik } = await canUserAccessDiagnostik(diagnostikId, req)
     if (!success) {
-        return res.status(401).json(undefined);
+        return res.status(403).json(undefined);
     }
     const ergebnisse = await getDiagnostikStore().getErgebnisse(parseInt(diagnostikId))
     res.status(diagnostik ? 200 : 400).json(ergebnisse);
@@ -124,7 +124,7 @@ router.post('/auswertungsgruppen/:diagnostikId', async (req, res: Response<AddEr
     }
     const { success } = await canUserAccessDiagnostik(`${diagnostikId}`, req)
     if (!success) {
-        return res.status(401).json(undefined);
+        return res.status(403).json(undefined);
     }
     const auswertungsgruppen = req.body
     const msg = await getDiagnostikStore().updateAuswertungsgruppen(diagnostikId, auswertungsgruppen)
@@ -139,7 +139,7 @@ router.post('/copy/:diagnostikId', async (req, res: Response<AddErgebnisseRespon
     }
     const { success } = await canUserAccessDiagnostik(`${diagnostikId}`, req)
     if (!success) {
-        return res.status(401).json(undefined);
+        return res.status(403).json(undefined);
     }
 
     let diagnostik = await getDiagnostikStore().getDiagnostik(diagnostikId)
@@ -189,7 +189,7 @@ router.post('/:diagnostikId', async (req, res: Response<AddErgebnisseResponseBod
         return getNoSessionResponse(res)
     }
     if (!success) {
-        return res.status(401).json(undefined);
+        return res.status(403).json(undefined);
     }
 
     let ergebnisse: Ergebnis[] = req.body ?? []
@@ -348,7 +348,7 @@ router.put('/sichtbarkeit', async (req, res): Promise<any> => {
     }
     const { success } = await canUserUpdateSichtbarkeit(req)
     if (!success) {
-        return res.status(401).json(undefined);
+        return res.status(403).json(undefined);
     }
 
     const msg = await getDiagnostikStore().updateSichtbarkeit(parseInt(diagnostikId), parseInt(sichtbarkeit));
@@ -384,7 +384,7 @@ router.post('/', async (
     }
     const { success } = await canUserCreateDiagnostik(req)
     if (!success) {
-        return res.status(401).json({
+        return res.status(403).json({
                 success: false,
                 message: 'Deine Berechtigungen reichen nicht aus.'
         });
@@ -437,7 +437,7 @@ router.put('/', async (
     const { success } = await canEditDiagnostik(`${diagnostik.id}`, req)
 
     if (!success) {
-        return res.status(401).json({
+        return res.status(403).json({
                 success: false,
                 message: 'Deine Berechtigungen reichen nicht aus.'
         });
@@ -527,7 +527,7 @@ router.delete('/:diagnostikId', async (req, res: Response): Promise<any> => {
     const { diagnostikId } = req.params
     const { success } = await canUserDeleteDiagnostik(diagnostikId, req)
     if (!success) {
-        return res.status(401).json({
+        return res.status(403).json({
             success: false,
             message: 'Deine Berechtigungen reichen nicht aus.'
         });

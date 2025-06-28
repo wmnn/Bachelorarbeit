@@ -15,6 +15,8 @@ import { Route as appRouteImport } from './routes/(app)/route'
 import { Route as IndexImport } from './routes/index'
 import { Route as authRegisterIndexImport } from './routes/(auth)/register/index'
 import { Route as authLoginIndexImport } from './routes/(auth)/login/index'
+import { Route as auth2faVerifyIndexImport } from './routes/(auth)/2fa-verify/index'
+import { Route as auth2faSetupIndexImport } from './routes/(auth)/2fa-setup/index'
 import { Route as appSettingsIndexImport } from './routes/(app)/settings/index'
 import { Route as appSchuelerIndexImport } from './routes/(app)/schueler/index'
 import { Route as appRollenmanagementIndexImport } from './routes/(app)/rollenmanagement/index'
@@ -61,6 +63,18 @@ const authRegisterIndexRoute = authRegisterIndexImport.update({
 const authLoginIndexRoute = authLoginIndexImport.update({
   id: '/(auth)/login/',
   path: '/login/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const auth2faVerifyIndexRoute = auth2faVerifyIndexImport.update({
+  id: '/(auth)/2fa-verify/',
+  path: '/2fa-verify/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const auth2faSetupIndexRoute = auth2faSetupIndexImport.update({
+  id: '/(auth)/2fa-setup/',
+  path: '/2fa-setup/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -298,6 +312,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appSettingsIndexImport
       parentRoute: typeof appRouteImport
     }
+    '/(auth)/2fa-setup/': {
+      id: '/(auth)/2fa-setup/'
+      path: '/2fa-setup'
+      fullPath: '/2fa-setup'
+      preLoaderRoute: typeof auth2faSetupIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/(auth)/2fa-verify/': {
+      id: '/(auth)/2fa-verify/'
+      path: '/2fa-verify'
+      fullPath: '/2fa-verify'
+      preLoaderRoute: typeof auth2faVerifyIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/(auth)/login/': {
       id: '/(auth)/login/'
       path: '/login'
@@ -488,6 +516,8 @@ export interface FileRoutesByFullPath {
   '/rollenmanagement': typeof appRollenmanagementIndexRoute
   '/schueler': typeof appSchuelerIndexRoute
   '/settings': typeof appSettingsIndexRoute
+  '/2fa-setup': typeof auth2faSetupIndexRoute
+  '/2fa-verify': typeof auth2faVerifyIndexRoute
   '/login': typeof authLoginIndexRoute
   '/register': typeof authRegisterIndexRoute
   '/diagnostikverfahren/$diagnostikId/daten': typeof appDiagnostikverfahrenDiagnostikIdDatenRoute
@@ -517,6 +547,8 @@ export interface FileRoutesByTo {
   '/rollenmanagement': typeof appRollenmanagementIndexRoute
   '/schueler': typeof appSchuelerIndexRoute
   '/settings': typeof appSettingsIndexRoute
+  '/2fa-setup': typeof auth2faSetupIndexRoute
+  '/2fa-verify': typeof auth2faVerifyIndexRoute
   '/login': typeof authLoginIndexRoute
   '/register': typeof authRegisterIndexRoute
   '/diagnostikverfahren/$diagnostikId/daten': typeof appDiagnostikverfahrenDiagnostikIdDatenRoute
@@ -548,6 +580,8 @@ export interface FileRoutesById {
   '/(app)/rollenmanagement/': typeof appRollenmanagementIndexRoute
   '/(app)/schueler/': typeof appSchuelerIndexRoute
   '/(app)/settings/': typeof appSettingsIndexRoute
+  '/(auth)/2fa-setup/': typeof auth2faSetupIndexRoute
+  '/(auth)/2fa-verify/': typeof auth2faVerifyIndexRoute
   '/(auth)/login/': typeof authLoginIndexRoute
   '/(auth)/register/': typeof authRegisterIndexRoute
   '/(app)/diagnostikverfahren/$diagnostikId/daten': typeof appDiagnostikverfahrenDiagnostikIdDatenRoute
@@ -579,6 +613,8 @@ export interface FileRouteTypes {
     | '/rollenmanagement'
     | '/schueler'
     | '/settings'
+    | '/2fa-setup'
+    | '/2fa-verify'
     | '/login'
     | '/register'
     | '/diagnostikverfahren/$diagnostikId/daten'
@@ -607,6 +643,8 @@ export interface FileRouteTypes {
     | '/rollenmanagement'
     | '/schueler'
     | '/settings'
+    | '/2fa-setup'
+    | '/2fa-verify'
     | '/login'
     | '/register'
     | '/diagnostikverfahren/$diagnostikId/daten'
@@ -636,6 +674,8 @@ export interface FileRouteTypes {
     | '/(app)/rollenmanagement/'
     | '/(app)/schueler/'
     | '/(app)/settings/'
+    | '/(auth)/2fa-setup/'
+    | '/(auth)/2fa-verify/'
     | '/(auth)/login/'
     | '/(auth)/register/'
     | '/(app)/diagnostikverfahren/$diagnostikId/daten'
@@ -658,6 +698,8 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   appRouteRoute: typeof appRouteRouteWithChildren
+  auth2faSetupIndexRoute: typeof auth2faSetupIndexRoute
+  auth2faVerifyIndexRoute: typeof auth2faVerifyIndexRoute
   authLoginIndexRoute: typeof authLoginIndexRoute
   authRegisterIndexRoute: typeof authRegisterIndexRoute
 }
@@ -665,6 +707,8 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   appRouteRoute: appRouteRouteWithChildren,
+  auth2faSetupIndexRoute: auth2faSetupIndexRoute,
+  auth2faVerifyIndexRoute: auth2faVerifyIndexRoute,
   authLoginIndexRoute: authLoginIndexRoute,
   authRegisterIndexRoute: authRegisterIndexRoute,
 }
@@ -681,6 +725,8 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/(app)",
+        "/(auth)/2fa-setup/",
+        "/(auth)/2fa-verify/",
         "/(auth)/login/",
         "/(auth)/register/"
       ]
@@ -751,6 +797,12 @@ export const routeTree = rootRoute
     "/(app)/settings/": {
       "filePath": "(app)/settings/index.tsx",
       "parent": "/(app)"
+    },
+    "/(auth)/2fa-setup/": {
+      "filePath": "(auth)/2fa-setup/index.tsx"
+    },
+    "/(auth)/2fa-verify/": {
+      "filePath": "(auth)/2fa-verify/index.tsx"
     },
     "/(auth)/login/": {
       "filePath": "(auth)/login/index.tsx"
