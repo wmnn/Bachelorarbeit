@@ -23,6 +23,8 @@ function RouteComponent() {
 
   const ergebnisse = query.data
 
+  if (!ergebnisse) return;
+
   return <div className='w-full'>
     <DiagnostikNav diagnostikId={diagnostikId} />
     <Table data={ergebnisse} />
@@ -103,7 +105,7 @@ const Table = ({ data }: { data: Row[]}) => {
 
   return <div className='mx-8 mt-8'>
 
-    <div className='flex justify-end mb-8'>
+    {/* <div className='flex justify-end mb-8'>
       <div className='flex gap-2'>
         <ButtonLight>
           Sortieren
@@ -114,7 +116,7 @@ const Table = ({ data }: { data: Row[]}) => {
         </ButtonLight>
 
       </div>
-    </div>
+    </div> */}
 
   
     <div className="overflow-x-scroll mb-8">
