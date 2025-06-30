@@ -149,6 +149,26 @@ const DiagnostikFilterButton = ({ initialData, setDiagnostiken, sortOption }: Di
                     <input type="checkbox" checked={!filteredKlassenstufen.includes(klassenStufe)} /> {klassenStufe}
                 </DropdownMenuItem>)
             }
+            {
+                filteredKlassenstufen.length !== klassenStufen.size ? <DropdownMenuItem 
+                    className="cursor-pointer"
+                    onClick={() => {
+                        const newVal = Array.from(klassenStufen)
+                        setFilteredKlassenstufen(newVal)
+                        filtern(newVal, filteredKategorien)
+                    }}
+                >
+                    Alle entfernen
+                </DropdownMenuItem> : <DropdownMenuItem 
+                    className="cursor-pointer"
+                    onClick={() => {
+                        setFilteredKlassenstufen([])
+                        filtern([], filteredKategorien)
+                    }}
+                >
+                    Alle anzeigen
+                </DropdownMenuItem>
+            }
 
             <hr className="my-2" />
             <label>
@@ -160,8 +180,28 @@ const DiagnostikFilterButton = ({ initialData, setDiagnostiken, sortOption }: Di
                     className="cursor-pointer"
                     onClick={() => handleClickOnKategorie(kategorie)}
                 >
-                    <input type="checkbox" checked={!filteredKategorien.includes(kategorie)}/> {kategorie}
+                    <input type="checkbox" checked={!filteredKategorien.includes(kategorie)} onChange={() => {}}/> {kategorie}
                 </DropdownMenuItem>)
+            }
+            {
+                filteredKategorien.length !== kategorien.size ? <DropdownMenuItem 
+                    className="cursor-pointer"
+                    onClick={() => {
+                        const newVal = Array.from(kategorien)
+                        setFilteredKategorien(newVal)
+                        filtern(filteredKlassenstufen, newVal)
+                    }}
+                >
+                    Alle entfernen
+                </DropdownMenuItem> : <DropdownMenuItem 
+                    className="cursor-pointer"
+                    onClick={() => {
+                        setFilteredKategorien([])
+                        filtern(filteredKlassenstufen, [])
+                    }}
+                >
+                    Alle anzeigen
+                </DropdownMenuItem>
             }
         </DropdownMenuContent>
     </DropdownMenu>

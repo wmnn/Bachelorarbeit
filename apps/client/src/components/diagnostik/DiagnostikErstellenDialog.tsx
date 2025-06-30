@@ -13,11 +13,8 @@ export function DiagnostikErstellenDialog({ closeDialog }: DiagnostikErstellenDi
     const queryClient = useQueryClient()
     async function handleSubmit(diagnostik: Diagnostik, files: File[]) {
         const res = await createDiagnostik(diagnostik, files);
-        alert(JSON.stringify(res))
+        alert(res.message)
         queryClient.invalidateQueries({ queryKey: [DIAGNOSTIKEN_QUERY_KEY]})
-        if (res.success) {
-            // closeDialog()
-        }
     }
 
     return <Dialog className="overflow-auto! p-8">

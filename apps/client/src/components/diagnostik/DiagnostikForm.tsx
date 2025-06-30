@@ -34,6 +34,9 @@ export const DiagnostikForm = (props: DiagnostikFormProps) => {
         vorlageId: -1,
         farbbereiche: [{
             hexFarbe: '#129600'
+        }, {
+            hexFarbe: '#cf0202',
+            obereGrenze: ''
         }],
         speicherTyp: DiagnostikTyp.LAUFENDES_VERFAHREN,
         sichtbarkeit: Sichtbarkeit.PRIVAT
@@ -262,7 +265,7 @@ export const DiagnostikForm = (props: DiagnostikFormProps) => {
                 </ButtonLight>
                 
 
-                <label>Format</label>
+                {/* <label>Format</label>
                 <Select 
                     value={`${diagnostik.format}`}
                     onValueChange={async (val: string) => {
@@ -283,7 +286,7 @@ export const DiagnostikForm = (props: DiagnostikFormProps) => {
                             Prozent
                         </SelectItem>   
                     </SelectContent>
-                </Select> 
+                </Select>  */}
 
                 <label>Obere Grenze</label>
                 <Input type="number" value={`${diagnostik.obereGrenze ?? ''}`}
@@ -372,12 +375,12 @@ const Farbbereiche = (props: FarbbereicheProps) => {
     }, [farbbereiche]);
 
     return <div className="flex flex-col xl:flex-row gap-8">
-        <div>
+        {/* <div>
             <FarbbereichSlider {...props} />
-        </div>
+        </div> */}
 
 
-        <div className="flex flex-col gap-2">
+        <div className="xl:ml-16 flex flex-col gap-2">
             {
                 sortFarbbereiche(farbbereiche).map((bereich, idx) => <div key={idx} className="flex gap-2 items-center w-full justify-end">
 
@@ -422,51 +425,51 @@ const Farbbereiche = (props: FarbbereicheProps) => {
                     }}/>
                 </div>)
             }
-            <ButtonLight onClick={() => setFarbbereiche([...(farbbereiche), {
+            {/* <ButtonLight onClick={() => setFarbbereiche([...(farbbereiche), {
                 obereGrenze: -1,
                 hexFarbe: '#000000'
             }])}>
                 Farbbereich hinzufügen
-            </ButtonLight>
+            </ButtonLight> */}
 
         </div>
         
     </div>
 }
-const FarbbereichSlider = (props: FarbbereicheProps) => {
+// const FarbbereichSlider = (props: FarbbereicheProps) => {
 
-    const { farbbereiche } = props
-    const sortedFarbbereiche = sortFarbbereiche(farbbereiche)
+//     const { farbbereiche } = props
+//     const sortedFarbbereiche = sortFarbbereiche(farbbereiche)
 
-    const heightInPx = 250
+//     const heightInPx = 250
 
-    function getHeight(_: number) {
+//     function getHeight(_: number) {
 
-        return 0;
-        // console.log(obereGrenze, untereGrenze, heightInPx)
-        // const totalHeight = obereGrenze - untereGrenze
-        // const wertInBereich = grenze - untereGrenze
-        // return heightInPx - ((wertInBereich / totalHeight ) * heightInPx)
-    }
+//         return 0;
+//         // console.log(obereGrenze, untereGrenze, heightInPx)
+//         // const totalHeight = obereGrenze - untereGrenze
+//         // const wertInBereich = grenze - untereGrenze
+//         // return heightInPx - ((wertInBereich / totalHeight ) * heightInPx)
+//     }
 
-    return <>
+//     return <>
     
-        <div className={`min-h-[${heightInPx}px] min-w-[${heightInPx}px] border border-gray-300 rounded-lg overflow-hidden flex flex-col`}>
-            {sortedFarbbereiche.map((bereich, index) => {
-                return (
-                <div
-                    key={index}
-                    className="flex items-center justify-center text-white font-bold text-sm"
-                    style={{
-                        height: `${getHeight(index)}px`,
-                        backgroundColor: bereich.hexFarbe,
-                    }}
-                >
-                    {bereich.obereGrenze}
-                    {getHeight(index)}
-                </div>
-                );
-            })}
-        </div>
-     </>
-}
+//         <div className={`min-h-[${heightInPx}px] min-w-[${heightInPx}px] border border-gray-300 rounded-lg overflow-hidden flex flex-col`}>
+//             {sortedFarbbereiche.map((bereich, index) => {
+//                 return (
+//                 <div
+//                     key={index}
+//                     className="flex items-center justify-center text-white font-bold text-sm"
+//                     style={{
+//                         height: `${getHeight(index)}px`,
+//                         backgroundColor: bereich.hexFarbe,
+//                     }}
+//                 >
+//                     {bereich.obereGrenze}
+//                     {getHeight(index)}
+//                 </div>
+//                 );
+//             })}
+//         </div>
+//      </>
+// }
