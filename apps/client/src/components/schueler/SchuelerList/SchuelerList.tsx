@@ -68,7 +68,7 @@ export const SchuelerList = (props: SchuelerListProps ) => {
         setSchueler(prev => sort(value, prev))
     };
 
-    const rightHeader = <div className="flex gap-2 items-center">
+    const rightHeader = <div className="flex flex-col md:flex-row gap-2 items-center">
       <div>
         <Button className="border-[1px] max-h-[36px] flex justify-center items-center px-2 py-4 rounded-lg hover:bg-gray-200" onClick={() => setIsGeprüftDialogShown(true)}>
           <p>Alle auf geprüft setzen</p>
@@ -114,7 +114,7 @@ export const SchuelerList = (props: SchuelerListProps ) => {
     </div>
 
     const header = <>
-      <div className='flex justify-between mb-8 items-center'>
+      <div className='flex flex-col items-start md:flex-row justify-between mb-8 md:items-center '>
         { props.leftHeader }
         { rightHeader }
           

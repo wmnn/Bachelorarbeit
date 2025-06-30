@@ -45,17 +45,15 @@ export function DiagnostikList2({ initialDiagnostiken, children }: DiagnostikLis
 
     const header = <div>
         <div className='flex justify-end mb-8'>
-            <div className='flex gap-2'>
-
-            <Input value={searchQuery} placeholder="Suche" onChange={(e) => {
-                const val = e.target.value
-                setSearchQuery(val)
-                setDiagnostiken(_ => sort(sortOption, (initialDiagnostiken ?? []).filter(item => item.name.includes(val))))
-            }}/>
-            <SortSelect selectedSortItem={sortOption} handleSortChange={handleSortChange} labels={DiagnostikSortLabels}/>
-    
-            <DiagnostikFilterButton sortOption={sortOption} initialData={initialDiagnostiken} setDiagnostiken={setDiagnostiken} />
-    
+            <div className='flex flex-col md:flex-row gap-2'>
+                <Input value={searchQuery} placeholder="Suche" onChange={(e) => {
+                    const val = e.target.value
+                    setSearchQuery(val)
+                    setDiagnostiken(_ => sort(sortOption, (initialDiagnostiken ?? []).filter(item => item.name.includes(val))))
+                }}/>
+                <SortSelect selectedSortItem={sortOption} handleSortChange={handleSortChange} labels={DiagnostikSortLabels}/>
+        
+                <DiagnostikFilterButton sortOption={sortOption} initialData={initialDiagnostiken} setDiagnostiken={setDiagnostiken} />
             </div>
         </div>
         
