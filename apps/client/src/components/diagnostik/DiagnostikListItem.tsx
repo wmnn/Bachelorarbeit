@@ -1,4 +1,3 @@
-import { Link } from "@tanstack/react-router"
 import { copyDiagnostik, DiagnostikTyp, editDiagnostik, Sichtbarkeit, updateSichtbarkeit, type Diagnostik } from "@thesis/diagnostik"
 import { use, useState } from "react"
 import { DiagnostikListItemInfoDialog } from "./DiagnostikListItemInfoDialog"
@@ -18,6 +17,7 @@ import { userContext } from "@/context/UserContext"
 import { Berechtigung } from "@thesis/rollen"
 import { useAllUsers } from "../shared/useAllUsers"
 import { LoadingSpinner } from "../LoadingSpinner"
+import { Link } from "@tanstack/react-router"
 
 type DiagnostikListItemProps = {
   diagnostik: Diagnostik;
@@ -105,10 +105,14 @@ export const DiagnostikListItem = ({ diagnostik, isShared = false }: DiagnostikL
   {responseMessage !== '' && (
     <ErrorDialog message={responseMessage} closeDialog={() => setResponseMsg('')} />
   )}
-
-  {/* Main content grid: Two columns on medium screens and up */}
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
-    {/* Left Column (Labels) - This structure will naturally align content */}
+    
+    <Link className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8"
+                to="/diagnostikverfahren/$diagnostikId"
+                params={{
+                    diagnostikId: `${diagnostik.id}`
+                }}
+            >
+  
     <div className="flex flex-col gap-2">
       <div className="flex justify-between items-center">
         <label className="text-gray-600 font-medium min-w-[120px]">Name:</label>
@@ -118,17 +122,17 @@ export const DiagnostikListItem = ({ diagnostik, isShared = false }: DiagnostikL
         <label className="text-gray-600 font-medium min-w-[120px]">Klasse:</label>
         <p className="text-gray-700 text-right flex-grow">{klasse !== undefined && getTitle(klasse)}</p>
       </div>
-      <div className="flex justify-between items-center">
+      
+    </div>
+
+    <div className="flex flex-col gap-2">
+        <div className="flex justify-between items-center">
         <label className="text-gray-600 font-medium min-w-[120px]">Erstellt am:</label>
         <p className="text-gray-700 text-right flex-grow">
           {diagnostik.erstellungsDatum &&
             new Date(diagnostik.erstellungsDatum).toLocaleDateString('de')}
         </p>
       </div>
-    </div>
-
-    {/* Right Column (More Details and Selects) */}
-    <div className="flex flex-col gap-2">
       <div className="flex justify-between items-center">
         <label className="text-gray-600 font-medium min-w-[120px]">Aktualisiert am:</label>
         <p className="text-gray-700 text-right flex-grow">
@@ -136,8 +140,17 @@ export const DiagnostikListItem = ({ diagnostik, isShared = false }: DiagnostikL
             new Date(diagnostik.aktualisiertAm).toLocaleDateString('de')}
         </p>
       </div>
-      <div className="flex justify-between items-center">
+      
+
+    </div>
+  </Link>
+
+  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-6 pt-4 border-t border-gray-200">
+    <div className="flex gap-3 items-center flex-wrap">
+        <div className="flex justify-between items-center">
         <label className="text-gray-600 font-medium min-w-[120px]">Besitzer:</label>
+        
+      
         {user?.rolle?.berechtigungen[Berechtigung.DiagnostikverfahrenRead] === 'alle' && (
           <Select
             value={`${diagnostik.userId}`}
@@ -179,8 +192,7 @@ export const DiagnostikListItem = ({ diagnostik, isShared = false }: DiagnostikL
             </SelectContent>
           </Select>
         )}
-      </div>
-
+        </div>
       {isVorlage && (
         <div className="flex justify-between items-center">
           <label className="text-gray-600 font-medium min-w-[120px]">Sichtbarkeit:</label>
@@ -198,35 +210,35 @@ export const DiagnostikListItem = ({ diagnostik, isShared = false }: DiagnostikL
           </Select>
         </div>
       )}
-    </div>
-  </div>
-
-  {/* Action Buttons Section */}
-  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-6 pt-4 border-t border-gray-200">
-    <div className="flex gap-3 items-center flex-wrap">
-      {isVorlage && (
-        <ButtonLight className="min-w-[100px]" onClick={() => setIsSelectClassDialogShown(true)}>Benutzen</ButtonLight>
-      )}
       {isShared && <ButtonLight className="min-w-[100px]" onClick={handleCopy}>Kopieren</ButtonLight>}
       {!isShared && (
         <>
           <Tooltip content="Info">
-            <ButtonLight className="p-2 h-auto" onClick={() => setIsInfoDialogShown(true)}>
-              <Info size={20} />
+            <ButtonLight className="p-2 h-auto flex gap-2 items-center" onClick={() => setIsInfoDialogShown(true)}>
+                <p>Info</p>
+                <Info size={20} />
             </ButtonLight>
           </Tooltip>
 
           <Tooltip content="Bearbeiten">
-            <ButtonLight className="p-2 h-auto" onClick={() => setIsEditDialogShown(true)}>
-              <Edit2 size={20} />
+            <ButtonLight className="p-2 h-auto flex gap-2 items-center" onClick={() => setIsEditDialogShown(true)}>
+                <p>Bearbeiten</p>
+                <Edit2 size={20} />
             </ButtonLight>
           </Tooltip>
 
           <Tooltip content="Löschen">
-            <ButtonLight className="p-2 h-auto" onClick={() => setIsDeleteDialogShown(true)}>
-              <Trash2 size={20} />
+            <ButtonLight className="p-2 h-auto flex gap-2 items-center" onClick={() => setIsDeleteDialogShown(true)}>
+                <p>Löschen</p>
+                <Trash2 size={20} />
             </ButtonLight>
           </Tooltip>
+          {isVorlage && (
+            <Tooltip content="Benutzen">
+                <ButtonLight className="min-w-[100px]" onClick={() => setIsSelectClassDialogShown(true)}>Benutzen</ButtonLight>
+            </Tooltip>
+            
+            )}
         </>
       )}
     </div>
