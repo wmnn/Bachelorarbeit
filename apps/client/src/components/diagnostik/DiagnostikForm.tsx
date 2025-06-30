@@ -359,7 +359,7 @@ interface FarbbereicheProps {
     untereGrenze: number | string
 }
 const Farbbereiche = (props: FarbbereicheProps) => {
-    const { farbbereiche, setFarbbereiche, obereGrenze, untereGrenze } = props
+    const { farbbereiche, setFarbbereiche } = props
 
     const [lastUpdatedValue, setLastUpdatedValue] = useState<null | string>(null);
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -435,12 +435,12 @@ const Farbbereiche = (props: FarbbereicheProps) => {
 }
 const FarbbereichSlider = (props: FarbbereicheProps) => {
 
-    const { farbbereiche, setFarbbereiche, obereGrenze, untereGrenze } = props
+    const { farbbereiche } = props
     const sortedFarbbereiche = sortFarbbereiche(farbbereiche)
 
     const heightInPx = 250
 
-    function getHeight(sortedFarbbereicheIdx: number) {
+    function getHeight(_: number) {
 
         return 0;
         // console.log(obereGrenze, untereGrenze, heightInPx)

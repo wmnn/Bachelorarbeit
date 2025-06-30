@@ -195,7 +195,7 @@ export const getDiagnostik = async (diagnostikId: number) => {
         const data = await res.json();
 
         if (res.status === 401) {
-            return handleRedirection(data.redirect)
+            handleRedirection(data.redirect)
         }
     
         return data as Diagnostik | undefined
@@ -225,7 +225,7 @@ export const addErgebnisse = async (ergebnisse: Ergebnis[], diagnostikId: string
         const data = await res.json();
 
         if (res.status === 401) {
-            return handleRedirection(data.redirect)
+            handleRedirection(data.redirect)
         }
     
         return data as AddErgebnisseResponseBody
@@ -252,7 +252,7 @@ export const getErgebnisse = async (diagnostikId: string) => {
         const data = await res.json();
 
         if (res.status === 401) {
-            return handleRedirection(data.redirect)
+            handleRedirection(data.redirect)
         }
     
         return data as Row[];
@@ -280,7 +280,7 @@ export const getDiagnostikSchuelerData = async (schuelerId: string) => {
         const data = await res.json();
 
         if (res.status === 401) {
-            return handleRedirection(data.redirect)
+            handleRedirection(data.redirect)
         }
     
         return data as GetSchuelerDataResponseBody
@@ -309,7 +309,7 @@ export const deleteDiagnostik = async (diagnostikId: string) => {
         const data = await res.json();
 
         if (res.status === 401) {
-            return handleRedirection(data.redirect)
+            handleRedirection(data.redirect)
         }
     
         return data as CreateDiagnostikResponseBody

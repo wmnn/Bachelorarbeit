@@ -34,7 +34,7 @@ export function DiagnostikVorlageSelectClassDialog({ diagnostik, closeDialog, se
             name,
             klasseId: selectedClass,
             speicherTyp: DiagnostikTyp.LAUFENDES_VERFAHREN
-        })
+        }, [])
         setResponseMsg(res.message)
         queryClient.invalidateQueries({ queryKey: [DIAGNOSTIKEN_QUERY_KEY]})
         closeDialog()

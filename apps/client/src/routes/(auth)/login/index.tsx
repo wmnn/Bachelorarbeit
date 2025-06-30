@@ -5,7 +5,7 @@ import { Input } from "@/components/Input";
 import { MainButton } from "@/components/MainButton";
 import { userContext } from "@/context/UserContext";
 
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { login } from "@thesis/auth"
 import { useContext, useState } from "react";
 import { handleRedirection } from "../../../../../../libs/config/config";
@@ -73,6 +73,9 @@ export default function Login () {
             <Button className="mt-2">
                 <Link 
                     to='/reset-password'
+                    search={{
+                        token: undefined
+                    }}
                 >
                     Password vergessen?
                 </Link>

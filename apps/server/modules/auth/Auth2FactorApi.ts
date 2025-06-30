@@ -24,7 +24,8 @@ router.get('/setup',async (
     if (await is2FASetup(userId)) {
         return res.status(400).json({
             success: false,
-            message: '2-Faktor Authentifizierung wurde schon eingerichtet.'
+            message: '2-Faktor Authentifizierung wurde schon eingerichtet.',
+            redirect: LoginRedirectAction.VALIDATE_2_FACTOR_CODE
         });
     }
     const name = process.env.AUTH_2_FACTOR_NAME
@@ -62,7 +63,8 @@ router.post('/verify',async (
     if (typeof secret == 'string') {
         return res.status(400).json({
             success: false,
-            message: '2-Faktor Authentifizierung wurde schon eingerichtet.'
+            message: '2-Faktor Authentifizierung wurde schon eingerichtet.',
+            redirect: LoginRedirectAction.VALIDATE_2_FACTOR_CODE
         });
     }
 

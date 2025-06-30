@@ -88,6 +88,9 @@ export const authMiddleware = async (
     res: Response,
     next: NextFunction
 ) => {
+    if (!req.originalUrl.startsWith('/api')) {
+        return next();
+    }
     // Middleware to verify and add session cookie
     const cookie = req.cookies[SESSION_COOKIE_NAME];
     if (!cookie || !cookie.includes('.')) {
@@ -127,7 +130,10 @@ export const authMiddleware = async (
         && !req.originalUrl.startsWith(AUTH_2_FACTOR_API_ENDPOINT) 
         && !req.originalUrl.startsWith(AUTH_API_ENDPOINT + LOGIN_ENDPOINT)
         && !req.originalUrl.startsWith(AUTH_API_ENDPOINT + `/reset-password`)
+        && !req.originalUrl.startsWith(AUTH_2_FACTOR_API_ENDPOINT + `/2fa-verify`)
+        && !req.originalUrl.startsWith(AUTH_API_ENDPOINT + `/register`)
     ) {
+        console.log('!2fa verify', req.originalUrl)
         return res.status(401).json({
             success: false,
             message: 'Der 2-Faktor Authentifizierungscode wurde noch nicht überprüft.',
@@ -216,7 +222,7 @@ router.post(
         res.status(200).json({
             success: true,
             user,
-            redirect: LoginRedirectAction.VERIFY_2_FACTOR_CODE
+            redirect: LoginRedirectAction.VALIDATE_2_FACTOR_CODE
         });
     }
 );
@@ -513,7 +519,7 @@ router.get('/reset-password', async (req: Request<{}, {}, any>, res: Response<an
     if (!email) return;
 
     const token = jwt.sign({ email }, registerKey, { expiresIn: '10m'})
-    const link = `${req.get('host')}` + `/reset-password?token=${token}`
+    const link = `https://${req.get('host')}` + `/reset-password?token=${token}`
     const success = await sendResetPasswordEmail(email as string, link)
 
     if (success) {

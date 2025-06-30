@@ -1,6 +1,5 @@
 import { DiagnostikList2 } from '@/components/diagnostik/DiagnostikList2';
 import { DiagnostikListItem } from '@/components/diagnostik/DiagnostikListItem';
-import { List } from '@/components/List';
 import { useDiagnostiken } from '@/components/shared/useDiagnostiken';
 import { KlasseNav } from '@/layout/KlasseNav'
 import { createFileRoute } from '@tanstack/react-router'

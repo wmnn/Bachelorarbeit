@@ -1,4 +1,3 @@
-import { LoginRedirectAction } from "../../../auth/src"
 import { handleRedirection } from "../../../config/config"
 import { type Rolle } from "../models/role"
 

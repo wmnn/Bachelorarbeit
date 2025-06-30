@@ -5,7 +5,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { validate2FactorAuthentication } from '@thesis/auth'
 import { useState } from 'react'
 
-export const Route = createFileRoute('/(auth)/2fa-verify/')({
+export const Route = createFileRoute('/(auth)/2fa-validate/')({
   component: RouteComponent,
 })
 

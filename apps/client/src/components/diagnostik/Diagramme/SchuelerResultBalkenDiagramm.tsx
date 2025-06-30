@@ -1,5 +1,4 @@
 import { Tooltip } from "@/components/Tooltip"
-import type { Ergebnis } from "@thesis/diagnostik"
 
 interface SchuelerResultBalkenDiagrammProps {
     obereGrenze: number,

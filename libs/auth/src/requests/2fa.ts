@@ -5,7 +5,8 @@ import { LoginRedirectAction } from "./login";
 export interface Setup2FactorAuthenticationResponseBody {
     success: boolean,
     message: string,
-    data?: any
+    data?: any,
+    redirect?: LoginRedirectAction
 }
 export const setup2FactorAuthentication = async (): Promise<Setup2FactorAuthenticationResponseBody> => {
 

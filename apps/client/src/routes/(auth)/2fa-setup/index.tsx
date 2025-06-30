@@ -6,6 +6,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { setup2FactorAuthentication, verify2FactorAuthentication } from '@thesis/auth'
 import QRCode from 'qrcode'
 import { useEffect, useState } from 'react'
+import { handleRedirection } from '../../../../../../libs/config/config'
 
 export const Route = createFileRoute('/(auth)/2fa-setup/')({
   component: RouteComponent,
@@ -30,6 +31,10 @@ function RouteComponent() {
     return <p>...Loading</p>
   }
 
+  if (query.data?.redirect) {
+    handleRedirection(query.data.redirect)
+  }
+
   if (query.data !== undefined && !query.data.success) {
     return alert(query.data.message)
   }
@@ -46,9 +51,13 @@ function RouteComponent() {
 
   async function handleSubmit() {
     const res = await verify2FactorAuthentication(code)
+    if (res.redirect) {
+      handleRedirection(res.redirect)
+    }
     if (!res.success) {
       alert(res.message)
     }
+    
   }
  
   return <div className='flex flex-col gap-4 px-2 xl:px-8'>

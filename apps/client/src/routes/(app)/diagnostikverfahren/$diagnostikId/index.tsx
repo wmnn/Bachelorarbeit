@@ -4,7 +4,6 @@ import { KuchenDiagramm } from '@/components/diagnostik/Diagramme/KuchenDiagramm
 import { Liniendiagramm } from '@/components/diagnostik/Diagramme/LinienDiagramm';
 import { useDiagnostik } from '@/components/diagnostik/useDiagnostik';
 import { useErgebnisse } from '@/components/diagnostik/useErgebnisse';
-import { Input } from '@/components/Input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DiagnostikNav } from '@/layout/DiagnostikNav';
 import { createFileRoute } from '@tanstack/react-router'

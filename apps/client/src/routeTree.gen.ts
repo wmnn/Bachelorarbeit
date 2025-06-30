@@ -16,7 +16,7 @@ import { Route as IndexImport } from './routes/index'
 import { Route as authResetPasswordIndexImport } from './routes/(auth)/reset-password/index'
 import { Route as authRegisterIndexImport } from './routes/(auth)/register/index'
 import { Route as authLoginIndexImport } from './routes/(auth)/login/index'
-import { Route as auth2faVerifyIndexImport } from './routes/(auth)/2fa-verify/index'
+import { Route as auth2faValidateIndexImport } from './routes/(auth)/2fa-validate/index'
 import { Route as auth2faSetupIndexImport } from './routes/(auth)/2fa-setup/index'
 import { Route as appSettingsIndexImport } from './routes/(app)/settings/index'
 import { Route as appSchuelerIndexImport } from './routes/(app)/schueler/index'
@@ -72,9 +72,9 @@ const authLoginIndexRoute = authLoginIndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const auth2faVerifyIndexRoute = auth2faVerifyIndexImport.update({
-  id: '/(auth)/2fa-verify/',
-  path: '/2fa-verify/',
+const auth2faValidateIndexRoute = auth2faValidateIndexImport.update({
+  id: '/(auth)/2fa-validate/',
+  path: '/2fa-validate/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -312,11 +312,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof auth2faSetupIndexImport
       parentRoute: typeof rootRoute
     }
-    '/(auth)/2fa-verify/': {
-      id: '/(auth)/2fa-verify/'
-      path: '/2fa-verify'
-      fullPath: '/2fa-verify'
-      preLoaderRoute: typeof auth2faVerifyIndexImport
+    '/(auth)/2fa-validate/': {
+      id: '/(auth)/2fa-validate/'
+      path: '/2fa-validate'
+      fullPath: '/2fa-validate'
+      preLoaderRoute: typeof auth2faValidateIndexImport
       parentRoute: typeof rootRoute
     }
     '/(auth)/login/': {
@@ -514,7 +514,7 @@ export interface FileRoutesByFullPath {
   '/schueler': typeof appSchuelerIndexRoute
   '/settings': typeof appSettingsIndexRoute
   '/2fa-setup': typeof auth2faSetupIndexRoute
-  '/2fa-verify': typeof auth2faVerifyIndexRoute
+  '/2fa-validate': typeof auth2faValidateIndexRoute
   '/login': typeof authLoginIndexRoute
   '/register': typeof authRegisterIndexRoute
   '/reset-password': typeof authResetPasswordIndexRoute
@@ -545,7 +545,7 @@ export interface FileRoutesByTo {
   '/schueler': typeof appSchuelerIndexRoute
   '/settings': typeof appSettingsIndexRoute
   '/2fa-setup': typeof auth2faSetupIndexRoute
-  '/2fa-verify': typeof auth2faVerifyIndexRoute
+  '/2fa-validate': typeof auth2faValidateIndexRoute
   '/login': typeof authLoginIndexRoute
   '/register': typeof authRegisterIndexRoute
   '/reset-password': typeof authResetPasswordIndexRoute
@@ -578,7 +578,7 @@ export interface FileRoutesById {
   '/(app)/schueler/': typeof appSchuelerIndexRoute
   '/(app)/settings/': typeof appSettingsIndexRoute
   '/(auth)/2fa-setup/': typeof auth2faSetupIndexRoute
-  '/(auth)/2fa-verify/': typeof auth2faVerifyIndexRoute
+  '/(auth)/2fa-validate/': typeof auth2faValidateIndexRoute
   '/(auth)/login/': typeof authLoginIndexRoute
   '/(auth)/register/': typeof authRegisterIndexRoute
   '/(auth)/reset-password/': typeof authResetPasswordIndexRoute
@@ -611,7 +611,7 @@ export interface FileRouteTypes {
     | '/schueler'
     | '/settings'
     | '/2fa-setup'
-    | '/2fa-verify'
+    | '/2fa-validate'
     | '/login'
     | '/register'
     | '/reset-password'
@@ -641,7 +641,7 @@ export interface FileRouteTypes {
     | '/schueler'
     | '/settings'
     | '/2fa-setup'
-    | '/2fa-verify'
+    | '/2fa-validate'
     | '/login'
     | '/register'
     | '/reset-password'
@@ -672,7 +672,7 @@ export interface FileRouteTypes {
     | '/(app)/schueler/'
     | '/(app)/settings/'
     | '/(auth)/2fa-setup/'
-    | '/(auth)/2fa-verify/'
+    | '/(auth)/2fa-validate/'
     | '/(auth)/login/'
     | '/(auth)/register/'
     | '/(auth)/reset-password/'
@@ -697,7 +697,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   appRouteRoute: typeof appRouteRouteWithChildren
   auth2faSetupIndexRoute: typeof auth2faSetupIndexRoute
-  auth2faVerifyIndexRoute: typeof auth2faVerifyIndexRoute
+  auth2faValidateIndexRoute: typeof auth2faValidateIndexRoute
   authLoginIndexRoute: typeof authLoginIndexRoute
   authRegisterIndexRoute: typeof authRegisterIndexRoute
   authResetPasswordIndexRoute: typeof authResetPasswordIndexRoute
@@ -707,7 +707,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   appRouteRoute: appRouteRouteWithChildren,
   auth2faSetupIndexRoute: auth2faSetupIndexRoute,
-  auth2faVerifyIndexRoute: auth2faVerifyIndexRoute,
+  auth2faValidateIndexRoute: auth2faValidateIndexRoute,
   authLoginIndexRoute: authLoginIndexRoute,
   authRegisterIndexRoute: authRegisterIndexRoute,
   authResetPasswordIndexRoute: authResetPasswordIndexRoute,
@@ -726,7 +726,7 @@ export const routeTree = rootRoute
         "/",
         "/(app)",
         "/(auth)/2fa-setup/",
-        "/(auth)/2fa-verify/",
+        "/(auth)/2fa-validate/",
         "/(auth)/login/",
         "/(auth)/register/",
         "/(auth)/reset-password/"
@@ -797,8 +797,8 @@ export const routeTree = rootRoute
     "/(auth)/2fa-setup/": {
       "filePath": "(auth)/2fa-setup/index.tsx"
     },
-    "/(auth)/2fa-verify/": {
-      "filePath": "(auth)/2fa-verify/index.tsx"
+    "/(auth)/2fa-validate/": {
+      "filePath": "(auth)/2fa-validate/index.tsx"
     },
     "/(auth)/login/": {
       "filePath": "(auth)/login/index.tsx"

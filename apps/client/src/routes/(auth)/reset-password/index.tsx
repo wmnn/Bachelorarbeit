@@ -29,6 +29,9 @@ function RouteComponent() {
   async function handleResetPasswort() {
     const res = await resetPassword(neuesPasswort, neuesPasswortWiederholt, search.token ?? '')
     alert(res.message)
+    if (res.success) {
+      window.location.href = '/login'
+    }
   }
 
   if (search.token) {

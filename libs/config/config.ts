@@ -29,5 +29,7 @@ export const handleRedirection = (redirect: undefined | LoginRedirectAction) => 
         window.location.href = '/2fa-setup'
     } else if (redirect == LoginRedirectAction.VERIFY_2_FACTOR_CODE) {
         window.location.href = '/2fa-verify'
+    } else if (redirect == LoginRedirectAction.VALIDATE_2_FACTOR_CODE) {
+        window.location.href = '/2fa-validate'
     }
 }

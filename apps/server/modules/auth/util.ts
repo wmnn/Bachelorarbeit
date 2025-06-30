@@ -113,6 +113,9 @@ export const rolleMiddleware = async (
     res: Response,
     next: NextFunction
 ) => {
+    if (!req.originalUrl.startsWith('/api')) {
+        return next();
+    }
     const rolle = req.rolle
     if (!rolle) {
         next();

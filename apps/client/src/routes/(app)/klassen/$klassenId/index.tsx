@@ -1,15 +1,14 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { type Klasse } from '@thesis/schule';
 import { useRouter } from '@tanstack/react-router'
-import { Edit, MoveLeft } from 'lucide-react';
+import { MoveLeft } from 'lucide-react';
 import { KlasseNav } from '@/layout/KlasseNav';
-import { getTitle } from '@thesis/schule'
 import { SchuelerList } from '@/components/schueler/SchuelerList/SchuelerList';
 import { useSchuelerStore } from '@/components/schueler/SchuelerStore';
 import { AnwesenheitTyp } from '@thesis/anwesenheiten';
 import { useKlasse } from '@/components/shared/useKlasse';
 import { useAllSchueler } from '@/components/schueler/useSchueler';
-import { memo, useMemo } from 'react';
+import { useMemo } from 'react';
 
 export const Route = createFileRoute('/(app)/klassen/$klassenId/')({
   component: RouteComponent,

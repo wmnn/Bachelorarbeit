@@ -1,7 +1,5 @@
-import { DateFilter } from '@/components/diagnostik/Diagramme/DateFilter';
 import { SchuelerBalkenDiagramm } from '@/components/diagnostik/Diagramme/SchuelerBalkenDiagramm';
 import { useDiagnostikSchuelerData } from '@/components/schueler/useDiagnostikSchuelerData';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { SchuelerNav } from '@/layout/SchuelerNav';
 import { createFileRoute } from '@tanstack/react-router'
 

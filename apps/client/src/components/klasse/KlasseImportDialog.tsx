@@ -43,7 +43,7 @@ export function KlasseImportDialog(props: KlasseErstellenDialogProps) {
                     modus: ImportModus.KeineKlasse,
                     neueKlassenstufe: version.klassenstufe,
                     neuerZusatz: version.zusatz,
-                }))
+                })) as any // TODO
             }));
             setImportData(initialImportData);
         }

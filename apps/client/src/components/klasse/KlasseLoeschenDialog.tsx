@@ -3,7 +3,6 @@ import { RiskyActionDialog } from "../dialog/RiskyActionDialog";
 import { KLASSEN_QUERY_KEY } from "@/reactQueryKeys";
 import { deleteKlasse } from "@thesis/schule";
 import { useSchuljahrStore } from "../schuljahr/SchuljahrStore";
-import { useNavigate } from "@tanstack/react-router";
 
 interface KlasseLoeschenDialogProps {
     klasseId: number,

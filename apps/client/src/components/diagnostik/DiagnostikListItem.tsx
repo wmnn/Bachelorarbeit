@@ -17,8 +17,6 @@ import { DIAGNOSTIKEN_QUERY_KEY } from "@/reactQueryKeys"
 import { userContext } from "@/context/UserContext"
 import { Berechtigung } from "@thesis/rollen"
 import { useAllUsers } from "../shared/useAllUsers"
-import { useUserStore } from "../auth/UserStore"
-import { useRollenStore } from "../auth/RollenStore"
 import { LoadingSpinner } from "../LoadingSpinner"
 
 type DiagnostikListItemProps = {

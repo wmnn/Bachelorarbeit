@@ -1,10 +1,8 @@
-import { Link, useRouter, useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { NavItem as ListItem } from "./NavItem";
-import { ButtonLight } from "@/components/ButtonLight";
 
 export const DiagnostikenNav = () => {
 
-  const router = useRouter()
   const { location } = useRouterState();
   const pathname = location.pathname;
   const base = `/diagnostikverfahren`;
