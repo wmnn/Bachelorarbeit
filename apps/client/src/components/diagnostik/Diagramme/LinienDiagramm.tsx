@@ -36,13 +36,14 @@ export const Liniendiagramm = ({ data: initialData, diagnostik }: { data: Row[],
                 if (schuelerData) {
                     label = `${schuelerData?.vorname} ${schuelerData?.nachname}`
                 }
-
+                const data = row.ergebnisse.map(ergebnis => `${Number(ergebnis.ergebnis.replace(',', '.')).toFixed(2)}`)
+    
                 return {
                     label,
                     fill: false,
                     borderColor: `hsl(${Math.floor(Math.random() * 360)}, 70%, 50%)`,
                     tension: 0.1,
-                    data: row.ergebnisse.map(ergebnis => `${ergebnis.ergebnis}`)
+                    data
                 }
             }), 
             {
