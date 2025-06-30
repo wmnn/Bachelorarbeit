@@ -17,7 +17,8 @@ export function DiagnostikGeteiltList() {
         initialDiagnostiken={diagnostiken ?? []}
     >
         {
-            ({diagnostiken}) => diagnostiken?.map((diagnostik, idx) => <DiagnostikListItem key={idx} diagnostik={diagnostik} isShared />)
+            ({ diagnostiken }) => diagnostiken?.map((diagnostik, idx) => <DiagnostikListItem key={idx} diagnostik={diagnostik} isShared />)
+           
         }
     </DiagnostikList2>
 }

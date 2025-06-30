@@ -16,6 +16,7 @@ export function DiagnostikList() {
     >
         {
             ({ diagnostiken }) => diagnostiken?.map((diagnostik, idx) => <DiagnostikListItem key={idx} diagnostik={diagnostik} />)
+           
         }
     </DiagnostikList2>
 }

@@ -64,13 +64,15 @@ export function DiagnostikList2({ initialDiagnostiken, children }: DiagnostikLis
     return <List 
         createButonLabel="Diagnostik erstellen"
         setIsCreateDialogShown={setIsCreateDialogShown}
-        className="mt-8"
+        className="mt-8 divide-none"
         header={header}
     >
         { isCreateDialogShown && <DiagnostikErstellenDialog closeDialog={() => setIsCreateDialogShown(false)}/>}
-        {typeof children === 'function'
+        <div className="my-2 flex flex-col gap-2">
+            {typeof children === 'function'
             ? children({ diagnostiken })
             : children}
+        </div>
     </List> 
 }
 
