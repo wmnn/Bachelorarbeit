@@ -20,13 +20,13 @@ export function sortFarbbereiche(farbbereiche: Farbbereich[]): Farbbereich[] {
   });
 }
 
-export function getMindeststandard(diagnostik: Diagnostik): undefined | number {
+export function getMindeststandard(diagnostik: Diagnostik): undefined | string {
   const { farbbereiche } = diagnostik
   sortFarbbereiche(farbbereiche ?? [])
   if (farbbereiche == undefined || farbbereiche.length == 0) {
       return;
   }
-  return parseInt(`${farbbereiche[farbbereiche?.length - 1].obereGrenze}`)
+  return Number(parseFloat(`${farbbereiche[farbbereiche?.length - 1].obereGrenze}`)).toFixed(2)
 }
 
 /**

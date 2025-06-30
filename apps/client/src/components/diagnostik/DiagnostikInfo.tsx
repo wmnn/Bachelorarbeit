@@ -1,4 +1,4 @@
-import type { Diagnostik } from "@thesis/diagnostik"
+import { getMindeststandard, type Diagnostik } from "@thesis/diagnostik"
 import { ButtonLight } from "../ButtonLight"
 import { downloadDateien } from "./Diagramme/util"
 import { userContext } from "@/context/UserContext"
@@ -68,6 +68,13 @@ export const DiagnostikInfo = ({ diagnostik }: { diagnostik : Diagnostik }) => {
                 Untere Grenze
             </label>
             <p>{diagnostik.untereGrenze}</p>
+        </div>
+
+        <div>
+            <label>
+                Mindeststandard
+            </label>
+            <p>{getMindeststandard(diagnostik)}</p>
         </div>
 
         <div>

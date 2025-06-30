@@ -219,7 +219,7 @@ router.post('/:diagnostikId', async (req, res: Response<AddErgebnisseResponseBod
             isValidData = false
             break;
         }
-        if (parseInt(ergebnis.ergebnis) > parseInt(`${diagnostik?.obereGrenze}`) || parseInt(ergebnis.ergebnis) < parseInt(`${diagnostik.untereGrenze}`)) {
+        if (parseFloat(ergebnis.ergebnis) > parseFloat(`${diagnostik?.obereGrenze}`) || parseFloat(ergebnis.ergebnis) < parseFloat(`${diagnostik.untereGrenze}`)) {
             isValidData = false
             break;
         }
@@ -402,6 +402,13 @@ router.post('/', async (
         });
     }
 
+    if (diagnostik?.beschreibung && diagnostik?.beschreibung.length > 255) {
+        return res.status(400).json({
+            success: false,
+            message: `Die Beschreibung darf maximal 255 Zeichen haben.`
+        })
+    }
+
     if (diagnostik.erstellungsTyp === 'Vorlage') {
         const vorlage = await getDiagnostikStore().getDiagnostik(diagnostik.vorlageId!) 
         if (!vorlage) {
@@ -464,15 +471,15 @@ router.put('/', async (
 
 function validierungGrenzen(diagnostik: Diagnostik): CreateDiagnostikResponseBody {
     const { obereGrenze, untereGrenze } = diagnostik
-    const parsedObereGrenze = parseInt(`${obereGrenze}`)
-    const parsedUntereGrenze = parseInt(`${untereGrenze}`)
+    const parsedObereGrenze = parseFloat(`${obereGrenze}`)
+    const parsedUntereGrenze = parseFloat(`${untereGrenze}`)
     if (obereGrenze === undefined || parsedObereGrenze < 0) {
         return {
             success: false,
             message: 'Es wurde eine ungültige obere Grenze definiert.'
         }
     }
-    if (untereGrenze === undefined || parsedUntereGrenze < 0) {
+    if (untereGrenze === undefined) {
         return {
             success: false,
             message: 'Es wurde eine ungültige untere Grenze definiert.'

@@ -41,8 +41,8 @@ export class DiagnostikStore {
                 name: diag.name,
                 beschreibung: diag.beschreibung,
                 erstellungsDatum: diag.erstellungsdatum,
-                obereGrenze: diag.obereGrenze,
-                untereGrenze: diag.untereGrenze,
+                obereGrenze: Number(parseFloat(diag.obereGrenze).toFixed(2)),
+                untereGrenze: Number(parseFloat(diag.untereGrenze).toFixed(2)),
                 speicherTyp: parseInt(diag.typ),
                 userId: diag.userId,
                 klasseId: parseInt(diag.klasseId),
@@ -131,8 +131,8 @@ export class DiagnostikStore {
                     name: diag.name,
                     beschreibung: diag.beschreibung,
                     erstellungsDatum: diag.erstellungsdatum,
-                    obereGrenze: parseInt(diag.obereGrenze),
-                    untereGrenze: diag.untereGrenze,
+                    obereGrenze: Number(parseFloat(diag.obereGrenze).toFixed(2)),
+                    untereGrenze: Number(parseFloat(diag.untereGrenze).toFixed(2)),
                     speicherTyp: parseInt(diag.typ),
                     userId: diag.userId,
                     klasseId: parseInt(diag.klasseId),
@@ -234,7 +234,7 @@ export class DiagnostikStore {
             const obereGrenze = row.obereGrenze
             return {
                 hexFarbe: row.hexFarbe,
-                obereGrenze: obereGrenze ?? undefined
+                obereGrenze: Number(parseFloat(obereGrenze)).toFixed(2) ?? undefined
             }
         });
     }
