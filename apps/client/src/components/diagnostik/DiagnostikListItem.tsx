@@ -107,11 +107,11 @@ export const DiagnostikListItem = ({ diagnostik, isShared = false }: DiagnostikL
   )}
     
     <Link className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8"
-                to="/diagnostikverfahren/$diagnostikId"
-                params={{
-                    diagnostikId: `${diagnostik.id}`
-                }}
-            >
+        to="/diagnostikverfahren/$diagnostikId"
+        params={{
+            diagnostikId: `${diagnostik.id}`
+        }}
+    >
   
     <div className="flex flex-col gap-2">
       <div className="flex justify-between items-center">
