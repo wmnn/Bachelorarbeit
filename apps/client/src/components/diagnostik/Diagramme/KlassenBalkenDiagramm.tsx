@@ -25,8 +25,8 @@ export const KlassenBalkenDiagramm = ({ data: initialData, diagnostik }: { data:
         const ctx = (document.getElementById(id) as HTMLCanvasElement).getContext('2d');
         const sortedData = sortRowErgebnisseByDate(data)
         const dates = getDates(sortedData)
-        const mindeststandardErreicht = dates.map(date => getMindeststandardResults(mindeststandard, data, date).mindeststandardErreicht)
-        const mindeststandardNichtErreicht = dates.map(date => getMindeststandardResults(mindeststandard, data, date).mindeststandardNichtErreicht)
+        const mindeststandardErreicht = dates.map(date => getMindeststandardResults(Number(mindeststandard), data, date).mindeststandardErreicht)
+        const mindeststandardNichtErreicht = dates.map(date => getMindeststandardResults(Number(mindeststandard), data, date).mindeststandardNichtErreicht)
 
         const labels = [...dates]
         const datasets = [

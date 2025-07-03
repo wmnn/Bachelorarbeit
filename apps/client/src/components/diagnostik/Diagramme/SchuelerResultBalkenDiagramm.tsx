@@ -22,7 +22,7 @@ export const SchuelerResultBalkenDiagramm = (props: SchuelerResultBalkenDiagramm
     const widthInPx = 50
     const heightInPx = 250
 
-    const heightGreenDivInPercent = 1 - ((mindeststandard - untereGrenze) / (obereGrenze - untereGrenze))
+    const heightGreenDivInPercent = 1 - ((Number(mindeststandard) - untereGrenze) / (obereGrenze - untereGrenze))
     const heightResultInPercent = (ergebnis - untereGrenze) / (obereGrenze - untereGrenze)
     const heightResultBarInPx = 2
     return <div className="flex flex-col items-center min-w-[100px]">

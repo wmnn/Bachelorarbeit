@@ -23,7 +23,7 @@ export const KuchenDiagramm = ({ data: initialData, diagnostik }: { data: Row[],
         const {
             mindeststandardErreicht,
             mindeststandardNichtErreicht
-        } = getMindeststandardResults(mindeststandard, data, date)
+        } = getMindeststandardResults(Number(mindeststandard), data, date)
 
         let chart = Chart.getChart(id); 
         if (chart != undefined) {

@@ -69,7 +69,7 @@ const DiagnostikListItem = ({ diagnostik: initialData }: {diagnostik : Diagnosti
                         return <SchuelerResultBalkenDiagramm  
                         obereGrenze={parseInt(`${diagnostik.obereGrenze ?? -1}`)}
                         untereGrenze={parseInt(`${diagnostik.untereGrenze ?? -1}`)}
-                        mindeststandard={getMindeststandard(diagnostik) ?? -1}  
+                        mindeststandard={Number(getMindeststandard(diagnostik) ?? -1)}  
                         ergebnis={parseInt(ergebnis.ergebnis)}
                         label={new Date(ergebnis.datum ?? '').toLocaleDateString('de')}   
                         />

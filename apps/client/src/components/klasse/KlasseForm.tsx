@@ -65,7 +65,7 @@ export const KlasseForm = (props: KlasseFormProps) => {
         }])
     }
 
-    return <div className="h-[60vh]">
+    return <div>
         <h1>{title ? title : 'Klasse hinzufügen'}</h1>
 
         <SelectedUserCtrl 
