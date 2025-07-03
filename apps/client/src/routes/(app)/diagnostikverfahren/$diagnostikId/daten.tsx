@@ -3,7 +3,7 @@ import { useErgebnisse } from '@/components/diagnostik/useErgebnisse';
 import { useSchuelerStore } from '@/components/schueler/SchuelerStore';
 import { useAllSchueler } from '@/components/schueler/useSchueler';
 import { DiagnostikNav } from '@/layout/DiagnostikNav';
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { getDates, type Ergebnis, type Row } from '@thesis/diagnostik';
 
 export const Route = createFileRoute(
@@ -137,6 +137,18 @@ const Table = ({ data }: { data: Row[]}) => {
           {rows.map((row, rowIndex) => (
             <tr key={row.schuelerId} className={rowIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
               {row.ergebnisse.map((ergebnis, idx) => (
+                idx == 0 ? 
+                  <td
+                    key={idx}
+                    className="border border-gray-300 px-4 py-2 text-center"
+                  >
+                    <Link to='/schueler/$schuelerId' params={{ schuelerId: `${ergebnis.schuelerId}` }}
+                  className='border-none'
+                >{ergebnis.ergebnis}</Link>
+                    
+                  </td>
+                
+                :
                 <td
                   key={idx}
                   className="border border-gray-300 px-4 py-2 text-center"
