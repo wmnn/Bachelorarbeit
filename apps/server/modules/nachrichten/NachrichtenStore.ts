@@ -36,7 +36,7 @@ export class NachrichtenStore {
         }
 
         return rows.reduce((prev, acc) => {
-            if (!prev.find(o => o.id === acc.nachrichtId)) {
+            if (!prev.find(o => o.nachrichtId === acc.nachrichtId)) {
                 prev.push({
                     nachrichtId: acc.nachrichtId,
                     id: acc.id,
@@ -82,7 +82,7 @@ export class NachrichtenStore {
         }
 
         return rows.reduce((prev, acc) => {
-            if (!prev.find(o => o.id == acc.nachrichtId)) {
+            if (!prev.find(o => o.nachrichtId == acc.nachrichtId)) {
                 prev.push({
                     nachrichtId: acc.nachrichtId,
                     id: acc.id,

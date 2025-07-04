@@ -8,15 +8,15 @@ interface NachrichtFormProps {
   submitButtonClassName?: string,
   cancelButtonClassName?: string,
   submitButtonText: string
-  initial?: Nachricht,
+  initial?: string,
   title?: string
 }
 
 export const NachrichtForm = (props: NachrichtFormProps) => {
 
-    const { onAbort, onSubmit, cancelButtonClassName, submitButtonClassName, submitButtonText } = props
+    const { onAbort, onSubmit, cancelButtonClassName, submitButtonClassName, submitButtonText, initial } = props
 
-    const [inhalt, setInhalt] = useState('')
+    const [inhalt, setInhalt] = useState(initial === undefined ? '' : initial)
 
     const handleSubmit = () => {
         onSubmit(inhalt)

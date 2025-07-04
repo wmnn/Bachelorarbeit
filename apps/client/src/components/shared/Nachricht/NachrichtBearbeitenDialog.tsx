@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query"
-import { nachrichtBearbeiten, type Nachricht, type NachrichtenTyp } from "@thesis/nachricht"
+import { nachrichtBearbeiten, type Nachricht } from "@thesis/nachricht"
 import { NachrichtForm } from "./NachrichtForm"
 import { Dialog } from "@/components/dialog/Dialog"
 import { NACHRICHTEN_QUERY_KEY } from "@/reactQueryKeys"
@@ -21,6 +21,8 @@ export function NachrichtBearbeitenDialog({ closeDialog, nachricht }: NachrichtE
         queryClient.invalidateQueries({ queryKey: [NACHRICHTEN_QUERY_KEY, nachricht.typ, nachricht.id] })
     }
 
+    const initial = nachricht.versionen[0]?.inhalt ?? ''
+
     return <Dialog className="overflow-auto! p-8">
         <h2>Nachricht erstellen</h2>
         <NachrichtForm 
@@ -28,7 +30,7 @@ export function NachrichtBearbeitenDialog({ closeDialog, nachricht }: NachrichtE
             onAbort={closeDialog} 
             submitButtonText="Speichern"
             title="Nachricht bearbeiten"
-            initial={nachricht}
+            initial={initial}
         />
     </Dialog>
 }
