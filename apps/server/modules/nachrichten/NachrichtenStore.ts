@@ -143,6 +143,41 @@ export class NachrichtenStore {
         }
     }
 
+    async nachrichtBearbeiten(nachrichtId: number, inhalt: string): Promise<DatabaseMessage> {
+        if (!this.connection) {
+            return STANDARD_FEHLER
+        }
+
+        const conn = await this.connection.getConnection();
+        try {
+            await conn.beginTransaction();
+
+
+            await conn.execute<ResultSetHeader>(`
+                INSERT INTO nachrichtenversionen (nachricht_id, zeitstempel, inhalt)
+                VALUES (?, CURDATE(), ?)
+            `, [nachrichtId, inhalt]);
+            
+
+            await conn.commit();
+
+            return {
+                success: true,
+                message: 'Die Nachricht wurde erfolgreich bearbeitet.'
+            };
+        } catch (error) {
+            console.error('Fehler beim Bearbeiten der Nachricht:', error);
+            await conn.rollback();
+
+            return {
+                success: false,
+                message: 'Fehler beim Bearbeiten der Nachricht.'
+            };
+        } finally {
+            conn.release()
+        }
+    }
+
     async nachrichtLoeschen(nachrichtId: number): Promise<DatabaseMessage> {
         if (!this.connection) {
             return STANDARD_FEHLER

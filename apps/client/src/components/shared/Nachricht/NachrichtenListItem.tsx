@@ -8,10 +8,13 @@ import { useKlassen } from "../useKlassen";
 import { useSchuelerStore } from "@/components/schueler/SchuelerStore";
 import { getTitle } from "@thesis/schule";
 import { NachrichtLoeschenDialog } from "./NachrichtLoeschenDialog";
+import { Edit2 } from "lucide-react";
+import { NachrichtBearbeitenDialog } from "./NachrichtBearbeitenDialog";
 
 export const NachrichtenListItem = ({ nachricht, showId }: { nachricht: Nachricht, showId: boolean }) => {
     
     const [isDeleteDialogShown, setIsDeleteDialogShown] = useState(false)
+    const [isEditDialogShown, setIsEditDialogShown] = useState(false)
     
     const users = useUserStore(store => store.users)
     const user = users.find(o => o.id == nachricht.userId)
@@ -48,6 +51,9 @@ export const NachrichtenListItem = ({ nachricht, showId }: { nachricht: Nachrich
         {
             isDeleteDialogShown && <NachrichtLoeschenDialog typ={nachricht.typ} nachrichtId={nachricht.nachrichtId} id={nachricht.id} closeDialog={() => setIsDeleteDialogShown(false)} />
         }
+        {
+            isEditDialogShown && <NachrichtBearbeitenDialog nachricht={nachricht} closeDialog={() => setIsEditDialogShown(false)} />
+        }
         <div className="flex flex-col w-full gap-4">
             <div className="flex flex-col w-full">
                  {
@@ -63,6 +69,9 @@ export const NachrichtenListItem = ({ nachricht, showId }: { nachricht: Nachrich
         </div>
         
         <div className='flex gap-4'>
+            <button onClick={() => setIsEditDialogShown(true)}>
+                <Edit2 />
+            </button>
             <button onClick={() => setIsDeleteDialogShown(true)}>
                 <DeleteIcon />
             </button>

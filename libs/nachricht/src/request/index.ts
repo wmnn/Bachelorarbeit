@@ -84,6 +84,37 @@ export const nachrichtErstellen = async (inhalt: string, id: number, typ: Nachri
     }
 }
 
+export const nachrichtBearbeiten = async (inhalt: string, nachrichtId: number) => {
+
+    try {
+        const res = await fetch(NACHRICHTEN_ENDPOINT, {
+            method: 'PATCH',
+            body: JSON.stringify({
+                inhalt, 
+                nachrichtId,
+            }),
+            headers: {
+                'content-type': 'application/json'
+            },
+        })
+
+        const data = await res.json();
+                
+        if (res.status === 401) {
+            handleRedirection(data.redirect)
+        }
+    
+        return data as NachrichtErstellenResponseBody;
+        
+    } catch (e) {
+        return {
+            success: false,
+            message: 'Die Nachricht konnte nicht bearbeitet werden.'
+        };
+    }
+}
+
+
 export const nachrichtLoeschen = async (nachrichtId: number): Promise<NachrichtErstellenResponseBody> => {
 
     try {

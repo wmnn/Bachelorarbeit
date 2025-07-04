@@ -1,0 +1,34 @@
+import { useQueryClient } from "@tanstack/react-query"
+import { nachrichtBearbeiten, type Nachricht, type NachrichtenTyp } from "@thesis/nachricht"
+import { NachrichtForm } from "./NachrichtForm"
+import { Dialog } from "@/components/dialog/Dialog"
+import { NACHRICHTEN_QUERY_KEY } from "@/reactQueryKeys"
+
+interface NachrichtErstellenDialogProps {
+  closeDialog: () => void,
+  nachricht: Nachricht
+}
+
+export function NachrichtBearbeitenDialog({ closeDialog, nachricht }: NachrichtErstellenDialogProps) {
+
+    const queryClient = useQueryClient()
+
+    async function handleSubmit(inhalt: string) {
+        const res = await nachrichtBearbeiten(inhalt, nachricht.nachrichtId)
+        alert(res.message)
+        closeDialog()
+        queryClient.invalidateQueries({ queryKey: [NACHRICHTEN_QUERY_KEY, nachricht.typ] })
+        queryClient.invalidateQueries({ queryKey: [NACHRICHTEN_QUERY_KEY, nachricht.typ, nachricht.id] })
+    }
+
+    return <Dialog className="overflow-auto! p-8">
+        <h2>Nachricht erstellen</h2>
+        <NachrichtForm 
+            onSubmit={handleSubmit} 
+            onAbort={closeDialog} 
+            submitButtonText="Speichern"
+            title="Nachricht bearbeiten"
+            initial={nachricht}
+        />
+    </Dialog>
+}

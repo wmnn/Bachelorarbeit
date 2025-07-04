@@ -50,6 +50,30 @@ router.post('/', async (req: Request, res: Response): Promise<any> => {
     res.status(msg.success ? 200 : 400).json(msg);
 });
 
+router.patch('/', async (req: Request, res: Response): Promise<any> => {
+    const { inhalt, nachrichtId } = req.body 
+    const userId = req.userId
+    if (!userId) {
+        return;
+    }
+
+    if (!inhalt || inhalt == '') {
+        return res.status(400).json({
+            success: false,
+            message: 'Die Nachricht darf nicht leer sein.'
+        });
+    }
+
+    if (inhalt.length > 280) {
+        return res.status(400).json({
+            success: false,
+            message: 'Die Nachricht darf maximal 280 Zeichen haben.'
+        });
+    }
+    const msg = await getNachrichtenStore().nachrichtBearbeiten(nachrichtId, inhalt)
+    res.status(msg.success ? 200 : 400).json(msg);
+});
+
 router.delete('/', async (req, res) => {
     const { nachrichtId } = req.query as {
         nachrichtId?: string,
