@@ -49,6 +49,7 @@
     "@thesis/auth": "workspace:*",
     "@thesis/diagnostik": "workspace:*",
     "@thesis/rollen": "workspace:*",
+    "@thesis/nachricht": "workspace:*",
     "@thesis/schueler": "workspace:*",
     "@thesis/schule": "workspace:*",
     "@types/qrcode": "^1.5.5",

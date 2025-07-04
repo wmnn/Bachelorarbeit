@@ -83,13 +83,6 @@ CREATE TABLE schueler_abholberechtigte_personen (
     abholzeit VARCHAR(255)
 );
 
-CREATE TABLE nachrichtenversionen (
-    zeitstempel TIMESTAMP,
-    nachrichten_id VARCHAR(36),
-    inhalt VARCHAR(255),
-    PRIMARY KEY (zeitstempel, nachrichten_id)
-);
-
 CREATE TABLE anwesenheitsstatus (
     schueler_id INT,
     datum DATE,
@@ -105,14 +98,6 @@ CREATE TABLE klassenversionen (
     klassenstufe VARCHAR(255),
     zusatz VARCHAR(255),
     PRIMARY KEY (klassen_id, schuljahr, halbjahr, klassenstufe)
-);
-
-CREATE TABLE nachrichten (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    typ VARCHAR(255),
-    schueler_id VARCHAR(36),
-    klassen_id INT,
-    user_id VARCHAR(36)
 );
 
 CREATE TABLE diagnostikverfahren_ergebnisse (
@@ -215,4 +200,19 @@ CREATE TABLE users_2_factor_authentication (
     secret VARCHAR(64),
     tmp VARCHAR(64),
     PRIMARY KEY (user_id)
+)
+
+CREATE TABLE nachrichten (
+    nachricht_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    typ INT,
+    id INT
+);
+
+CREATE TABLE nachrichtenversionen (
+    nachricht_id INT,
+    nachrichtenversion_id INT AUTO_INCREMENT,
+    zeitstempel DATE,
+    inhalt VARCHAR(255),
+    PRIMARY KEY(nachrichtenversion_id)
 )

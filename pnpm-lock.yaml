@@ -116,6 +116,9 @@ importers:
       '@thesis/diagnostik':
         specifier: workspace:*
         version: link:../../libs/diagnostik
+      '@thesis/nachricht':
+        specifier: workspace:*
+        version: link:../../libs/nachricht
       '@thesis/rollen':
         specifier: workspace:*
         version: link:../../libs/rollen
@@ -167,6 +170,9 @@ importers:
       '@thesis/diagnostik':
         specifier: workspace:*
         version: link:../../libs/diagnostik
+      '@thesis/nachricht':
+        specifier: workspace:*
+        version: link:../../libs/nachricht
       '@thesis/rollen':
         specifier: workspace:*
         version: link:../../libs/rollen
@@ -268,6 +274,8 @@ importers:
   libs/config: {}
 
   libs/diagnostik: {}
+
+  libs/nachricht: {}
 
   libs/rollen: {}
 

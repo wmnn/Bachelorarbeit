@@ -16,6 +16,7 @@ export const ANWESENHEITEN_ENDPOINT = '/api/anwesenheiten'
 export const GANZTAGSANGEBOT_ENDPOINT = '/api/ganztagsangebot'
 export const DIAGNOSTIK_ENDPOINT = '/api/diagnostik'
 export const FILES_ENDPOINT = '/api/files'
+export const NACHRICHTEN_ENDPOINT = '/api/nachrichten'
 
 export const handleRedirection = (redirect: undefined | LoginRedirectAction) => {
     if (redirect == undefined) {

@@ -16,6 +16,7 @@
     "@thesis/config": "workspace:*",
     "@thesis/diagnostik": "workspace:*",
     "@thesis/rollen": "workspace:*",
+    "@thesis/nachricht": "workspace:*",
     "@thesis/schueler": "workspace:*",
     "@thesis/schule": "workspace:*",
     "@types/express": "^5.0.2",

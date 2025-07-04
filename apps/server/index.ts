@@ -11,8 +11,9 @@ import { router as ganztagsangebotRouter } from './modules/ganztagsangebot/api'
 import { router as diagnostikRouter } from './modules/diagnostik/diagnostikApi'
 import { router as filesApi } from './modules/files/api'
 import { router as twoFactorAuthApi } from './modules/auth/Auth2FactorApi'
+import { router as nachrichtenApi } from './modules/nachrichten/api'
 
-import { ANWESENHEITEN_ENDPOINT, AUTH_2_FACTOR_API_ENDPOINT, AUTH_API_ENDPOINT, DIAGNOSTIK_ENDPOINT, FILES_ENDPOINT, GANZTAGSANGEBOT_ENDPOINT, KLASSEN_ENDPOINT, SCHUELER_ENDPOINT } from "@thesis/config"
+import { ANWESENHEITEN_ENDPOINT, AUTH_2_FACTOR_API_ENDPOINT, AUTH_API_ENDPOINT, DIAGNOSTIK_ENDPOINT, FILES_ENDPOINT, GANZTAGSANGEBOT_ENDPOINT, KLASSEN_ENDPOINT, NACHRICHTEN_ENDPOINT, SCHUELER_ENDPOINT } from "@thesis/config"
 import cookieParser from "cookie-parser"
 import https from 'https';
 import fs from 'fs'
@@ -81,6 +82,7 @@ app.use(KLASSEN_ENDPOINT, klassenRouter);
 app.use(ANWESENHEITEN_ENDPOINT, anwesenheitenRouter);
 app.use(GANZTAGSANGEBOT_ENDPOINT, ganztagsangebotRouter);
 app.use(DIAGNOSTIK_ENDPOINT, diagnostikRouter);
+app.use(NACHRICHTEN_ENDPOINT, nachrichtenApi);
 app.use(AUTH_2_FACTOR_API_ENDPOINT, twoFactorAuthApi);
 app.use(FILES_ENDPOINT, filesApi);
 app.use(ROLLE_ENDPOINT, rollenRouter);

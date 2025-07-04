@@ -1,0 +1,29 @@
+import express, { Request, Response } from 'express';
+import { getNachrichtenStore } from '../../singleton';
+
+let router = express.Router();
+
+router.get('/', async (req, res) => {
+    const { id, typ } = req.query as {
+        id?: string,
+        typ?: string
+    }
+    if (!id || !typ) {
+        return;
+    }
+    const nachrichten = await getNachrichtenStore().getNachrichten(parseInt(id), parseInt(typ))
+    res.status(200).json(nachrichten);
+})
+router.post('/', async (req: Request, res: Response) => {
+    console.log(req.body)
+    const { typ, inhalt, id } = req.body 
+    const userId = req.userId
+    if (!userId) {
+        return;
+    }
+    const msg = await getNachrichtenStore().nachrichtErstellen(userId, typ, inhalt, id)
+    res.status(msg.success ? 200 : 400).json(msg);
+});
+
+
+export { router };
