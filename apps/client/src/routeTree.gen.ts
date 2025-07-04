@@ -24,6 +24,7 @@ import { Route as appRollenmanagementIndexImport } from './routes/(app)/rollenma
 import { Route as appKlassenIndexImport } from './routes/(app)/klassen/index'
 import { Route as appGanztagsangeboteIndexImport } from './routes/(app)/ganztagsangebote/index'
 import { Route as appDiagnostikverfahrenIndexImport } from './routes/(app)/diagnostikverfahren/index'
+import { Route as appBrettIndexImport } from './routes/(app)/brett/index'
 import { Route as appDiagnostikverfahrenVorlagenImport } from './routes/(app)/diagnostikverfahren/vorlagen'
 import { Route as appDiagnostikverfahrenSharedImport } from './routes/(app)/diagnostikverfahren/shared'
 import { Route as appSchuelerSchuelerIdIndexImport } from './routes/(app)/schueler/$schuelerId/index'
@@ -120,6 +121,12 @@ const appDiagnostikverfahrenIndexRoute =
     path: '/diagnostikverfahren/',
     getParentRoute: () => appRouteRoute,
   } as any)
+
+const appBrettIndexRoute = appBrettIndexImport.update({
+  id: '/brett/',
+  path: '/brett/',
+  getParentRoute: () => appRouteRoute,
+} as any)
 
 const appDiagnostikverfahrenVorlagenRoute =
   appDiagnostikverfahrenVorlagenImport.update({
@@ -261,6 +268,13 @@ declare module '@tanstack/react-router' {
       path: '/diagnostikverfahren/vorlagen'
       fullPath: '/diagnostikverfahren/vorlagen'
       preLoaderRoute: typeof appDiagnostikverfahrenVorlagenImport
+      parentRoute: typeof appRouteImport
+    }
+    '/(app)/brett/': {
+      id: '/(app)/brett/'
+      path: '/brett'
+      fullPath: '/brett'
+      preLoaderRoute: typeof appBrettIndexImport
       parentRoute: typeof appRouteImport
     }
     '/(app)/diagnostikverfahren/': {
@@ -446,6 +460,7 @@ declare module '@tanstack/react-router' {
 interface appRouteRouteChildren {
   appDiagnostikverfahrenSharedRoute: typeof appDiagnostikverfahrenSharedRoute
   appDiagnostikverfahrenVorlagenRoute: typeof appDiagnostikverfahrenVorlagenRoute
+  appBrettIndexRoute: typeof appBrettIndexRoute
   appDiagnostikverfahrenIndexRoute: typeof appDiagnostikverfahrenIndexRoute
   appGanztagsangeboteIndexRoute: typeof appGanztagsangeboteIndexRoute
   appKlassenIndexRoute: typeof appKlassenIndexRoute
@@ -471,6 +486,7 @@ interface appRouteRouteChildren {
 const appRouteRouteChildren: appRouteRouteChildren = {
   appDiagnostikverfahrenSharedRoute: appDiagnostikverfahrenSharedRoute,
   appDiagnostikverfahrenVorlagenRoute: appDiagnostikverfahrenVorlagenRoute,
+  appBrettIndexRoute: appBrettIndexRoute,
   appDiagnostikverfahrenIndexRoute: appDiagnostikverfahrenIndexRoute,
   appGanztagsangeboteIndexRoute: appGanztagsangeboteIndexRoute,
   appKlassenIndexRoute: appKlassenIndexRoute,
@@ -507,6 +523,7 @@ export interface FileRoutesByFullPath {
   '/': typeof appRouteRouteWithChildren
   '/diagnostikverfahren/shared': typeof appDiagnostikverfahrenSharedRoute
   '/diagnostikverfahren/vorlagen': typeof appDiagnostikverfahrenVorlagenRoute
+  '/brett': typeof appBrettIndexRoute
   '/diagnostikverfahren': typeof appDiagnostikverfahrenIndexRoute
   '/ganztagsangebote': typeof appGanztagsangeboteIndexRoute
   '/klassen': typeof appKlassenIndexRoute
@@ -538,6 +555,7 @@ export interface FileRoutesByTo {
   '/': typeof appRouteRouteWithChildren
   '/diagnostikverfahren/shared': typeof appDiagnostikverfahrenSharedRoute
   '/diagnostikverfahren/vorlagen': typeof appDiagnostikverfahrenVorlagenRoute
+  '/brett': typeof appBrettIndexRoute
   '/diagnostikverfahren': typeof appDiagnostikverfahrenIndexRoute
   '/ganztagsangebote': typeof appGanztagsangeboteIndexRoute
   '/klassen': typeof appKlassenIndexRoute
@@ -571,6 +589,7 @@ export interface FileRoutesById {
   '/(app)': typeof appRouteRouteWithChildren
   '/(app)/diagnostikverfahren/shared': typeof appDiagnostikverfahrenSharedRoute
   '/(app)/diagnostikverfahren/vorlagen': typeof appDiagnostikverfahrenVorlagenRoute
+  '/(app)/brett/': typeof appBrettIndexRoute
   '/(app)/diagnostikverfahren/': typeof appDiagnostikverfahrenIndexRoute
   '/(app)/ganztagsangebote/': typeof appGanztagsangeboteIndexRoute
   '/(app)/klassen/': typeof appKlassenIndexRoute
@@ -604,6 +623,7 @@ export interface FileRouteTypes {
     | '/'
     | '/diagnostikverfahren/shared'
     | '/diagnostikverfahren/vorlagen'
+    | '/brett'
     | '/diagnostikverfahren'
     | '/ganztagsangebote'
     | '/klassen'
@@ -634,6 +654,7 @@ export interface FileRouteTypes {
     | '/'
     | '/diagnostikverfahren/shared'
     | '/diagnostikverfahren/vorlagen'
+    | '/brett'
     | '/diagnostikverfahren'
     | '/ganztagsangebote'
     | '/klassen'
@@ -665,6 +686,7 @@ export interface FileRouteTypes {
     | '/(app)'
     | '/(app)/diagnostikverfahren/shared'
     | '/(app)/diagnostikverfahren/vorlagen'
+    | '/(app)/brett/'
     | '/(app)/diagnostikverfahren/'
     | '/(app)/ganztagsangebote/'
     | '/(app)/klassen/'
@@ -740,6 +762,7 @@ export const routeTree = rootRoute
       "children": [
         "/(app)/diagnostikverfahren/shared",
         "/(app)/diagnostikverfahren/vorlagen",
+        "/(app)/brett/",
         "/(app)/diagnostikverfahren/",
         "/(app)/ganztagsangebote/",
         "/(app)/klassen/",
@@ -768,6 +791,10 @@ export const routeTree = rootRoute
     },
     "/(app)/diagnostikverfahren/vorlagen": {
       "filePath": "(app)/diagnostikverfahren/vorlagen.tsx",
+      "parent": "/(app)"
+    },
+    "/(app)/brett/": {
+      "filePath": "(app)/brett/index.tsx",
       "parent": "/(app)"
     },
     "/(app)/diagnostikverfahren/": {

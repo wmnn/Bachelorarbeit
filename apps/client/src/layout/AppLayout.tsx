@@ -43,6 +43,9 @@ export const AppLayout = () => {
         </button>
         <header className={`${isNavShown ? 'block' : 'hidden xl:flex'} xl:w-[20%] bg-abcd shadow-2xl flex flex-col justify-between xl:pb-12 pt-24 xl:pt-16 pb-16 px-8 md:px-24 xl:px-8 bg-main xl:fixed top-0 left-0 h-[100vh] transition-all`}>
             <nav className="flex flex-col gap-4">
+                <LayoutButton onClick={() => setIsNavShown(false)}>
+                    <Link className="w-[100%] text-left" to="/brett">Schwarzes Brett</Link>
+                </LayoutButton>
                 {
                     user?.rolle?.berechtigungen[Berechtigung.KlasseRead] === "alle" && 
                     <LayoutButton onClick={() => setIsNavShown(false)}>

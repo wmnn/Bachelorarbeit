@@ -14,6 +14,18 @@ router.get('/', async (req, res) => {
     const nachrichten = await getNachrichtenStore().getNachrichten(parseInt(id), parseInt(typ))
     res.status(200).json(nachrichten);
 })
+
+router.get('/all', async (req, res) => {
+    const { typ } = req.query as {
+        typ?: string
+    }
+    if (!typ) {
+        return;
+    }
+    const nachrichten = await getNachrichtenStore().getAllNachrichten(parseInt(typ))
+    res.status(200).json(nachrichten);
+})
+
 router.post('/', async (req: Request, res: Response) => {
     console.log(req.body)
     const { typ, inhalt, id } = req.body 

@@ -3,6 +3,7 @@ export enum NachrichtenTyp {
     SCHÜLER
 }
 export type Nachricht = {
+    nachrichtId: number,
     id: number,
     typ: NachrichtenTyp,
     userId: number,

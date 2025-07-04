@@ -10,6 +10,52 @@ export class NachrichtenStore {
         this.connection = pool
     }
 
+    async getAllNachrichten(typ: number): Promise<any> {
+        if (!this.connection) {
+            return [];
+        }
+
+        const conn = this.connection;
+
+        const [rows] = await conn.execute<RowDataPacket[]>(`
+            SELECT 
+                n.nachricht_id as nachrichtId,
+                n.user_id as userId,
+                n.typ as typ,
+                n.id,
+                v.zeitstempel,
+                v.inhalt
+            FROM nachrichten n
+            JOIN nachrichtenversionen v ON n.nachricht_id = v.nachricht_id
+            WHERE n.typ = ?
+            ORDER BY v.zeitstempel DESC
+        `, [typ]);
+
+        if (!Array.isArray(rows)) {
+            return [];
+        }
+
+        return rows.reduce((prev, acc) => {
+            if (!prev.find(o => o.id === acc.nachrichtId)) {
+                prev.push({
+                    nachrichtId: acc.nachrichtId,
+                    id: acc.id,
+                    userId: acc.userId,
+                    typ: acc.typ,
+                    versionen: [],
+                });
+            }
+
+            const element = prev.find(o => o.nachrichtId === acc.nachrichtId);
+            element?.versionen.push({
+                inhalt: acc.inhalt,
+                zeitstempel: acc.zeitstempel
+            });
+
+            return prev;
+        }, [] as Nachricht[]);
+    }
+
     async getNachrichten(id: number, typ: number): Promise<any> {
         if (!this.connection) {
             return []
@@ -38,14 +84,15 @@ export class NachrichtenStore {
         return rows.reduce((prev, acc) => {
             if (!prev.find(o => o.id == acc.nachrichtId)) {
                 prev.push({
-                    id: acc.nachrichtId,
+                    nachrichtId: acc.nachrichtId,
+                    id: acc.id,
                     userId: acc.userId,
                     versionen: [],
                     typ: acc.typ,
                     
                 })
             }
-            const element = prev.find(o => o.id == acc.nachrichtId);
+            const element = prev.find(o => o.nachrichtId == acc.nachrichtId);
             element?.versionen.push({
                 inhalt: acc.inhalt,
                 zeitstempel: acc.zeitstempel
