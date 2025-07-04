@@ -26,6 +26,7 @@ export function NachrichtErstellenDialog({ closeDialog, typ, id }: NachrichtErst
         <NachrichtForm 
             onSubmit={handleSubmit} 
             onAbort={closeDialog} 
+            typ={typ}
             submitButtonText="Erstellen"
             title="Schüler erstellen"
             

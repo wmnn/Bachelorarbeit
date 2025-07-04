@@ -28,6 +28,7 @@ export function NachrichtBearbeitenDialog({ closeDialog, nachricht }: NachrichtE
         <NachrichtForm 
             onSubmit={handleSubmit} 
             onAbort={closeDialog} 
+            typ={nachricht.typ}
             submitButtonText="Speichern"
             title="Nachricht bearbeiten"
             initial={initial}
