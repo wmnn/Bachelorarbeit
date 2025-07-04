@@ -40,20 +40,21 @@ export function AbholberechtigtePersonen ({ personen, setPersonen }: Abholberech
                     }))
                 }}/>
 
-                <label>Straße</label>
+                <label>Telefonnummer</label> 
                 <Input key={idx} value={person.strasse} onChange={(e) => {
                     setPersonen(personen.map((p, i) => {
                         if (i !== idx) {
                             return p;
                         }
+                        // TODO property 
                         return {
                             ...p,
-                            strasse: e.target.value
+                            strasse: e.target.value 
                         }
                     }))
                 }}/>
 
-                <label>Hausnummer</label>
+                {/* <label>Hausnummer</label>
                 <Input key={idx} value={person.hausnummer} onChange={(e) => {
                     setPersonen(personen.map((p, i) => {
                         if (i !== idx) {
@@ -103,7 +104,7 @@ export function AbholberechtigtePersonen ({ personen, setPersonen }: Abholberech
                             abholzeit: e.target.value
                         }
                     }))
-                }}/>
+                }}/> */}
             
             
             </div>)
