@@ -26,11 +26,25 @@ router.get('/all', async (req, res) => {
     res.status(200).json(nachrichten);
 })
 
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', async (req: Request, res: Response): Promise<any> => {
     const { typ, inhalt, id } = req.body 
     const userId = req.userId
     if (!userId) {
         return;
+    }
+
+    if (!inhalt || inhalt == '') {
+        return res.status(400).json({
+            success: false,
+            message: 'Die Nachricht darf nicht leer sein.'
+        });
+    }
+
+    if (inhalt.length > 280) {
+        return res.status(400).json({
+            success: false,
+            message: 'Die Nachricht darf maximal 280 Zeichen haben.'
+        });
     }
     const msg = await getNachrichtenStore().nachrichtErstellen(userId, typ, inhalt, id)
     res.status(msg.success ? 200 : 400).json(msg);

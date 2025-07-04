@@ -213,6 +213,6 @@ CREATE TABLE nachrichtenversionen (
     nachricht_id INT,
     nachrichtenversion_id INT AUTO_INCREMENT,
     zeitstempel DATE,
-    inhalt VARCHAR(255),
+    inhalt VARCHAR(280),
     PRIMARY KEY(nachrichtenversion_id)
 )
