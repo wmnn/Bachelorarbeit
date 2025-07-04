@@ -1,16 +1,17 @@
 import { DeleteIcon } from "@/components/icons/DeleteIcon";
 import { NachrichtenTyp, type Nachricht } from "@thesis/nachricht";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAllUsers } from "../useAllUsers";
 import { useUserStore } from "@/components/auth/UserStore";
 import { useAllSchueler } from "@/components/schueler/useSchueler";
 import { useKlassen } from "../useKlassen";
 import { useSchuelerStore } from "@/components/schueler/SchuelerStore";
 import { getTitle } from "@thesis/schule";
+import { NachrichtLoeschenDialog } from "./NachrichtLoeschenDialog";
 
 export const NachrichtenListItem = ({ nachricht, showId }: { nachricht: Nachricht, showId: boolean }) => {
     
-    const [_, setIsDeleteDialogShown] = useState(false)
+    const [isDeleteDialogShown, setIsDeleteDialogShown] = useState(false)
     
     const users = useUserStore(store => store.users)
     const user = users.find(o => o.id == nachricht.userId)
@@ -44,6 +45,9 @@ export const NachrichtenListItem = ({ nachricht, showId }: { nachricht: Nachrich
     
     
     return <li className='py-2 px-8 flex justify-between w-[100%] gap-8'>
+        {
+            isDeleteDialogShown && <NachrichtLoeschenDialog typ={nachricht.typ} nachrichtId={nachricht.nachrichtId} id={nachricht.id} closeDialog={() => setIsDeleteDialogShown(false)} />
+        }
         <div className="flex flex-col w-full gap-4">
             <div className="flex flex-col w-full">
                  {

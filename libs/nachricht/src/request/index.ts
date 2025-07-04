@@ -83,3 +83,26 @@ export const nachrichtErstellen = async (inhalt: string, id: number, typ: Nachri
         };
     }
 }
+
+export const nachrichtLoeschen = async (nachrichtId: number): Promise<NachrichtErstellenResponseBody> => {
+
+    try {
+        const res = await fetch(NACHRICHTEN_ENDPOINT + `?nachrichtId=${nachrichtId}`, {
+            method: 'DELETE',
+        })
+
+        const data = await res.json();
+                
+        if (res.status === 401) {
+            handleRedirection(data.redirect)
+        }
+    
+        return data as NachrichtErstellenResponseBody
+        
+    } catch (e) {
+        return {
+            success: false,
+            message: 'Ein Fehler ist aufgetreten.'
+        }
+    }
+}

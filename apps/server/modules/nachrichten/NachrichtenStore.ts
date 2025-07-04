@@ -152,35 +152,20 @@ export class NachrichtenStore {
         try {
             await conn.beginTransaction();
 
-            const [rows] = await conn.execute<RowDataPacket[]>(`
-                SELECT id FROM nachrichten WHERE nachricht_id = ?
-            `, [nachrichtId]);
-
-            if (!Array.isArray(rows) || rows.length === 0) {
-                await conn.rollback();
-                conn.release();
-                return {
-                    success: false,
-                    message: 'Nachricht nicht gefunden.'
-                };
-            }
-
-            const versionId = rows[0].id;
-
             await conn.execute(`
                 DELETE FROM nachrichten WHERE nachricht_id = ?
             `, [nachrichtId]);
 
             const [versionReferences] = await conn.execute<RowDataPacket[]>(`
-                SELECT COUNT(*) as count FROM nachrichten WHERE id = ?
-            `, [versionId]);
+                SELECT COUNT(*) as count FROM nachrichten WHERE nachricht_id = ?
+            `, [nachrichtId]);
 
             const refCount = versionReferences[0].count;
 
             if (refCount === 0) {
                 await conn.execute(`
-                    DELETE FROM nachrichtenversionen WHERE id = ?
-                `, [versionId]);
+                    DELETE FROM nachrichtenversionen WHERE nachricht_id = ?
+                `, [nachrichtId]);
             }
 
             await conn.commit();

@@ -27,7 +27,6 @@ router.get('/all', async (req, res) => {
 })
 
 router.post('/', async (req: Request, res: Response) => {
-    console.log(req.body)
     const { typ, inhalt, id } = req.body 
     const userId = req.userId
     if (!userId) {
@@ -36,6 +35,17 @@ router.post('/', async (req: Request, res: Response) => {
     const msg = await getNachrichtenStore().nachrichtErstellen(userId, typ, inhalt, id)
     res.status(msg.success ? 200 : 400).json(msg);
 });
+
+router.delete('/', async (req, res) => {
+    const { nachrichtId } = req.query as {
+        nachrichtId?: string,
+    }
+    if (!nachrichtId) {
+        return;
+    }
+    const msg = await getNachrichtenStore().nachrichtLoeschen(parseInt(nachrichtId))
+    res.status(msg.success ? 200 : 400).json(msg);
+})
 
 
 export { router };
