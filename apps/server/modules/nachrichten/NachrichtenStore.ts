@@ -27,7 +27,7 @@ export class NachrichtenStore {
                 v.inhalt
             FROM nachrichten n
             JOIN nachrichtenversionen v ON n.nachricht_id = v.nachricht_id
-            WHERE n.typ = ?
+            WHERE n.typ = ? AND v.zeitstempel >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
             ORDER BY v.zeitstempel DESC
         `, [typ]);
 
@@ -73,7 +73,7 @@ export class NachrichtenStore {
                 v.inhalt
             FROM nachrichten n
             JOIN nachrichtenversionen v ON n.nachricht_id = v.nachricht_id
-            WHERE n.id = ? AND n.typ = ?
+            WHERE n.id = ? AND n.typ = ? AND v.zeitstempel >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
             ORDER BY v.zeitstempel DESC
         `, [id, typ]);
 
