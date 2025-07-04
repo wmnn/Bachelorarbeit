@@ -137,3 +137,54 @@ export const nachrichtLoeschen = async (nachrichtId: number): Promise<NachrichtE
         }
     }
 }
+
+export const getNachrichtenVorlagen = async (typ: NachrichtenTyp) => {
+
+    try {
+        const res = await fetch(NACHRICHTEN_ENDPOINT + `/vorlage?typ=${typ}`, {
+            method: 'GET',
+        })
+
+        const data = await res.json();
+                
+        if (res.status === 401) {
+            handleRedirection(data.redirect)
+        }
+    
+        return data as string[];
+        
+    } catch (e) {
+        return []
+    }
+}
+
+
+export const nachrichtenVorlagenSpeichern = async (klassenVorlagen: string[], schuelerVorlagen: string[]) => {
+
+    try {
+        const res = await fetch(NACHRICHTEN_ENDPOINT + '/vorlage', {
+            method: 'POST',
+            body: JSON.stringify({
+                klassenVorlagen, 
+                schuelerVorlagen
+            }),
+            headers: {
+                'content-type': 'application/json'
+            },
+        })
+
+        const data = await res.json();
+                
+        if (res.status === 401) {
+            handleRedirection(data.redirect)
+        }
+    
+        return data as NachrichtErstellenResponseBody;
+        
+    } catch (e) {
+        return {
+            success: false,
+            message: 'Die Nachrichtenvorlage konnte nicht erstellt werden.'
+        };
+    }
+}

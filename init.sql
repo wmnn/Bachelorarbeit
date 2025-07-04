@@ -216,3 +216,10 @@ CREATE TABLE nachrichtenversionen (
     inhalt VARCHAR(280),
     PRIMARY KEY(nachrichtenversion_id)
 )
+
+CREATE TABLE nachrichtenvorlagen (
+    nachricht_id INT AUTO_INCREMENT,
+    typ INT,
+    inhalt VARCHAR(280),
+    PRIMARY KEY(AUTO_INCREMENT)
+)

@@ -222,4 +222,75 @@ export class NachrichtenStore {
         }
     }
 
+
+    async nachrichtenVorlagenSpeichern(klassenVorlagen: string[], schuelerVorlagen: string[]): Promise<DatabaseMessage> {
+        if (!this.connection) {
+            return STANDARD_FEHLER;
+        }
+
+        const conn = await this.connection.getConnection();
+
+        try {
+            await conn.beginTransaction();
+            await conn.execute(`DELETE FROM nachrichtenvorlagen`);
+
+            for (const inhalt of klassenVorlagen) {
+                await conn.execute(`
+                    INSERT INTO nachrichtenvorlagen (typ, inhalt)
+                    VALUES (?, ?)
+                `, [NachrichtenTyp.KLASSE, inhalt]);
+            }
+
+            for (const inhalt of schuelerVorlagen) {
+                await conn.execute(`
+                    INSERT INTO nachrichtenvorlagen (typ, inhalt)
+                    VALUES (?, ?)
+                `, [NachrichtenTyp.SCHÜLER, inhalt]);
+            }
+
+            await conn.commit();
+            
+            return {
+                success: true,
+                message: 'Die Nachrichtenvorlagen wurden erfolgreich gespeichert.'
+            };
+        } catch (error) {
+            console.error('Fehler beim Speichern der Vorlagen:', error);
+            await conn.rollback();
+
+            return {
+                success: false,
+                message: 'Fehler beim Speichern der Nachrichtenvorlagen.'
+            };
+        } finally {
+            conn.release();
+        }
+    }
+    async getNachrichtenVorlagen(typ: NachrichtenTyp): Promise<string[]> {
+        if (!this.connection) {
+            return [];
+        }
+
+        const conn = this.connection;
+
+        try {
+            const [rows] = await conn.execute<RowDataPacket[]>(`
+                SELECT inhalt 
+                FROM nachrichtenvorlagen
+                WHERE typ = ?
+                ORDER BY nachricht_id ASC
+            `, [typ]);
+
+            if (!Array.isArray(rows)) {
+                return [];
+            }
+
+            return rows.map(row => row.inhalt as string);
+        } catch (error) {
+            console.error('Fehler beim Laden der Nachrichtenvorlagen:', error);
+            return [];
+        }
+    }
+
+
 }

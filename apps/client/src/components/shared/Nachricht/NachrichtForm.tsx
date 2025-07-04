@@ -1,5 +1,4 @@
 import { ButtonLight } from "@/components/ButtonLight"
-import type { Nachricht } from "@thesis/nachricht"
 import { useState } from "react"
 
 interface NachrichtFormProps {
