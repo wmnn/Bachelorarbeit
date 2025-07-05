@@ -6,6 +6,7 @@ import { Link, Outlet, useNavigate } from "@tanstack/react-router"
 import { logout } from "@thesis/auth"
 import { countUnreadMessages, NachrichtenTyp } from "@thesis/nachricht"
 import { Berechtigung } from "@thesis/rollen"
+import { HelpCircle } from "lucide-react"
 import { useContext, useEffect, useMemo, useState, type Dispatch, type FC } from "react"
 
 const LayoutButton: FC<ButtonProps> = (props) => {
@@ -83,6 +84,13 @@ export const AppLayout = () => {
                 
             </nav>
             <menu className="flex flex-col gap-4">
+                <LayoutButton onClick={() => setIsNavShown(false)}>
+                    <div className="flex justify-start gap-2 items-center grow">
+                        <HelpCircle />
+                        <Link className="w-[100%] text-left" to="/hilfe">Hilfe</Link>
+                    </div>
+                </LayoutButton>
+
                 <LayoutButton onClick={() => setIsNavShown(false)}>
                     <div className="flex justify-start gap-2 items-center grow">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">

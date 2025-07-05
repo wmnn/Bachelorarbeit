@@ -22,6 +22,7 @@ import { Route as appSettingsIndexImport } from './routes/(app)/settings/index'
 import { Route as appSchuelerIndexImport } from './routes/(app)/schueler/index'
 import { Route as appRollenmanagementIndexImport } from './routes/(app)/rollenmanagement/index'
 import { Route as appKlassenIndexImport } from './routes/(app)/klassen/index'
+import { Route as appHilfeIndexImport } from './routes/(app)/hilfe/index'
 import { Route as appGanztagsangeboteIndexImport } from './routes/(app)/ganztagsangebote/index'
 import { Route as appDiagnostikverfahrenIndexImport } from './routes/(app)/diagnostikverfahren/index'
 import { Route as appBrettIndexImport } from './routes/(app)/brett/index'
@@ -106,6 +107,12 @@ const appRollenmanagementIndexRoute = appRollenmanagementIndexImport.update({
 const appKlassenIndexRoute = appKlassenIndexImport.update({
   id: '/klassen/',
   path: '/klassen/',
+  getParentRoute: () => appRouteRoute,
+} as any)
+
+const appHilfeIndexRoute = appHilfeIndexImport.update({
+  id: '/hilfe/',
+  path: '/hilfe/',
   getParentRoute: () => appRouteRoute,
 } as any)
 
@@ -291,6 +298,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appGanztagsangeboteIndexImport
       parentRoute: typeof appRouteImport
     }
+    '/(app)/hilfe/': {
+      id: '/(app)/hilfe/'
+      path: '/hilfe'
+      fullPath: '/hilfe'
+      preLoaderRoute: typeof appHilfeIndexImport
+      parentRoute: typeof appRouteImport
+    }
     '/(app)/klassen/': {
       id: '/(app)/klassen/'
       path: '/klassen'
@@ -463,6 +477,7 @@ interface appRouteRouteChildren {
   appBrettIndexRoute: typeof appBrettIndexRoute
   appDiagnostikverfahrenIndexRoute: typeof appDiagnostikverfahrenIndexRoute
   appGanztagsangeboteIndexRoute: typeof appGanztagsangeboteIndexRoute
+  appHilfeIndexRoute: typeof appHilfeIndexRoute
   appKlassenIndexRoute: typeof appKlassenIndexRoute
   appRollenmanagementIndexRoute: typeof appRollenmanagementIndexRoute
   appSchuelerIndexRoute: typeof appSchuelerIndexRoute
@@ -489,6 +504,7 @@ const appRouteRouteChildren: appRouteRouteChildren = {
   appBrettIndexRoute: appBrettIndexRoute,
   appDiagnostikverfahrenIndexRoute: appDiagnostikverfahrenIndexRoute,
   appGanztagsangeboteIndexRoute: appGanztagsangeboteIndexRoute,
+  appHilfeIndexRoute: appHilfeIndexRoute,
   appKlassenIndexRoute: appKlassenIndexRoute,
   appRollenmanagementIndexRoute: appRollenmanagementIndexRoute,
   appSchuelerIndexRoute: appSchuelerIndexRoute,
@@ -526,6 +542,7 @@ export interface FileRoutesByFullPath {
   '/brett': typeof appBrettIndexRoute
   '/diagnostikverfahren': typeof appDiagnostikverfahrenIndexRoute
   '/ganztagsangebote': typeof appGanztagsangeboteIndexRoute
+  '/hilfe': typeof appHilfeIndexRoute
   '/klassen': typeof appKlassenIndexRoute
   '/rollenmanagement': typeof appRollenmanagementIndexRoute
   '/schueler': typeof appSchuelerIndexRoute
@@ -558,6 +575,7 @@ export interface FileRoutesByTo {
   '/brett': typeof appBrettIndexRoute
   '/diagnostikverfahren': typeof appDiagnostikverfahrenIndexRoute
   '/ganztagsangebote': typeof appGanztagsangeboteIndexRoute
+  '/hilfe': typeof appHilfeIndexRoute
   '/klassen': typeof appKlassenIndexRoute
   '/rollenmanagement': typeof appRollenmanagementIndexRoute
   '/schueler': typeof appSchuelerIndexRoute
@@ -592,6 +610,7 @@ export interface FileRoutesById {
   '/(app)/brett/': typeof appBrettIndexRoute
   '/(app)/diagnostikverfahren/': typeof appDiagnostikverfahrenIndexRoute
   '/(app)/ganztagsangebote/': typeof appGanztagsangeboteIndexRoute
+  '/(app)/hilfe/': typeof appHilfeIndexRoute
   '/(app)/klassen/': typeof appKlassenIndexRoute
   '/(app)/rollenmanagement/': typeof appRollenmanagementIndexRoute
   '/(app)/schueler/': typeof appSchuelerIndexRoute
@@ -626,6 +645,7 @@ export interface FileRouteTypes {
     | '/brett'
     | '/diagnostikverfahren'
     | '/ganztagsangebote'
+    | '/hilfe'
     | '/klassen'
     | '/rollenmanagement'
     | '/schueler'
@@ -657,6 +677,7 @@ export interface FileRouteTypes {
     | '/brett'
     | '/diagnostikverfahren'
     | '/ganztagsangebote'
+    | '/hilfe'
     | '/klassen'
     | '/rollenmanagement'
     | '/schueler'
@@ -689,6 +710,7 @@ export interface FileRouteTypes {
     | '/(app)/brett/'
     | '/(app)/diagnostikverfahren/'
     | '/(app)/ganztagsangebote/'
+    | '/(app)/hilfe/'
     | '/(app)/klassen/'
     | '/(app)/rollenmanagement/'
     | '/(app)/schueler/'
@@ -765,6 +787,7 @@ export const routeTree = rootRoute
         "/(app)/brett/",
         "/(app)/diagnostikverfahren/",
         "/(app)/ganztagsangebote/",
+        "/(app)/hilfe/",
         "/(app)/klassen/",
         "/(app)/rollenmanagement/",
         "/(app)/schueler/",
@@ -803,6 +826,10 @@ export const routeTree = rootRoute
     },
     "/(app)/ganztagsangebote/": {
       "filePath": "(app)/ganztagsangebote/index.tsx",
+      "parent": "/(app)"
+    },
+    "/(app)/hilfe/": {
+      "filePath": "(app)/hilfe/index.tsx",
       "parent": "/(app)"
     },
     "/(app)/klassen/": {
