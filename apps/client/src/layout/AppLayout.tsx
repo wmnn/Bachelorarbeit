@@ -6,7 +6,7 @@ import { Link, Outlet, useNavigate } from "@tanstack/react-router"
 import { logout } from "@thesis/auth"
 import { countUnreadMessages, NachrichtenTyp } from "@thesis/nachricht"
 import { Berechtigung } from "@thesis/rollen"
-import { useContext, useEffect, useState, type Dispatch, type FC } from "react"
+import { useContext, useEffect, useMemo, useState, type Dispatch, type FC } from "react"
 
 const LayoutButton: FC<ButtonProps> = (props) => {
     return <Button className="hover:bg-black text-white text-xl rounded-xl px-4 py-2 cursor-pointer transition-all w-full flex justify-start hover:text-gray-200" {...props} />
@@ -125,7 +125,8 @@ const SchwartesBrettButton = ({ setIsNavShown } : { setIsNavShown: Dispatch<Reac
 
     const klassenQuery = useAllNachrichten(NachrichtenTyp.KLASSE)
     const schuelerQuery = useAllNachrichten(NachrichtenTyp.SCHÜLER)
-    const isUnreadMessage = countUnreadMessages([...klassenQuery.query.data, ...schuelerQuery.query.data]) > 0
+    const isUnreadMessage = useMemo(() => countUnreadMessages([...klassenQuery.query.data, ...schuelerQuery.query.data]) > 0, 
+        [klassenQuery.query.data, schuelerQuery.query.data])
 
     return <LayoutButton onClick={() => setIsNavShown(false)}>
         <Link className="w-[100%] text-left flex justify-between items-center" to="/brett">
