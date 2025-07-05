@@ -102,7 +102,7 @@ export class AuthStore {
             return undefined;
         }
   
-        const rolle = 'admin';
+        const rolle = '';
         try {
             const [result] = await this.connection.execute<ResultSetHeader>(`
                 INSERT INTO users (email, passwort, vorname, nachname, rolle, is_locked, is_verified)
@@ -114,6 +114,10 @@ export class AuthStore {
             }
 
             const id = result.insertId;
+
+            if (id === 1) {
+                await this.updateUser(id, undefined, undefined, undefined, undefined, 'admin')
+            }
 
             return {
                 id,

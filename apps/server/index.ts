@@ -17,9 +17,10 @@ import { ANWESENHEITEN_ENDPOINT, AUTH_2_FACTOR_API_ENDPOINT, AUTH_API_ENDPOINT, 
 import cookieParser from "cookie-parser"
 import https from 'https';
 import fs from 'fs'
-import { Berechtigungen, ROLLE_ENDPOINT } from '@thesis/rollen';
+import { Berechtigung, Berechtigungen, ROLLE_ENDPOINT } from '@thesis/rollen';
 import { rolleMiddleware } from './modules/auth/util';
 import fileUpload from 'express-fileupload';
+import { getAuthStore } from './singleton';
 
 declare global {
     namespace Express {
@@ -32,33 +33,32 @@ declare global {
     }
 }
 
-// setTimeout(() => {
-//     getDB().createRole({
-//         // rolle: `${crypto.randomUUID().slice(0, 24)}`,
-//         rolle: `admin`,
-//         berechtigungen: {
-//             [Berechtigung.KlasseCreate]: true,
-//             [Berechtigung.KlasseRead]: "alle",
-//             [Berechtigung.KlasseUpdate]: true,
-//             [Berechtigung.KlasseDelete]: true,
-//             [Berechtigung.GanztagsangebotCreate]: true,
-//             [Berechtigung.GanztagsangebotRead]: "alle",
-//             [Berechtigung.GanztagsangebotUpdate]: true,
-//             [Berechtigung.GanztagsangebotDelete]: true,
-//             [Berechtigung.SchuelerCreate]: true,
-//             [Berechtigung.SchuelerRead]: "alle",
-//             [Berechtigung.SchuelerUpdate]: true,
-//             [Berechtigung.SchuelerDelete]: true,
-//             [Berechtigung.AnwesenheitsstatusUpdate]: true,
-//             [Berechtigung.AnwesenheitsstatusRead]: true,
-//             [Berechtigung.DiagnostikverfahrenRead]: "alle",
-//             [Berechtigung.DiagnostikverfahrenDelete]: true,
-//             [Berechtigung.RollenVerwalten]: true,
-//             [Berechtigung.NachrichtenvorlagenVerwalten]: true,
-//             [Berechtigung.NachrichtenDelete]: "alle",
-//         }
-//     })
-// }, 5000)
+setTimeout(() => {
+    getAuthStore().createRole({
+        rolle: `admin`,
+        berechtigungen: {
+            [Berechtigung.KlasseCreate]: true,
+            [Berechtigung.KlasseRead]: "alle",
+            [Berechtigung.KlasseUpdate]: true,
+            [Berechtigung.KlasseDelete]: true,
+            [Berechtigung.GanztagsangebotCreate]: true,
+            [Berechtigung.GanztagsangebotRead]: "alle",
+            [Berechtigung.GanztagsangebotUpdate]: true,
+            [Berechtigung.GanztagsangebotDelete]: true,
+            [Berechtigung.SchuelerCreate]: true,
+            [Berechtigung.SchuelerRead]: "alle",
+            [Berechtigung.SchuelerUpdate]: true,
+            [Berechtigung.SchuelerDelete]: true,
+            [Berechtigung.AnwesenheitsstatusUpdate]: true,
+            [Berechtigung.AnwesenheitsstatusRead]: true,
+            [Berechtigung.DiagnostikverfahrenRead]: "alle",
+            [Berechtigung.DiagnostikverfahrenDelete]: true,
+            [Berechtigung.RollenVerwalten]: true,
+            [Berechtigung.NachrichtenvorlagenVerwalten]: true,
+            [Berechtigung.NachrichtenDelete]: "alle",
+        }
+    })
+}, 5000)
 
 
 const privateKey  = fs.readFileSync('../../https.key', 'utf8');

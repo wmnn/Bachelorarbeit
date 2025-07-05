@@ -37,6 +37,7 @@ export default function Login () {
         }
   
         if (user.rolle !== undefined && typeof user.rolle === "string") {
+            alert('Ein unerwarteter Fehler ist aufgetreten.')
             return;
         }
         setUser(user);

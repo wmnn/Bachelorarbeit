@@ -132,8 +132,8 @@ export const authMiddleware = async (
         && !req.originalUrl.startsWith(AUTH_API_ENDPOINT + `/reset-password`)
         && !req.originalUrl.startsWith(AUTH_2_FACTOR_API_ENDPOINT + `/2fa-verify`)
         && !req.originalUrl.startsWith(AUTH_API_ENDPOINT + `/register`)
+        && !req.originalUrl.startsWith(AUTH_API_ENDPOINT + REGISTER_CALLBACK_ENDPOINT)
     ) {
-        console.log('!2fa verify', req.originalUrl)
         return res.status(401).json({
             success: false,
             message: 'Der 2-Faktor Authentifizierungscode wurde noch nicht überprüft.',
@@ -212,7 +212,7 @@ router.post(
         user = await addRoleDataToUser(user);
 
         if (!await is2FASetup(user?.id ?? -1)) {
-            return res.status(401).json({
+            return res.status(200).json({
                 success: true,
                 user,
                 redirect: LoginRedirectAction.SETUP_2_FACTOR_AUTHENTICATION
