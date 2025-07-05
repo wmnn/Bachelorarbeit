@@ -1,4 +1,4 @@
-import { Nachricht, NachrichtenTyp, NachrichtErstellenRequestBody } from "@thesis/nachricht"
+import { Lesestatus, Nachricht, NachrichtenTyp, NachrichtErstellenRequestBody } from "@thesis/nachricht"
 import { Pool, ResultSetHeader, RowDataPacket } from "mysql2/promise"
 import { DatabaseMessage, STANDARD_FEHLER } from "../shared/models";
 
@@ -10,7 +10,7 @@ export class NachrichtenStore {
         this.connection = pool
     }
 
-    async getAllNachrichten(typ: number): Promise<any> {
+    async getAllNachrichten(typ: number, userId: number): Promise<any> {
         if (!this.connection) {
             return [];
         }
@@ -24,12 +24,14 @@ export class NachrichtenStore {
                 n.typ as typ,
                 n.id,
                 v.zeitstempel,
-                v.inhalt
+                v.inhalt,
+                v.nachrichtenversion_id as nachrichtenversionId,
+                (SELECT lesestatus FROM nachrichtenlesestatus l WHERE l.nachrichtenversion_id = v.nachrichtenversion_id AND l.user_id = ?) as lesestatus
             FROM nachrichten n
             JOIN nachrichtenversionen v ON n.nachricht_id = v.nachricht_id
             WHERE n.typ = ? AND v.zeitstempel >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
             ORDER BY v.zeitstempel DESC
-        `, [typ]);
+        `, [userId, typ]);
 
         if (!Array.isArray(rows)) {
             return [];
@@ -49,14 +51,16 @@ export class NachrichtenStore {
             const element = prev.find(o => o.nachrichtId === acc.nachrichtId);
             element?.versionen.push({
                 inhalt: acc.inhalt,
-                zeitstempel: acc.zeitstempel
+                zeitstempel: acc.zeitstempel,
+                lesestatus: acc.lesestatus ?? undefined,
+                nachrichtenversionId: acc.nachrichtenversionId
             });
 
             return prev;
         }, [] as Nachricht[]);
     }
 
-    async getNachrichten(id: number, typ: number): Promise<any> {
+    async getNachrichten(id: number, typ: number, userId: number): Promise<any> {
         if (!this.connection) {
             return []
         }
@@ -70,12 +74,14 @@ export class NachrichtenStore {
                 n.typ as typ,
                 n.id,
                 v.zeitstempel,
-                v.inhalt
+                v.inhalt,
+                v.nachrichtenversion_id as nachrichtenversionId,
+                (SELECT lesestatus FROM nachrichtenlesestatus l WHERE l.nachrichtenversion_id = v.nachrichtenversion_id AND l.user_id = ?) as lesestatus
             FROM nachrichten n
             JOIN nachrichtenversionen v ON n.nachricht_id = v.nachricht_id
             WHERE n.id = ? AND n.typ = ? AND v.zeitstempel >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
             ORDER BY v.zeitstempel DESC
-        `, [id, typ]);
+        `, [userId, id, typ]);
 
         if (!Array.isArray(rows)) {
             return [];
@@ -95,7 +101,9 @@ export class NachrichtenStore {
             const element = prev.find(o => o.nachrichtId == acc.nachrichtId);
             element?.versionen.push({
                 inhalt: acc.inhalt,
-                zeitstempel: acc.zeitstempel
+                zeitstempel: acc.zeitstempel,
+                lesestatus: acc.lesestatus ?? undefined,
+                nachrichtenversionId: acc.nachrichtenversionId
             })
 
             return prev
@@ -289,6 +297,30 @@ export class NachrichtenStore {
         } catch (error) {
             console.error('Fehler beim Laden der Nachrichtenvorlagen:', error);
             return [];
+        }
+    }
+
+    async updateLesestatus(ids: number[], userId: number) {
+        if (!this.connection) {
+            return false;
+        }
+
+        const conn = this.connection;
+
+        try {
+            const placeholders = ids.map(() => `(?, ?, ?)`).join(', ');
+            const values = ids.flatMap(id => [id, userId, Lesestatus.GELESEN]);
+
+            const [result] = await conn.execute(`
+                INSERT INTO nachrichtenlesestatus (nachrichtenversion_id, user_id, lesestatus)
+                VALUES ${placeholders}
+                ON DUPLICATE KEY UPDATE lesestatus = VALUES(lesestatus)
+            `, values);
+
+            return true;
+        } catch (error) {
+            console.error('Fehler beim Aktualisieren des Lesestatus:', error);
+            return false;
         }
     }
 

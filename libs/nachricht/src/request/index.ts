@@ -188,3 +188,32 @@ export const nachrichtenVorlagenSpeichern = async (klassenVorlagen: string[], sc
         };
     }
 }
+
+export const updateLesestatus = async (nachrichtenversionIds: number[]) => {
+
+    try {
+        const res = await fetch(NACHRICHTEN_ENDPOINT + '/lesestatus', {
+            method: 'POST',
+            body: JSON.stringify({
+                nachrichtenversionIds, 
+            }),
+            headers: {
+                'content-type': 'application/json'
+            },
+        })
+
+        const data = await res.json();
+                
+        if (res.status === 401) {
+            handleRedirection(data.redirect)
+        }
+    
+        return data as NachrichtErstellenResponseBody;
+        
+    } catch (e) {
+        return {
+            success: false,
+            message: 'Der Lesestatus konnte nicht aktualisiert werden.'
+        };
+    }
+}

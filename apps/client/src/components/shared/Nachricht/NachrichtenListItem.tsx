@@ -10,6 +10,7 @@ import { getTitle } from "@thesis/schule";
 import { NachrichtLoeschenDialog } from "./NachrichtLoeschenDialog";
 import { Edit2 } from "lucide-react";
 import { NachrichtBearbeitenDialog } from "./NachrichtBearbeitenDialog";
+import { NachrichtNotification } from "./NachrichtNotification";
 
 export const NachrichtenListItem = ({ nachricht, showId }: { nachricht: Nachricht, showId: boolean }) => {
     
@@ -47,7 +48,7 @@ export const NachrichtenListItem = ({ nachricht, showId }: { nachricht: Nachrich
     }, [schueler, klassenQuery.data, nachricht])
     
     
-    return <li className='py-2 px-8 flex justify-between w-[100%] gap-8'>
+    return <li className={`py-2 px-8 flex justify-between w-[100%] gap-8`}>
         {
             isDeleteDialogShown && <NachrichtLoeschenDialog typ={nachricht.typ} nachrichtId={nachricht.nachrichtId} id={nachricht.id} closeDialog={() => setIsDeleteDialogShown(false)} />
         }
@@ -57,9 +58,13 @@ export const NachrichtenListItem = ({ nachricht, showId }: { nachricht: Nachrich
         <div className="flex flex-col w-full gap-4">
             <div className="flex flex-col w-full">
                  {
-                    nachricht.versionen.map(version => <div className="flex gap-2 justify-between">
+                    nachricht.versionen.map(version => <div className={`flex gap-2 justify-between`}>
                         <p>{version.inhalt}</p>
-                        <p>{new Date(version.zeitstempel ?? '').toLocaleDateString('de')}</p>
+                        <div className="flex gap-2 items-center">
+                            {version.lesestatus === undefined && <NachrichtNotification />}
+                            <p>{new Date(version.zeitstempel ?? '').toLocaleDateString('de')}</p>
+                        </div>
+                        
                     </div>)
                 }
             </div>

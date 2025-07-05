@@ -4,9 +4,15 @@ import { AnwesenheitTyp } from "@thesis/anwesenheiten";
 import { GeprüftCheckbox } from "../../anwesenheitsstatus/GeprüftCheckbox";
 import type { Schueler } from "@thesis/schueler";
 import { AnwesenheitsstatusSchuelerListSelect } from "@/components/anwesenheitsstatus/AnwesenheitsstatusSchuelerListSelect";
+import { NachrichtNotification } from "@/components/shared/Nachricht/NachrichtNotification";
+import { countUnreadMessages, NachrichtenTyp } from "@thesis/nachricht";
+import { useNachrichten } from "@/components/shared/Nachricht/useNachrichten";
 
 export function SchuelerListItem({ schueler, typ, showDerzeitigeKlasse = false }: { schueler: Schueler, typ: AnwesenheitTyp, showDerzeitigeKlasse?: boolean }) {
    
+    const nachrichtenQuery = useNachrichten(NachrichtenTyp.SCHÜLER, schueler.id ?? -1)
+    const isUnreadMessage = countUnreadMessages([...nachrichtenQuery.query.data]) > 0
+
     return <li className='py-2 px-8 flex flex-col md:flex-row justify-between w-[100%]'>
        
         <Link 
@@ -23,6 +29,9 @@ export function SchuelerListItem({ schueler, typ, showDerzeitigeKlasse = false }
 
                 {
                     (schueler.derzeitigeKlasse && showDerzeitigeKlasse) && <p className="ml-16">{schueler.derzeitigeKlasse}</p>
+                }
+                { 
+                    isUnreadMessage && <NachrichtNotification />
                 }
             </div>
         

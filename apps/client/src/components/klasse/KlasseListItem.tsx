@@ -4,10 +4,15 @@ import { DeleteIcon } from "../icons/DeleteIcon";
 import { getTitle, type Klasse } from "@thesis/schule";
 import { Link } from "@tanstack/react-router";
 import type { User } from "@thesis/auth";
+import { countUnreadMessages, NachrichtenTyp } from "@thesis/nachricht";
+import { useNachrichten } from "../shared/Nachricht/useNachrichten";
+import { NachrichtNotification } from "../shared/Nachricht/NachrichtNotification";
 
 export function KlasseListItem({ klasse }: { klasse: Klasse }) {
 
     const [isDeleteDialogShown, setIsDeleteDialogShown] = useState(false)
+    const klasseQuery = useNachrichten(NachrichtenTyp.KLASSE, klasse.id)
+    const isUnreadMessage = countUnreadMessages([...klasseQuery.query.data]) > 0
 
     function formatLehrer(klassenlehrer: User[] | undefined) {
         if (!klassenlehrer) {
@@ -22,16 +27,22 @@ export function KlasseListItem({ klasse }: { klasse: Klasse }) {
         {
             isDeleteDialogShown && <KlasseLoeschenDialog klasseId={klasse.id} closeDialog={() => setIsDeleteDialogShown(false)}/>
         }
-        <Link className="flex gap-2 w-full"
+        <Link className="flex gap-4 w-full items-center"
             to="/klassen/$klassenId"
             params={{
                 klassenId: `${klasse.id}`
             }}
         >
             <p>{getTitle(klasse)}</p> 
+            { 
+                isUnreadMessage && <NachrichtNotification />
+            }
         </Link>
 
-        <p className="md:text-nowrap">{`${formatLehrer(klasse.klassenlehrer)}`}</p>
+        <div className="flex items-center gap-4">
+            <p className="md:text-nowrap">{`${formatLehrer(klasse.klassenlehrer)}`}</p>    
+        </div>
+        
         
         <div className='flex gap-4'>
             <button onClick={() => setIsDeleteDialogShown(true)}>

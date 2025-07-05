@@ -217,9 +217,18 @@ CREATE TABLE nachrichtenversionen (
     PRIMARY KEY(nachrichtenversion_id)
 )
 
+CREATE TABLE nachrichtenlesestatus (
+    nachrichtenversion_id INT,
+    user_id INT,
+    lesestatus INT,
+    PRIMARY KEY(nachrichtenversion_id, user_id)
+)
+
 CREATE TABLE nachrichtenvorlagen (
     nachricht_id INT AUTO_INCREMENT,
     typ INT,
     inhalt VARCHAR(280),
-    PRIMARY KEY(AUTO_INCREMENT)
+    PRIMARY KEY(nachricht_id)
 )
+
+

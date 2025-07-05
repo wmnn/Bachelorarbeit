@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import { getNachrichtenStore } from '../../singleton';
+import { STANDARD_FEHLER } from '../shared/models';
 
 let router = express.Router();
 
@@ -11,7 +12,7 @@ router.get('/', async (req, res) => {
     if (!id || !typ) {
         return;
     }
-    const nachrichten = await getNachrichtenStore().getNachrichten(parseInt(id), parseInt(typ))
+    const nachrichten = await getNachrichtenStore().getNachrichten(parseInt(id), parseInt(typ), req.userId ?? -1)
     res.status(200).json(nachrichten);
 })
 
@@ -22,7 +23,7 @@ router.get('/all', async (req, res) => {
     if (!typ) {
         return;
     }
-    const nachrichten = await getNachrichtenStore().getAllNachrichten(parseInt(typ))
+    const nachrichten = await getNachrichtenStore().getAllNachrichten(parseInt(typ), req.userId ?? -1)
     res.status(200).json(nachrichten);
 })
 
@@ -132,6 +133,25 @@ router.get('/vorlage', async (req: Request, res: Response): Promise<any> => {
     res.status(200).json(vorlagen)
 })
 
+router.post('/lesestatus', async (req: Request, res: Response): Promise<any> => {
+    const { nachrichtenversionIds } = req.body 
+    const userId = req.userId
+    if (!userId) {
+        return;
+    }
 
+    if (!Array.isArray(nachrichtenversionIds)) {
+        return res.status(400).json(STANDARD_FEHLER);
+    }
+  
+    const success = await getNachrichtenStore().updateLesestatus(nachrichtenversionIds, userId)
+    res.status(success ? 200 : 400).json(success ? {
+        success: true,
+        message: 'Lesestatus der Nachrichten wurde erfolgreich aktualisiert.'
+    }: {
+        success: false,
+        message: 'Beim Aktualisieren des Lesestatus der Nachrichten ist ein Fehler aufgetreten.'
+    });
+});
 
 export { router };

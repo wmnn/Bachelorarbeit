@@ -11,7 +11,13 @@ export type Nachricht = {
 }
 export type NachrichtenVersion = {
     inhalt: string,
-    zeitstempel?: string
+    zeitstempel?: string,
+    lesestatus?: Lesestatus.GELESEN,
+    nachrichtenversionId: number
+}
+
+export enum Lesestatus {
+    GELESEN
 }
 
 export type NachrichtenVorlage = {

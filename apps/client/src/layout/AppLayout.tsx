@@ -1,9 +1,12 @@
 import Button, { type ButtonProps } from "@/components/Button"
+import { NachrichtNotification, NachrichtNotificationColor } from "@/components/shared/Nachricht/NachrichtNotification"
+import { useAllNachrichten } from "@/components/shared/Nachricht/useAllNachrichten"
 import { userContext } from "@/context/UserContext"
 import { Link, Outlet, useNavigate } from "@tanstack/react-router"
 import { logout } from "@thesis/auth"
+import { countUnreadMessages, NachrichtenTyp } from "@thesis/nachricht"
 import { Berechtigung } from "@thesis/rollen"
-import { useContext, useEffect, useState, type FC } from "react"
+import { useContext, useEffect, useState, type Dispatch, type FC } from "react"
 
 const LayoutButton: FC<ButtonProps> = (props) => {
     return <Button className="hover:bg-black text-white text-xl rounded-xl px-4 py-2 cursor-pointer transition-all w-full flex justify-start hover:text-gray-200" {...props} />
@@ -43,9 +46,7 @@ export const AppLayout = () => {
         </button>
         <header className={`${isNavShown ? 'block' : 'hidden xl:flex'} xl:w-[20%] bg-abcd shadow-2xl flex flex-col justify-between xl:pb-12 pt-24 xl:pt-16 pb-16 px-8 md:px-24 xl:px-8 bg-main xl:fixed top-0 left-0 h-[100vh] transition-all`}>
             <nav className="flex flex-col gap-4">
-                <LayoutButton onClick={() => setIsNavShown(false)}>
-                    <Link className="w-[100%] text-left" to="/brett">Schwarzes Brett</Link>
-                </LayoutButton>
+                <SchwartesBrettButton setIsNavShown={setIsNavShown} />
                 {
                     user?.rolle?.berechtigungen[Berechtigung.KlasseRead] === "alle" && 
                     <LayoutButton onClick={() => setIsNavShown(false)}>
@@ -118,4 +119,18 @@ export const AppLayout = () => {
             <Outlet />
         </div>
     </div>
+}
+
+const SchwartesBrettButton = ({ setIsNavShown } : { setIsNavShown: Dispatch<React.SetStateAction<boolean>>}) => {
+
+    const klassenQuery = useAllNachrichten(NachrichtenTyp.KLASSE)
+    const schuelerQuery = useAllNachrichten(NachrichtenTyp.SCHÜLER)
+    const isUnreadMessage = countUnreadMessages([...klassenQuery.query.data, ...schuelerQuery.query.data]) > 0
+
+    return <LayoutButton onClick={() => setIsNavShown(false)}>
+        <Link className="w-[100%] text-left flex justify-between items-center" to="/brett">
+        <p>Schwarzes Brett</p>
+        { isUnreadMessage && <NachrichtNotification color={NachrichtNotificationColor.WHITE} /> }
+        </Link>
+    </LayoutButton>
 }
