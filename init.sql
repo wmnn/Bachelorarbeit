@@ -1,7 +1,3 @@
--- CREATE TABLE berechtigungen (
---     label VARCHAR(255) PRIMARY KEY
--- );
-
 CREATE TABLE rollen (
     rolle VARCHAR(36) PRIMARY KEY,
     berechtigungen VARCHAR(1024)
@@ -17,21 +13,6 @@ CREATE TABLE users (
     is_locked BOOLEAN,
     is_verified BOOLEAN
 );
-
-
-
--- CREATE TABLE rolle_hat_berechtigung (
---     rolle VARCHAR(36),
---     berechtigung VARCHAR(255),
---     berechtigung_wert VARCHAR(255),
---     PRIMARY KEY (rollen_id, label)
--- );
-
--- CREATE TABLE berechtigung_werte (
---     berechtigung VARCHAR(255),
---     berechtigung_wert VARCHAR(255),
---     PRIMARY KEY (label, wert)
--- );
 
 CREATE TABLE diagnostikverfahren (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -193,14 +174,14 @@ CREATE TABLE session_store (
     created_at     TIMESTAMP NOT NULL,
     expires_at     TIMESTAMP,
     PRIMARY KEY (session_id)
-)
+);
 
 CREATE TABLE users_2_factor_authentication (
     user_id INT,
     secret VARCHAR(64),
     tmp VARCHAR(64),
     PRIMARY KEY (user_id)
-)
+);
 
 CREATE TABLE nachrichten (
     nachricht_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -215,20 +196,20 @@ CREATE TABLE nachrichtenversionen (
     zeitstempel DATE,
     inhalt VARCHAR(280),
     PRIMARY KEY(nachrichtenversion_id)
-)
+);
 
 CREATE TABLE nachrichtenlesestatus (
     nachrichtenversion_id INT,
     user_id INT,
     lesestatus INT,
     PRIMARY KEY(nachrichtenversion_id, user_id)
-)
+);
 
 CREATE TABLE nachrichtenvorlagen (
     nachricht_id INT AUTO_INCREMENT,
     typ INT,
     inhalt VARCHAR(280),
     PRIMARY KEY(nachricht_id)
-)
+);
 
 
