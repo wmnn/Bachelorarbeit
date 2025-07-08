@@ -77,10 +77,7 @@ const Table = ({ data }: { data: Row[]}) => {
   }, [] as Row[])
 
   function getIndex(datum: string): number {
-    if (datum.includes('T')) {
-      return header.findIndex(item => item === datum.split('T')[0])
-    }
-    return -1
+    return header.findIndex(item => item === datum)
   }
 
   const handleDownload = () => {
@@ -128,7 +125,7 @@ const Table = ({ data }: { data: Row[]}) => {
                 key={item}
                 className="border border-gray-300 px-4 py-2 text-center font-medium"
               >
-                {item.includes('-') ? new Date(item).toLocaleDateString('de') : item}
+                {item}
               </th>
             ))}
           </tr>

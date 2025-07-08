@@ -25,7 +25,8 @@ CREATE TABLE diagnostikverfahren (
     sichtbarkeit VARCHAR(255),
     typ VARCHAR(255),
     user_id VARCHAR(36),
-    klassen_id VARCHAR(36)
+    klassen_id VARCHAR(36),
+    erhebungszeitraum TINYINT(1),
 );
 
 CREATE TABLE ganztagsangebote (
@@ -50,7 +51,8 @@ CREATE TABLE schueler (
     postleitzahl INT,
     ort VARCHAR(255),
     hat_sonderpaedagogische_kraft VARCHAR(255),
-    verlaesst_schule_allein VARCHAR(255)
+    verlaesst_schule_allein VARCHAR(255),
+    kommentar VARCHAR(280)
 );
 
 CREATE TABLE schueler_abholberechtigte_personen (
@@ -83,7 +85,7 @@ CREATE TABLE klassenversionen (
 
 CREATE TABLE diagnostikverfahren_ergebnisse (
     diagnostikverfahren_id INT,
-    datum DATE,
+    datum VARCHAR(10),
     schueler_id INT,
     ergebnis VARCHAR(10),
     PRIMARY KEY (diagnostikverfahren_id, datum, schueler_id)

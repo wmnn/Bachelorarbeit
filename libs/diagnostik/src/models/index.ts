@@ -33,6 +33,11 @@ export type Diagnostik = {
     geteiltMit?: number[],
     auswertungsgruppen?: Auswertungsgruppe[],
     aktualisiertAm?: string
+    erhebungszeitraum?: Erhebungszeitraum
+}
+export enum Erhebungszeitraum {
+    TAG,
+    KALENDERWOCHE
 }
 export type DiagnostikenSchuelerData = {
     ergebnisse?: Row[]

@@ -6,7 +6,7 @@ import { use, useEffect, useState } from "react";
 import { DiagnostikAddTestDialog } from "@/components/diagnostik/DiagnostikAddTestDialog";
 import { ButtonLight } from "@/components/ButtonLight";
 import { DialogWithButtons } from "@/components/dialog/DialogWithButtons";
-import { editDiagnostik, type Diagnostik } from "@thesis/diagnostik";
+import { editDiagnostik, Erhebungszeitraum, type Diagnostik } from "@thesis/diagnostik";
 import { SelectedUserCtrl } from "@/components/shared/SelectedUserCtrl";
 import { Berechtigung } from "@thesis/rollen";
 import { useSelectedUserStore } from "@/components/shared/SelectedUserStore";
@@ -45,6 +45,7 @@ export const DiagnostikNav = ({ diagnostikId }: { diagnostikId: string }) => {
     {
       isAddTestDataDialogShown && <DiagnostikAddTestDialog 
         diagnostikId={parseInt(diagnostikId)}
+        erhebungszeitraum={diagnostik.erhebungszeitraum ?? Erhebungszeitraum.TAG}
         closeDialog={() => setIsAddTestDataDialogShown(false)} 
         klasseId={typeof diagnostik.klasseId === 'number' ? diagnostik.klasseId : parseInt(diagnostik.klasseId)}
       />

@@ -1,4 +1,4 @@
-import { addErgebnisse, ergebnisDatumGleich, type Ergebnis } from "@thesis/diagnostik";
+import { addErgebnisse, ergebnisDatumGleich, Erhebungszeitraum, type Ergebnis } from "@thesis/diagnostik";
 import { DialogWithButtons } from "../dialog/DialogWithButtons";
 import { Input } from "../Input";
 import { useSchuelerStore } from "../schueler/SchuelerStore";
@@ -11,17 +11,18 @@ import { useErgebnisse } from "./useErgebnisse";
 
 interface DiagnostikAddTestDialogProps {
   closeDialog: () => void,
-  klasseId: number
-  diagnostikId: number
+  klasseId: number,
+  diagnostikId: number,
+  erhebungszeitraum: Erhebungszeitraum
 }
 
-export function DiagnostikAddTestDialog({ closeDialog, klasseId, diagnostikId }: DiagnostikAddTestDialogProps) {
+export function DiagnostikAddTestDialog({ closeDialog, klasseId, diagnostikId, erhebungszeitraum }: DiagnostikAddTestDialogProps) {
 
     const klasseQuery = useKlasse(klasseId)
     useAllSchueler()
     const schueler = useSchuelerStore(store => store.schueler)
     const [ergebnisse, setErgebnisse] = useState<Ergebnis[]>([])
-    const [datum, setDatum] = useState<any>(new Date().toISOString().split('T')[0])
+    const [datum, setDatum] = useState<any>(erhebungszeitraum === Erhebungszeitraum.TAG ? new Date().toISOString().split('T')[0] : getCurrentISOWeek())
     const queryClient = useQueryClient();
 
     const klasse = klasseQuery.data
@@ -31,6 +32,20 @@ export function DiagnostikAddTestDialog({ closeDialog, klasseId, diagnostikId }:
 
     const ergebnisseQuery = useErgebnisse(diagnostikId)
     const data = ergebnisseQuery.data
+
+    function getCurrentISOWeek(): string {
+        const now = new Date();
+        const temp = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+        const day = temp.getUTCDay();
+        const isoDay = (day + 6) % 7;
+        temp.setUTCDate(temp.getUTCDate() - isoDay + 3);
+        const firstThursday = new Date(Date.UTC(temp.getUTCFullYear(), 0, 4));
+        const diff = temp.getTime() - firstThursday.getTime();
+        const week = 1 + Math.round(diff / (7 * 24 * 60 * 60 * 1000));
+        const isoYear = temp.getUTCFullYear();
+        const weekStr = String(week).padStart(2, '0');
+        return `${isoYear}-W${weekStr}`;
+    }
 
     useEffect(() => {
         const neueErgebnisse = schuelerIds?.map(schuelerId => {
@@ -84,8 +99,9 @@ export function DiagnostikAddTestDialog({ closeDialog, klasseId, diagnostikId }:
             <label>
                 Datum
             </label>
-            <Input type="date" value={datum} onChange={(e) => setDatum(e.target.value)} />
-
+            {
+                erhebungszeitraum === Erhebungszeitraum.TAG ? <Input type="date" value={datum} onChange={(e) => setDatum(e.target.value)} /> : <Input type="week" value={datum} onChange={(e) => setDatum(e.target.value)} />
+            }
         </div>
         
         <div className="flex justify-between my-4">

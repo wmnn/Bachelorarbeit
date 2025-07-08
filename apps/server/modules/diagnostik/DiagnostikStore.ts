@@ -1,4 +1,4 @@
-import { Auswertungsgruppe, deleteDiagnostik, Diagnostik, DiagnostikTyp, Ergebnis, Farbbereich, Row } from "@thesis/diagnostik";
+import { Auswertungsgruppe, deleteDiagnostik, Diagnostik, DiagnostikTyp, Ergebnis, Erhebungszeitraum, Farbbereich, Row } from "@thesis/diagnostik";
 import { Pool, ResultSetHeader, RowDataPacket } from "mysql2/promise"
 import { DatabaseMessage, STANDARD_FEHLER } from "../shared/models";
 
@@ -18,7 +18,7 @@ export class DiagnostikStore {
         try {
             const [rows] = await conn.execute<RowDataPacket[]>(`
                 SELECT id, name, beschreibung, erstellungsdatum, obere_grenze AS obereGrenze, user_id as userId,
-                    untere_grenze AS untereGrenze, typ, user_id AS userId, klassen_id AS klasseId, sichtbarkeit, aktualisiertAm
+                    untere_grenze AS untereGrenze, typ, user_id AS userId, klassen_id AS klasseId, sichtbarkeit, aktualisiertAm, erhebungszeitraum
                 FROM diagnostikverfahren
                 WHERE id = ?
             `, [diagnostikId]);
@@ -53,7 +53,8 @@ export class DiagnostikStore {
                 files,
                 geteiltMit,
                 auswertungsgruppen,
-                aktualisiertAm: diag.aktualisiertAm
+                aktualisiertAm: diag.aktualisiertAm,
+                erhebungszeitraum: diag.erhebungszeitraum ?? Erhebungszeitraum.TAG
             };
 
         } catch (e) {
@@ -110,7 +111,7 @@ export class DiagnostikStore {
         try {
             const [rows] = await conn.execute<RowDataPacket[]>(`
                 SELECT id, name, beschreibung, erstellungsdatum, obere_grenze AS obereGrenze, 
-                    untere_grenze AS untereGrenze, typ, user_id AS userId, klassen_id AS klasseId, sichtbarkeit, aktualisiertAm
+                    untere_grenze AS untereGrenze, typ, user_id AS userId, klassen_id AS klasseId, sichtbarkeit, aktualisiertAm, erhebungszeitraum
                 FROM diagnostikverfahren
                 WHERE typ = ?
             `, [speicherTyp]);
@@ -142,7 +143,8 @@ export class DiagnostikStore {
                     sichtbarkeit: parseInt(diag.sichtbarkeit),
                     files,
                     auswertungsgruppen,
-                    aktualisiertAm: diag.aktualisiertAm
+                    aktualisiertAm: diag.aktualisiertAm,
+                    erhebungszeitraum: diag.erhebungszeitraum ?? Erhebungszeitraum.TAG
                 });
             }
 
@@ -305,9 +307,9 @@ export class DiagnostikStore {
             }
             
             const [result] = await conn.execute<ResultSetHeader>(`
-                INSERT INTO diagnostikverfahren (name, beschreibung, erstellungsdatum, obere_grenze, untere_grenze, typ, user_id, klassen_id, sichtbarkeit) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            `, [name, beschreibung, new Date().toISOString().split('T')[0], obereGrenze, untereGrenze, speicherTyp, userId, klasseId, diagnostik.sichtbarkeit ?? null]);
+                INSERT INTO diagnostikverfahren (name, beschreibung, erstellungsdatum, obere_grenze, untere_grenze, typ, user_id, klassen_id, sichtbarkeit, erhebungszeitraum) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `, [name, beschreibung, new Date().toISOString().split('T')[0], obereGrenze, untereGrenze, speicherTyp, userId, klasseId, diagnostik.sichtbarkeit ?? null, diagnostik.erhebungszeitraum]);
 
             const id = result.insertId;
 
@@ -675,29 +677,5 @@ export class DiagnostikStore {
             [diagnostikId]
         );
     }
-    
-    // async getSchuelerData(schuelerId: number): Promise<any> {
-
-    //     if (!this.connection) return [];
-
-    //     const conn = await this.connection.getConnection();
-
-    //     try {
-    //         const [rows] = await conn.query(
-    //             `SELECT diagnostikverfahren_id, datum, ergebnis
-    //             FROM diagnostikverfahren_ergebnisse
-    //             WHERE schueler_id = ?`,
-    //             [schuelerId]
-    //         );
-
-    //         return rows;
-    //     } catch (err) {
-    //         console.error('Fehler in getSchuelerData:', err);
-    //         return [];
-    //     } finally {
-    //         conn.release();
-    //     }
-        
-    // }
 
 }

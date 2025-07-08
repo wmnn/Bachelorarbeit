@@ -1,3 +1,4 @@
+import { Erhebungszeitraum, type Row } from "@thesis/diagnostik";
 import { FILES_ENDPOINT } from "../../../../../../libs/config/config";
 
 export const download = (id: string) => {
@@ -32,3 +33,50 @@ export const downloadDateien = async (diagnostikId: string, files: string[]) => 
         }
     }
 };
+export const filterErgebnisse = (rows: Row[], erhebungszeitraum: Erhebungszeitraum, maxDate: string | undefined, minDate: string | undefined) => {
+
+    let filtered = rows
+
+    if (minDate !== undefined) {
+        if (erhebungszeitraum === Erhebungszeitraum.TAG) {
+            filtered = filtered.map(row => ({
+                ...row,
+                ergebnisse: row.ergebnisse.filter(ergebnis => {
+                    if (ergebnis.datum === undefined) return false;
+                    return new Date(ergebnis.datum) >= new Date(minDate);
+                })
+            }));
+        } else if (erhebungszeitraum === Erhebungszeitraum.KALENDERWOCHE) {
+            filtered = filtered.map(row => ({
+                ...row,
+                ergebnisse: row.ergebnisse.filter(ergebnis => {
+                    if (ergebnis.datum === undefined) return false;
+                    return ergebnis.datum >= minDate;
+                })
+            }));
+        }
+    }
+
+    if (maxDate !== undefined) {
+
+        if (erhebungszeitraum === Erhebungszeitraum.TAG) {
+            filtered = filtered.map(row => ({
+                ...row,
+                ergebnisse: row.ergebnisse.filter(ergebnis => {
+                    if (ergebnis.datum === undefined) return false;
+                    return new Date(ergebnis.datum) <= new Date(maxDate);
+                })
+            }));
+        } else if (erhebungszeitraum === Erhebungszeitraum.KALENDERWOCHE) {
+            filtered = filtered.map(row => ({
+                ...row,
+                ergebnisse: row.ergebnisse.filter(ergebnis => {
+                    if (ergebnis.datum === undefined) return false;
+                    return ergebnis.datum <= maxDate;
+                })
+            }));
+        }
+    }
+
+    return filtered satisfies Row[] 
+}

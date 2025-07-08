@@ -1,8 +1,9 @@
-import { getMindeststandard, type DiagnostikenSchuelerData } from "@thesis/diagnostik";
+import { Erhebungszeitraum, getMindeststandard, type DiagnostikenSchuelerData } from "@thesis/diagnostik";
 import { useEffect, useState } from "react";
 import { SchuelerResultBalkenDiagramm } from "./SchuelerResultBalkenDiagramm";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { DateFilter } from "./DateFilter";
+import { filterErgebnisse } from "./util";
 
 export interface SchuelerBalkenDiagrammProps {
     data: DiagnostikenSchuelerData[]
@@ -29,18 +30,7 @@ const DiagnostikListItem = ({ diagnostik: initialData }: {diagnostik : Diagnosti
     function applyDateFilter(diagnostik: DiagnostikenSchuelerData) {
         return ({
             ...diagnostik,
-            ergebnisse: (diagnostik.ergebnisse ?? []).map(ergebnisWrapper => ({
-                ...ergebnisWrapper,
-                ergebnisse: ergebnisWrapper.ergebnisse.filter(ergebnis => {
-                    if (ergebnis.datum == undefined) return false;
-                    if (minDate == undefined) return true;
-                    return new Date(ergebnis.datum) >= new Date(minDate)
-                }).filter(ergebnis => {
-                    if (ergebnis.datum == undefined) return false;
-                    if (maxDate == undefined) return true;
-                    return new Date(ergebnis.datum) <= new Date(maxDate)
-                })
-            }))
+            ergebnisse: filterErgebnisse(diagnostik.ergebnisse ?? [], diagnostik.erhebungszeitraum ?? Erhebungszeitraum.TAG, maxDate, minDate)
         })
     }
 
@@ -55,7 +45,7 @@ const DiagnostikListItem = ({ diagnostik: initialData }: {diagnostik : Diagnosti
                 <DropdownMenuTrigger className="border-[1px] px-2 rounded-lg py-[6px] hover:bg-gray-200">Filtern</DropdownMenuTrigger>
                 <DropdownMenuContent>
                     <div className="flex flex-col gap-2">
-                        <DateFilter minDate={minDate} maxDate={maxDate} setMinDate={setMinDate} setMaxDate={setMaxDate} />
+                        <DateFilter minDate={minDate} maxDate={maxDate} setMinDate={setMinDate} setMaxDate={setMaxDate} erhebungszeitraum={diagnostik.erhebungszeitraum}/>
                     </div>
                 </DropdownMenuContent>
             </DropdownMenu>
@@ -67,11 +57,11 @@ const DiagnostikListItem = ({ diagnostik: initialData }: {diagnostik : Diagnosti
                     {
                     row.ergebnisse.map(ergebnis => {
                         return <SchuelerResultBalkenDiagramm  
-                        obereGrenze={parseInt(`${diagnostik.obereGrenze ?? -1}`)}
-                        untereGrenze={parseInt(`${diagnostik.untereGrenze ?? -1}`)}
-                        mindeststandard={Number(getMindeststandard(diagnostik) ?? -1)}  
-                        ergebnis={parseInt(ergebnis.ergebnis)}
-                        label={new Date(ergebnis.datum ?? '').toLocaleDateString('de')}   
+                            obereGrenze={parseInt(`${diagnostik.obereGrenze ?? -1}`)}
+                            untereGrenze={parseInt(`${diagnostik.untereGrenze ?? -1}`)}
+                            mindeststandard={Number(getMindeststandard(diagnostik) ?? -1)}  
+                            ergebnis={parseInt(ergebnis.ergebnis)}
+                            label={ergebnis.datum}   
                         />
                     })
                     }

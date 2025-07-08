@@ -66,14 +66,13 @@ export const KuchenDiagramm = ({ data: initialData, diagnostik }: { data: Row[],
                 {
                     dates.map((date) => {
                         return <SelectItem key={date} value={`${date}`}>
-                            {new Date(date).toLocaleDateString('de')}                    
+                            {date}                    
                         </SelectItem>                 
                     })
                 }
             </SelectContent>
         </Select>    
         <Filter initialData={initialData} data={data} setData={setData} diagnostik={diagnostik} />
-        {/* <Filter diagnostik={diagnostik} dates={dates} initData={initData} setData={setData} /> */}
 
         <canvas id={id} className='max-w-full xl:max-h-[576px] px-8'></canvas>
         <div className='flex justify-start my-8'>

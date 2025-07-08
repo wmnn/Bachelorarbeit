@@ -203,14 +203,14 @@ router.post('/:diagnostikId', async (req, res: Response<AddErgebnisseResponseBod
         datum = '';
     }
 
-    datum = datum.split('T')[0];
+    // datum = datum.split('T')[0];
 
-    if (!isValidDateFormat(datum as string | undefined ?? '')) {
-        return res.status(400).json({
-            success: false,
-            message: 'Es wurde kein korrektes Datum spezifiziert.'
-        })
-    }
+    // if (!isValidDateFormat(datum as string | undefined ?? '')) {
+    //     return res.status(400).json({
+    //         success: false,
+    //         message: 'Es wurde kein korrektes Datum spezifiziert.'
+    //     })
+    // }
 
     const diagnostik = await getDiagnostikStore().getDiagnostik(parseInt(diagnostikId))
     let isValidData = true;
@@ -231,8 +231,6 @@ router.post('/:diagnostikId', async (req, res: Response<AddErgebnisseResponseBod
             message: `Die obere Grenze für Ergebnisse ist "${diagnostik?.obereGrenze}" und die untere Grenze ist "${diagnostik?.untereGrenze}"`
         })
     }
-
-    // ergebnisse = ergebnisse.filter(item => item.ergebnis !== '')
 
     const msg = await getDiagnostikStore().addErgebnisse(ergebnisse, parseInt(diagnostikId), datum)
     res.status(msg.success ? 200 : 400).json(msg);

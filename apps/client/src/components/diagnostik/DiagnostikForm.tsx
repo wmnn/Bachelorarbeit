@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ButtonLight } from "../ButtonLight"
 import { Input } from "../Input";
-import { DiagnostikNumberFormat, DiagnostikTyp, Sichtbarkeit, sortFarbbereiche, type Diagnostik, type Farbbereich } from '@thesis/diagnostik'
+import { DiagnostikNumberFormat, DiagnostikTyp, Erhebungszeitraum, Sichtbarkeit, sortFarbbereiche, type Diagnostik, type Farbbereich } from '@thesis/diagnostik'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { useKlassen } from "../shared/useKlassen";
 import { getTitle, type Klasse } from "@thesis/schule";
@@ -39,7 +39,8 @@ export const DiagnostikForm = (props: DiagnostikFormProps) => {
             obereGrenze: ''
         }],
         speicherTyp: DiagnostikTyp.LAUFENDES_VERFAHREN,
-        sichtbarkeit: Sichtbarkeit.PRIVAT
+        sichtbarkeit: Sichtbarkeit.PRIVAT,
+        erhebungszeitraum: Erhebungszeitraum.TAG
     })
     const [isSichtbarkeitDialogShown, setIsSichtbarkeitDialogShown] = useState(false)
     const [files, setFiles] = useState<File[]>([])
@@ -287,6 +288,28 @@ export const DiagnostikForm = (props: DiagnostikFormProps) => {
                         </SelectItem>   
                     </SelectContent>
                 </Select>  */}
+                <label>Erhebungszeitraum</label>
+                <Select 
+                    value={`${diagnostik.erhebungszeitraum}`}
+                    onValueChange={async (val: string) => {
+                        setDiagnostik(prev => ({
+                            ...prev,
+                            erhebungszeitraum: parseInt(val) as Diagnostik['erhebungszeitraum']
+                        }))
+                    }}
+                >
+                    <SelectTrigger className="xl:w-[200px] w-min">
+                        <SelectValue placeholder="Keine Rolle"/>
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value={`${Erhebungszeitraum.TAG}`}>
+                            Tag
+                        </SelectItem>     
+                        <SelectItem value={`${Erhebungszeitraum.KALENDERWOCHE}`}>
+                            Kalenderwoche
+                        </SelectItem>    
+                    </SelectContent>
+                </Select>  
 
                 <label>Obere Grenze</label>
                 <Input type="number" value={`${diagnostik.obereGrenze ?? ''}`}

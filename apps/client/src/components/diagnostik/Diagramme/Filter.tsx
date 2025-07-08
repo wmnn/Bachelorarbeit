@@ -2,10 +2,11 @@ import { ButtonLight } from "@/components/ButtonLight"
 import { useSchuelerStore } from "@/components/schueler/SchuelerStore"
 import { useAllSchueler } from "@/components/schueler/useSchueler"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import type { Diagnostik, Row } from "@thesis/diagnostik"
+import { Erhebungszeitraum, type Diagnostik, type Row } from "@thesis/diagnostik"
 import { useEffect, useState, type Dispatch } from "react"
 import { AuswertungsgruppeDialog } from "../AuswertungsgruppeDialog"
 import { DateFilter } from "./DateFilter"
+import { filterErgebnisse } from "./util"
 
 export const Filter = ({ initialData, data, setData, diagnostik}: {
     initialData: Row[], 
@@ -45,27 +46,9 @@ export const Filter = ({ initialData, data, setData, diagnostik}: {
     }
 
     function applyDateFilter(rows: Row[]) {
-        let filtered = rows
-        if (minDate != undefined) {
-            filtered = filtered.map(row => ({
-                ...row,
-                ergebnisse: row.ergebnisse.filter(ergebnis => {
-                    if (ergebnis.datum == undefined) return false;
-                    return new Date(ergebnis.datum) >= new Date(minDate)
-                })
-            }))
-        }
-        if (maxDate != undefined) {
-            filtered = filtered.map(row => ({
-                ...row,
-                ergebnisse: row.ergebnisse.filter(ergebnis => {
-                    if (ergebnis.datum == undefined) return false;
-                    return new Date(ergebnis.datum) <= new Date(maxDate)
-                })
-            }))
-        }
-        return filtered
+        return filterErgebnisse(rows, diagnostik.erhebungszeitraum ?? Erhebungszeitraum.TAG, minDate, maxDate)
     }
+
 
     return <div>
 
@@ -82,7 +65,7 @@ export const Filter = ({ initialData, data, setData, diagnostik}: {
                 <DropdownMenuContent>
                     <div className="flex flex-col gap-2">
                         
-                        <DateFilter minDate={minDate} maxDate={maxDate} setMinDate={setMinDate} setMaxDate={setMaxDate} />
+                        <DateFilter minDate={minDate} maxDate={maxDate} setMinDate={setMinDate} setMaxDate={setMaxDate} erhebungszeitraum={diagnostik.erhebungszeitraum}/>
 
                         <label>
                             Auswertungsgruppen
