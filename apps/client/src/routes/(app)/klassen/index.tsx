@@ -9,11 +9,14 @@ import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { getSchueler, type SchuelerSimple } from '@thesis/schueler'
 import { type Klasse} from '@thesis/schule' 
-import { useEffect, useState } from 'react'
+import { use, useEffect, useState } from 'react'
 import { ErrorDialog } from '@/components/dialog/MessageDialog'
 import { ButtonLight } from '@/components/ButtonLight'
 import { KlasseImportDialog } from '@/components/klasse/KlasseImportDialog'
 import { useKlassen } from '@/components/shared/useKlassen'
+import { userContext } from '@/context/UserContext'
+import { Berechtigung } from '@thesis/rollen'
+import { userHasPermission } from '@/components/auth/userHasPermission'
 
 export const Route = createFileRoute('/(app)/klassen/')({
   component: RouteComponent,
@@ -25,6 +28,7 @@ function RouteComponent() {
   const [isCreateDialogShown, setIsCreateDialogShown] = useState(false)
   const [isImportDialogShown, setIsImportDialogShown] = useState(false)
   const [responseMessage, setResponseMessage] = useState('')
+  const { user } = use(userContext)
 
   const { isPending: isPending2, data: schueler } = useQuery<SchuelerSimple[]>({
     queryKey: [SCHUELER_QUERY_KEY],
@@ -65,7 +69,7 @@ function RouteComponent() {
     {(responseMessage !== '') && <ErrorDialog message={responseMessage} closeDialog={() => setResponseMessage('')}/>}
 
     <List 
-      setIsCreateDialogShown={setIsCreateDialogShown} 
+      setIsCreateDialogShown={userHasPermission(user, Berechtigung.KlasseCreate, true) ? setIsCreateDialogShown : undefined} 
       createButonLabel='Klasse erstellen'
       header={header}
       className='p-8'

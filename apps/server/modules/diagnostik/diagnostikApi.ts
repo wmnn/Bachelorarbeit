@@ -9,6 +9,7 @@ import { canEditDiagnostik, canUserAccessDiagnostik, canUserCreateDiagnostik, ca
 import { getNoSessionResponse } from '../auth/permissionsUtil';
 import { getKlassenIdsVonSchueler } from '../klassen/util';
 import { DiagnostikStore } from './DiagnostikStore';
+import { getDiagnostiken, getDiagnostikTyp } from './util';
 
 let router = express.Router();
 const SUCCESSFULL_VALIDATION_RES =  {
@@ -20,46 +21,12 @@ router.get('/', async (
     req: Request<{}, {}, {}, { typ?: string }>,
     res: Response<GetDiagnostikenResponseBody>
 ): Promise<any> => {
-    if (!req.userId) {
-        return getNoSessionResponse(res)
-    }
-    const permission = req.permissions?.[Berechtigung.DiagnostikverfahrenRead]
-    const allowed: BerechtigungWert<Berechtigung.DiagnostikverfahrenRead>[] = ['alle', 'eigene'] 
-    if (!permission || !allowed.includes(permission)) {
-        return res.status(403).json([]);
-    }
+   
+    const { status, success, data } = await getDiagnostiken(req, getDiagnostikTyp(req.query.typ))
+    return res.status(status).json(data);
 
-    let speicherTyp: DiagnostikTyp = DiagnostikTyp.LAUFENDES_VERFAHREN;
-
-    if (req.query.typ) {
-        const typ = parseInt(req.query.typ); 
-        if (!isNaN(typ)) {
-            speicherTyp = typ as DiagnostikTyp;
-        }
-    }
-
-    if (speicherTyp === DiagnostikTyp.GETEILT) {
-        let query = await getDiagnostikStore().getDiagnostiken(DiagnostikTyp.LAUFENDES_VERFAHREN);
-        if (!query.success || query.data == null) {
-            return;
-        }
-        let diagnostiken = query.data
-        const shared = await getDiagnostikStore().getDiagnostikenGeteilt(req.userId ?? -1)
-        if (!shared.success || shared.data == null) {
-            return;
-        }
-        return res.status(200).json(diagnostiken.filter(diagnostik => shared.data.includes(diagnostik.id ?? -1)));
-    }
-
-    let data = await getDiagnostikStore().getDiagnostiken(speicherTyp);
-    if (permission == 'eigene' && speicherTyp === DiagnostikTyp.LAUFENDES_VERFAHREN) {
-        data.data = data.data?.filter(o => o.userId == req.userId) ?? []
-    }
-    if (permission == 'eigene' && speicherTyp === DiagnostikTyp.VORLAGE) {
-        data.data = data.data?.filter(o => o.sichtbarkeit == Sichtbarkeit.ÖFFENTLICH || o.userId == req.userId) ?? []
-    }
-    return res.status(data.success ? 200 : 400).json(data.data ?? []);
 });
+
 
 router.get('/schueler', async (req, res: Response<GetSchuelerDataResponseBody>): Promise<any> => {
     const { schuelerId: schuelerIdString } = req.query as {
@@ -69,10 +36,11 @@ router.get('/schueler', async (req, res: Response<GetSchuelerDataResponseBody>):
     if (!req.userId) {
         return getNoSessionResponse(res)
     }
+
     // Alle klassenIds von den Klassenversionen anfragen, bei denen der Schüler ein Teil von ist
     const klassenIds = await getKlassenIdsVonSchueler(schuelerId)
     // Alle Diagnostiken die für die Klassen erstellt wurden anfragen
-    let { data: unfilteredDiagnostiken } = await getDiagnostikStore().getDiagnostiken(DiagnostikTyp.LAUFENDES_VERFAHREN)
+    let { data: unfilteredDiagnostiken } = await getDiagnostiken(req, DiagnostikTyp.LAUFENDES_VERFAHREN)
     // unfilteredDiagnostiken = [...unfilteredDiagnostiken, await getDiagnostikStore().getDiagnostiken(DiagnostikTyp.)]
     let filteredDiagnostiken: DiagnostikenSchuelerData[] = (unfilteredDiagnostiken?.filter(diagnostik => klassenIds.includes(diagnostik.klasseId)) ?? []) 
 
@@ -236,10 +204,10 @@ router.post('/:diagnostikId', async (req, res: Response<AddErgebnisseResponseBod
     res.status(msg.success ? 200 : 400).json(msg);
 });
 
-function isValidDateFormat(dateStr: string) {
-    const regex = /^\d{4}-\d{2}-\d{2}$/;
-    return regex.test(dateStr);
-}
+// function isValidDateFormat(dateStr: string) {
+//     const regex = /^\d{4}-\d{2}-\d{2}$/;
+//     return regex.test(dateStr);
+// }
 
 function validateDiagnostikInput(
   diagnostik: Diagnostik,

@@ -1,3 +1,4 @@
+import { userHasPermission } from "@/components/auth/userHasPermission"
 import Button, { type ButtonProps } from "@/components/Button"
 import { NachrichtNotification, NachrichtNotificationColor } from "@/components/shared/Nachricht/NachrichtNotification"
 import { useAllNachrichten } from "@/components/shared/Nachricht/useAllNachrichten"
@@ -49,7 +50,7 @@ export const AppLayout = () => {
             <nav className="flex flex-col gap-4">
                 <SchwartesBrettButton setIsNavShown={setIsNavShown} />
                 {
-                    user?.rolle?.berechtigungen[Berechtigung.KlasseRead] === "alle" && 
+                    userHasPermission(user, Berechtigung.KlasseRead, "alle") && 
                     <LayoutButton onClick={() => setIsNavShown(false)}>
                         <Link className="w-[100%] text-left" to="/klassen">Klassen</Link>
                     </LayoutButton>

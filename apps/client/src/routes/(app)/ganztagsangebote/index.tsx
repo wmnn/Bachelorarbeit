@@ -1,3 +1,4 @@
+import { userHasPermission } from '@/components/auth/userHasPermission'
 import { ErrorDialog } from '@/components/dialog/MessageDialog'
 import { GanztagsangebotErstellenDialog } from '@/components/ganztagsangebot/GanztagsangebotErstellenDialog'
 import { GanztagsangebotListItem } from '@/components/ganztagsangebot/GanztagsangebotListItem'
@@ -5,11 +6,13 @@ import { List } from '@/components/List'
 import { HalbjahrSelect } from '@/components/schuljahr/HalbjahrSelect'
 import { SchuljahrSelect } from '@/components/schuljahr/SchuljahrSelect'
 import { useSchuljahrStore } from '@/components/schuljahr/SchuljahrStore'
+import { userContext } from '@/context/UserContext'
 import { GANZTAGSANGEBOT_QUERY_KEY } from '@/reactQueryKeys'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
+import { Berechtigung } from '@thesis/rollen'
 import { getGanztagsangebote, type Halbjahr, type Schuljahr } from '@thesis/schule'
-import { useState } from 'react'
+import { use, useState } from 'react'
 
 export const Route = createFileRoute('/(app)/ganztagsangebote/')({
   component: RouteComponent,
@@ -19,6 +22,7 @@ function RouteComponent() {
 
   const [isCreateDialogShown, setIsCreateDialogShown] = useState(false)
   const [responseMessage, setResponseMessage] = useState('')
+  const { user } = use(userContext)
 
   const schuljahr = useSchuljahrStore(state => state.ausgewaeltesSchuljahr)
   const halbjahr = useSchuljahrStore(state => state.ausgewaeltesHalbjahr)
@@ -52,7 +56,7 @@ function RouteComponent() {
     {(responseMessage !== '') && <ErrorDialog message={responseMessage} closeDialog={() => setResponseMessage('')}/>}
 
     <List 
-      setIsCreateDialogShown={setIsCreateDialogShown} 
+      setIsCreateDialogShown={userHasPermission(user, Berechtigung.GanztagsangebotCreate, true) ? setIsCreateDialogShown : undefined} 
       createButonLabel='Ganztagsangebot erstellen'
       header={header}
       className='p-8'

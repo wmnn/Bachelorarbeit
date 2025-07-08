@@ -2,6 +2,8 @@ import express, { Request, Response } from 'express';
 import { CreateClassRequestBody, CreateClassResponseBody, DeleteKlasseRequestBody, DeleteKlasseResponseBody, getSchuljahrVorherigesHalbjahr, getVorherigesHalbjahr, Halbjahr, ImportKlasse, ImportKlassenversion, ImportModus, Klasse, KlassenVersion, Schuljahr } from '@thesis/schule';
 import { DeleteSchuelerResponseBody } from '@thesis/schueler';
 import { getKlassenStore } from '../../singleton';
+import { getNoPermissionResponse, getNoSessionResponse } from '../auth/permissionsUtil';
+import { Berechtigung } from '@thesis/rollen';
 
 let router = express.Router();
 
@@ -36,7 +38,15 @@ router.put('/:klassenId', async (req, res) => {
 });
 
 
-router.post('/', async (req: Request<{}, {}, CreateClassRequestBody>, res: Response<CreateClassResponseBody>) => {
+router.post('/', async (req: Request<{}, {}, CreateClassRequestBody>, res: Response<CreateClassResponseBody>): Promise<any> => {
+    
+    if(req.userId == undefined) {
+        return getNoSessionResponse(res);
+    }
+    if (!req.permissions?.[Berechtigung.KlasseCreate]) {
+        return getNoPermissionResponse(res)
+    }
+
     const { versionen, klassenlehrer } = req.body
     const msg = await getKlassenStore().createClass(undefined, versionen, klassenlehrer)
     res.status(msg.success ? 200 : 400).json(msg);

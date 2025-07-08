@@ -2,6 +2,8 @@ import express, { Request, Response } from 'express';
 import { DeleteGanztagsangebotRequestBody, DeleteGanztagsangebotResponseBody, Ganztagsangebot, Halbjahr, Schuljahr } from '@thesis/schule';
 import { CreateGanztagsangebotRequestBody, CreateGanztagsangebotResponseBody } from '@thesis/schule'
 import { getGanztagsangebotStore } from '../../singleton';
+import { getNoPermissionResponse, getNoSessionResponse } from '../auth/permissionsUtil';
+import { Berechtigung } from '@thesis/rollen';
 
 let router = express.Router();
 
@@ -18,7 +20,15 @@ router.get('/', async (req, res) => {
     res.status(200).json(msg);
 });
 
-router.post('/', async (req: Request<{}, {}, CreateGanztagsangebotRequestBody>, res: Response<CreateGanztagsangebotResponseBody>) => {
+router.post('/', async (req: Request<{}, {}, CreateGanztagsangebotRequestBody>, res: Response<CreateGanztagsangebotResponseBody>): Promise<any> => {
+    
+    if(req.userId == undefined) {
+        return getNoSessionResponse(res);
+    }
+    if (!req.permissions?.[Berechtigung.GanztagsangebotCreate]) {
+        return getNoPermissionResponse(res)
+    }
+    
     let ganztagsangebot = req.body
     ganztagsangebot.schueler = ganztagsangebot.schueler?.filter(item => item !== -1)
     const msg = await getGanztagsangebotStore().createGanztagsangebot(ganztagsangebot)

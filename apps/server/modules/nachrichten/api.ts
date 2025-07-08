@@ -1,6 +1,8 @@
 import express, { Request, Response } from 'express';
 import { getNachrichtenStore } from '../../singleton';
 import { STANDARD_FEHLER } from '../shared/models';
+import { getNoPermissionResponse, getNoSessionResponse } from '../auth/permissionsUtil';
+import { Berechtigung } from '@thesis/rollen';
 
 let router = express.Router();
 
@@ -87,6 +89,13 @@ router.delete('/', async (req, res) => {
 })
 
 router.post('/vorlage', async (req: Request, res: Response): Promise<any> => {
+    if(req.userId == undefined) {
+        return getNoSessionResponse(res);
+    }
+    if (!req.permissions?.[Berechtigung.NachrichtenvorlagenVerwalten]) {
+        return getNoPermissionResponse(res)
+    }
+
     const { klassenVorlagen, schuelerVorlagen } = req.body 
     const userId = req.userId
     if (!userId) {
@@ -122,6 +131,12 @@ router.post('/vorlage', async (req: Request, res: Response): Promise<any> => {
 
 
 router.get('/vorlage', async (req: Request, res: Response): Promise<any> => {
+    if(req.userId == undefined) {
+        return getNoSessionResponse(res);
+    }
+    if (!req.permissions?.[Berechtigung.NachrichtenvorlagenVerwalten]) {
+        return getNoPermissionResponse(res)
+    }
     const { typ } = req.query as {
         typ?: string
     }

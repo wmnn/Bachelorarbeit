@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react"
+import { use, useEffect, useState } from "react"
 import { List } from "../List"
 import { DiagnostikErstellenDialog } from "./DiagnostikErstellenDialog"
 import { type Diagnostik } from "@thesis/diagnostik"
 import { SortOption, SortSelect } from "../shared/SortSelect"
 import { Input } from "../Input"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
+import { userContext } from "@/context/UserContext"
 
 const DiagnostikSortLabels: Record<SortOption, string> = {
     [SortOption.AUFSTEIGEND]: 'Name aufsteigend',

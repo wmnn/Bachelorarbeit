@@ -1,11 +1,20 @@
 import express, { Request, Response } from 'express';
 import { CreateSchuelerRequestBody, DeleteSchuelerRequestBody, DeleteSchuelerResponseBody, EditSchuelerRequestBody } from '@thesis/schueler';
 import { getSchuelerStore } from '../../singleton';
+import { getNoPermissionResponse, getNoSessionResponse } from '../auth/permissionsUtil';
+import { Berechtigung } from '@thesis/rollen';
 
 let router = express.Router();
 
-router.post('/', async (req: Request<{}, {}, CreateSchuelerRequestBody>, res) => {
+router.post('/', async (req: Request<{}, {}, CreateSchuelerRequestBody>, res): Promise<any> => {
 
+    if(req.userId == undefined) {
+        return getNoSessionResponse(res);
+    }
+    if (!req.permissions?.[Berechtigung.SchuelerCreate]) {
+        return getNoPermissionResponse(res)
+    }
+    
     const schueler = req.body;
     const msg = await getSchuelerStore().createSchueler(schueler)
     res.status(200).json(msg);

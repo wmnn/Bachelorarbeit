@@ -2,10 +2,19 @@ import express, { Request, Response } from 'express';
 import { AnwesenheitTyp, DeleteStatusReqBody, UpdateStatusBatchReqBody, type UpdateStatusReqBody } from '@thesis/anwesenheiten'
 import { Schuljahr } from '@thesis/schule';
 import { getAnwesenheitenStore } from '../../singleton';
+import { getNoPermissionResponse, getNoSessionResponse } from '../auth/permissionsUtil';
+import { Berechtigung } from '@thesis/rollen';
 
 let router = express.Router();
 
-router.put('/', async (req: Request<{}, {}, UpdateStatusBatchReqBody>, res) => {
+router.put('/', async (req: Request<{}, {}, UpdateStatusBatchReqBody>, res): Promise<any> => {
+    if(req.userId == undefined) {
+        return getNoSessionResponse(res);
+    }
+    if (!req.permissions?.[Berechtigung.AnwesenheitsstatusUpdate]) {
+        return getNoPermissionResponse(res)
+    }
+
     const { schuelerIds, status, typ, startDatum, endDatum } = req.body
     let someError = false;
     for (const id of schuelerIds) {
@@ -24,14 +33,28 @@ router.put('/', async (req: Request<{}, {}, UpdateStatusBatchReqBody>, res) => {
     });
 });
 
-router.put('/:schuelerId', async (req: Request<any, {}, UpdateStatusReqBody>, res) => {
+router.put('/:schuelerId', async (req: Request<any, {}, UpdateStatusReqBody>, res): Promise<any> => {
+    if(req.userId == undefined) {
+        return getNoSessionResponse(res);
+    }
+    if (!req.permissions?.[Berechtigung.AnwesenheitsstatusUpdate]) {
+        return getNoPermissionResponse(res)
+    }
+
     const { status, typ, startDatum, endDatum } = req.body
     const { schuelerId } = req.params
     const msg = await getAnwesenheitenStore().updateAnwesenheitsstatus(parseInt(schuelerId), typ, status, startDatum, endDatum)
     res.status(200).json(msg);
 });
 
-router.get('/:schuelerId', async (req: Request<any, {}, UpdateStatusReqBody>, res) => {
+router.get('/:schuelerId', async (req: Request<any, {}, UpdateStatusReqBody>, res): Promise<any> => {
+    if(req.userId == undefined) {
+        return getNoSessionResponse(res);
+    }
+    if (!req.permissions?.[Berechtigung.AnwesenheitsstatusRead]) {
+        return getNoPermissionResponse(res)
+    }
+
     const { schuelerId } = req.params
     const { schuljahr, typ } = req.query
 
@@ -39,7 +62,14 @@ router.get('/:schuelerId', async (req: Request<any, {}, UpdateStatusReqBody>, re
     res.status(200).json(msg);
 });
 
-router.delete('/', async (req: Request<{}, {}, DeleteStatusReqBody>, res) => {
+router.delete('/', async (req: Request<{}, {}, DeleteStatusReqBody>, res): Promise<any> => {
+    if(req.userId == undefined) {
+        return getNoSessionResponse(res);
+    }
+    if (!req.permissions?.[Berechtigung.AnwesenheitsstatusUpdate]) {
+        return getNoPermissionResponse(res)
+    }
+
     const { typ, datum, schuelerId } = req.body
     const msg = await getAnwesenheitenStore().deleteAnwesenheitsstatus(schuelerId, typ, datum)
     res.status(200).json(msg);
