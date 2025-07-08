@@ -56,7 +56,7 @@ export const AppLayout = () => {
                     </LayoutButton>
                 }
                 {
-                    user?.rolle?.berechtigungen[Berechtigung.SchuelerRead] === "alle" && 
+                    user?.rolle?.berechtigungen[Berechtigung.SchuelerRead] === true && 
                     <LayoutButton onClick={() => setIsNavShown(false)}>
                         <Link className="w-[100%] text-left" to="/schueler">Schüler</Link>
                     </LayoutButton>

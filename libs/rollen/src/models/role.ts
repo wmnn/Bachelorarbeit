@@ -59,7 +59,7 @@ export const BERECHTIGUNGEN_VALUES: Record<Berechtigung, Array<any>>= {
     [Berechtigung.GanztagsangebotUpdate]: [true, false],
     [Berechtigung.GanztagsangebotDelete]: [true, false],
     [Berechtigung.SchuelerCreate]: [true, false],
-    [Berechtigung.SchuelerRead]: ["alle", "eigene", "keine"],
+    [Berechtigung.SchuelerRead]: [true, false],
     [Berechtigung.SchuelerUpdate]: [true, false],
     [Berechtigung.SchuelerDelete]: [true, false],
     [Berechtigung.AnwesenheitsstatusUpdate]: [true, false],
@@ -82,7 +82,7 @@ export type Berechtigungen = {
     [Berechtigung.GanztagsangebotUpdate]: true | false;
     [Berechtigung.GanztagsangebotDelete]: true | false;
     [Berechtigung.SchuelerCreate]: true | false;
-    [Berechtigung.SchuelerRead]: "alle" | "eigene" | "keine";
+    [Berechtigung.SchuelerRead]: true | false;
     [Berechtigung.SchuelerUpdate]: true | false;
     [Berechtigung.SchuelerDelete]: true | false;
     [Berechtigung.AnwesenheitsstatusUpdate]: true | false;

@@ -33,31 +33,34 @@ declare global {
     }
 }
 
-setTimeout(() => {
-    getAuthStore().createRole({
-        rolle: `admin`,
-        berechtigungen: {
-            [Berechtigung.KlasseCreate]: true,
-            [Berechtigung.KlasseRead]: "alle",
-            [Berechtigung.KlasseUpdate]: true,
-            [Berechtigung.KlasseDelete]: true,
-            [Berechtigung.GanztagsangebotCreate]: true,
-            [Berechtigung.GanztagsangebotRead]: "alle",
-            [Berechtigung.GanztagsangebotUpdate]: true,
-            [Berechtigung.GanztagsangebotDelete]: true,
-            [Berechtigung.SchuelerCreate]: true,
-            [Berechtigung.SchuelerRead]: "alle",
-            [Berechtigung.SchuelerUpdate]: true,
-            [Berechtigung.SchuelerDelete]: true,
-            [Berechtigung.AnwesenheitsstatusUpdate]: true,
-            [Berechtigung.AnwesenheitsstatusRead]: true,
-            [Berechtigung.DiagnostikverfahrenRead]: "alle",
-            [Berechtigung.DiagnostikverfahrenDelete]: true,
-            [Berechtigung.RollenVerwalten]: true,
-            [Berechtigung.NachrichtenvorlagenVerwalten]: true,
-            [Berechtigung.NachrichtenDelete]: "alle",
-        }
-    })
+setTimeout(async () => {
+    const roles = await getAuthStore().getRoles()
+    if (!roles || roles.length == 0) {
+        getAuthStore().createRole({
+            rolle: `admin`,
+            berechtigungen: {
+                [Berechtigung.KlasseCreate]: true,
+                [Berechtigung.KlasseRead]: "alle",
+                [Berechtigung.KlasseUpdate]: true,
+                [Berechtigung.KlasseDelete]: true,
+                [Berechtigung.GanztagsangebotCreate]: true,
+                [Berechtigung.GanztagsangebotRead]: "alle",
+                [Berechtigung.GanztagsangebotUpdate]: true,
+                [Berechtigung.GanztagsangebotDelete]: true,
+                [Berechtigung.SchuelerCreate]: true,
+                [Berechtigung.SchuelerRead]: true,
+                [Berechtigung.SchuelerUpdate]: true,
+                [Berechtigung.SchuelerDelete]: true,
+                [Berechtigung.AnwesenheitsstatusUpdate]: true,
+                [Berechtigung.AnwesenheitsstatusRead]: true,
+                [Berechtigung.DiagnostikverfahrenRead]: "alle",
+                [Berechtigung.DiagnostikverfahrenDelete]: true,
+                [Berechtigung.RollenVerwalten]: true,
+                [Berechtigung.NachrichtenvorlagenVerwalten]: true,
+                [Berechtigung.NachrichtenDelete]: "alle",
+            }
+        })
+    }
 }, 5000)
 
 
