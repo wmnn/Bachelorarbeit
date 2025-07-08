@@ -6,7 +6,12 @@ import { Berechtigung } from '@thesis/rollen';
 
 let router = express.Router();
 
-router.get('/', async (req, res) => {
+router.get('/', async (req, res): Promise<any> => {
+
+    if (!req.permissions?.[Berechtigung.NachrichtenRead]) {
+        return getNoPermissionResponse(res)
+    }
+
     const { id, typ } = req.query as {
         id?: string,
         typ?: string
@@ -18,7 +23,11 @@ router.get('/', async (req, res) => {
     res.status(200).json(nachrichten);
 })
 
-router.get('/all', async (req, res) => {
+router.get('/all', async (req, res): Promise<any> => {
+    if (!req.permissions?.[Berechtigung.NachrichtenRead]) {
+        return getNoPermissionResponse(res)
+    }
+
     const { typ } = req.query as {
         typ?: string
     }
@@ -30,6 +39,9 @@ router.get('/all', async (req, res) => {
 })
 
 router.post('/', async (req: Request, res: Response): Promise<any> => {
+    if (!req.permissions?.[Berechtigung.NachrichtenRead]) {
+        return getNoPermissionResponse(res)
+    }
     const { typ, inhalt, id } = req.body 
     const userId = req.userId
     if (!userId) {
@@ -54,6 +66,9 @@ router.post('/', async (req: Request, res: Response): Promise<any> => {
 });
 
 router.patch('/', async (req: Request, res: Response): Promise<any> => {
+    if (!req.permissions?.[Berechtigung.NachrichtenRead]) {
+        return getNoPermissionResponse(res)
+    }
     const { inhalt, nachrichtId } = req.body 
     const userId = req.userId
     if (!userId) {
@@ -77,7 +92,11 @@ router.patch('/', async (req: Request, res: Response): Promise<any> => {
     res.status(msg.success ? 200 : 400).json(msg);
 });
 
-router.delete('/', async (req, res) => {
+router.delete('/', async (req, res): Promise<any> => {
+    if (!req.permissions?.[Berechtigung.NachrichtenDelete]) {
+        return getNoPermissionResponse(res)
+    }
+
     const { nachrichtId } = req.query as {
         nachrichtId?: string,
     }
@@ -152,7 +171,7 @@ router.post('/lesestatus', async (req: Request, res: Response): Promise<any> => 
     const { nachrichtenversionIds } = req.body 
     const userId = req.userId
     if (!userId) {
-        return;
+        return getNoSessionResponse(res);
     }
 
     if (!Array.isArray(nachrichtenversionIds)) {

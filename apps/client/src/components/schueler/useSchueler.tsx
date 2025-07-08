@@ -16,7 +16,9 @@ export const useAllSchueler = () => {
 
   useEffect(() => {
     if (queryResult.data && queryResult.data !== schuelerInStore) {
+      if (Array.isArray(queryResult.data)) {
         setSchueler((_) => queryResult.data);
+      }
     }
   }, [queryResult.data, setSchueler, schuelerInStore]);
 

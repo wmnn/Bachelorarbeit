@@ -48,7 +48,9 @@ export const AppLayout = () => {
         </button>
         <header className={`${isNavShown ? 'block' : 'hidden xl:flex'} xl:w-[20%] bg-abcd shadow-2xl flex flex-col justify-between xl:pb-12 pt-24 xl:pt-16 pb-16 px-8 md:px-24 xl:px-8 bg-main xl:fixed top-0 left-0 h-[100vh] transition-all`}>
             <nav className="flex flex-col gap-4">
-                <SchwartesBrettButton setIsNavShown={setIsNavShown} />
+                {
+                    user?.rolle?.berechtigungen[Berechtigung.NachrichtenRead] === true && <SchwartesBrettButton setIsNavShown={setIsNavShown} />
+                }
                 {
                     (userHasPermission(user, Berechtigung.KlasseRead, "alle") || userHasPermission(user, Berechtigung.KlasseRead, "eigene")) && 
                     <LayoutButton onClick={() => setIsNavShown(false)}>
@@ -134,8 +136,12 @@ const SchwartesBrettButton = ({ setIsNavShown } : { setIsNavShown: Dispatch<Reac
 
     const klassenQuery = useAllNachrichten(NachrichtenTyp.KLASSE)
     const schuelerQuery = useAllNachrichten(NachrichtenTyp.SCHÜLER)
-    const isUnreadMessage = useMemo(() => countUnreadMessages([...klassenQuery.query.data, ...schuelerQuery.query.data]) > 0, 
-        [klassenQuery.query.data, schuelerQuery.query.data])
+    const isUnreadMessage = useMemo(() => {
+        const klassenData = Array.isArray(klassenQuery.query?.data) ? klassenQuery.query.data : [];
+        const schuelerData = Array.isArray(schuelerQuery.query?.data) ? schuelerQuery.query.data : [];
+
+        return countUnreadMessages([...klassenData, ...schuelerData]) > 0;
+    }, [klassenQuery.query?.data, schuelerQuery.query?.data]);
 
     return <LayoutButton onClick={() => setIsNavShown(false)}>
         <Link className="w-[100%] text-left flex justify-between items-center" to="/brett">

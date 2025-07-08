@@ -82,6 +82,9 @@ export const countUsersWithPermission = async <T extends Berechtigung> (berechti
     }
     const rolesWithAccordingPermission = roles.filter(role => role.berechtigungen[berechtigung] == berechtigungValue).map(role => role.rolle)
     const usersWithAccordingRole = users?.filter(user => {
+        if (user.rolle == null) {
+            return false
+        }
         if (typeof user.rolle === 'string' && rolesWithAccordingPermission.includes(user.rolle)) {
             return true
         } 

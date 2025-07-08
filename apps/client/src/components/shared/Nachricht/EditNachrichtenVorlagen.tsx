@@ -13,7 +13,6 @@ export const EditNachrichtenVorlagen = ({ closeDialog } : { closeDialog: () => v
     const schuelerQuery = useNachrichtenVorlagen(NachrichtenTyp.SCHÜLER)
 
     useEffect(() => {
-        console.log(klassenQuery.query.data)
         setKlassenVorlagen(klassenQuery.query.data)
         setSchuelerVorlagen(schuelerQuery.query.data)
     }, [klassenQuery.query.data, schuelerQuery.query.data])

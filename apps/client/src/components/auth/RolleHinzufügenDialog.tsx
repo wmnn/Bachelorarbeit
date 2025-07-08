@@ -21,7 +21,7 @@ const defaultRolle: Rolle = {
         [Berechtigung.GanztagsangebotUpdate]: false,
         [Berechtigung.GanztagsangebotDelete]: false,
         [Berechtigung.SchuelerCreate]: false,
-        [Berechtigung.SchuelerRead]: "keine",
+        [Berechtigung.SchuelerRead]: false,
         [Berechtigung.SchuelerUpdate]: false,
         [Berechtigung.SchuelerDelete]: false,
         [Berechtigung.AnwesenheitsstatusUpdate]: false,
@@ -30,7 +30,9 @@ const defaultRolle: Rolle = {
         [Berechtigung.DiagnostikverfahrenDelete]: false,
         [Berechtigung.RollenVerwalten]: false,
         [Berechtigung.NachrichtenvorlagenVerwalten]: false,
-        [Berechtigung.NachrichtenDelete]: "eigene",
+        [Berechtigung.NachrichtenRead]: false,
+        [Berechtigung.NachrichtenUpdate]: false,
+        [Berechtigung.NachrichtenDelete]: false,
     }
 }
 export function RolleHinzufügenDialog({ closeDialog }: RolleHinzufügenDialogProps) { 

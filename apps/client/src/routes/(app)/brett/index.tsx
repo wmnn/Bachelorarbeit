@@ -11,7 +11,7 @@ function RouteComponent() {
 
     const classQuery = useAllNachrichten(NachrichtenTyp.KLASSE)
     const schuelerQuery = useAllNachrichten(NachrichtenTyp.SCHÜLER)
-    
+
   return <div className='flex flex-col w-full p-2 xl:p-8'>
     <h1>Schwarzes Brett</h1>
 

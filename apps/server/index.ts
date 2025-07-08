@@ -57,7 +57,9 @@ setTimeout(async () => {
                 [Berechtigung.DiagnostikverfahrenDelete]: true,
                 [Berechtigung.RollenVerwalten]: true,
                 [Berechtigung.NachrichtenvorlagenVerwalten]: true,
-                [Berechtigung.NachrichtenDelete]: "alle",
+                [Berechtigung.NachrichtenRead]: true,
+                [Berechtigung.NachrichtenUpdate]: true,
+                [Berechtigung.NachrichtenDelete]: true,
             }
         })
     }

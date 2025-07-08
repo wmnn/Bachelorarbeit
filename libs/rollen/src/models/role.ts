@@ -17,6 +17,8 @@ export enum Berechtigung {
     DiagnostikverfahrenDelete,
     RollenVerwalten,
     NachrichtenvorlagenVerwalten,
+    NachrichtenRead,
+    NachrichtenUpdate,
     NachrichtenDelete,
 }
 
@@ -39,6 +41,8 @@ export const BERECHTIGUNGEN_LABELS: Record<Berechtigung, string>= {
     [Berechtigung.DiagnostikverfahrenDelete]: "Diagnostikverfahren löschen",
     [Berechtigung.RollenVerwalten]: "Rollen verwalten",
     [Berechtigung.NachrichtenvorlagenVerwalten]: "Nachrichtenvorlagen verwalten",
+    [Berechtigung.NachrichtenRead]: "Nachrichten Zugriff",
+    [Berechtigung.NachrichtenUpdate]: "Nachrichten bearbeiten",
     [Berechtigung.NachrichtenDelete]: "Nachrichten löschen",
 }
 
@@ -68,7 +72,9 @@ export const BERECHTIGUNGEN_VALUES: Record<Berechtigung, Array<any>>= {
     [Berechtigung.DiagnostikverfahrenDelete]: [true, false],
     [Berechtigung.RollenVerwalten]: [true, false],
     [Berechtigung.NachrichtenvorlagenVerwalten]: [true, false],
-    [Berechtigung.NachrichtenDelete]: ["alle", "eigene"],
+    [Berechtigung.NachrichtenRead]: [true, false],
+    [Berechtigung.NachrichtenUpdate]: [true, false],
+    [Berechtigung.NachrichtenDelete]: [true, false],
 }
 
 
@@ -91,5 +97,7 @@ export type Berechtigungen = {
     [Berechtigung.DiagnostikverfahrenDelete]: true | false;
     [Berechtigung.RollenVerwalten]: true | false;
     [Berechtigung.NachrichtenvorlagenVerwalten]: true | false;
-    [Berechtigung.NachrichtenDelete]: "alle" | "eigene";
+    [Berechtigung.NachrichtenRead]: true | false,
+    [Berechtigung.NachrichtenUpdate]: true | false,
+    [Berechtigung.NachrichtenDelete]: true | false;
 };
