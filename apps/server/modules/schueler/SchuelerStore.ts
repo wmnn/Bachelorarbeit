@@ -7,8 +7,10 @@ import { addCurrentClassToSchueler } from '../klassen/util';
 function handleSchuelerRow(schueler: any): Schueler {
     schueler.verlaesstSchuleAllein = schueler.verlaesst_schule_allein
     schueler.hatSonderpaedagogischeKraft = schueler.hat_sonderpaedagogische_kraft
+    schueler.ernährung = schueler.ernaehrung
     delete schueler.verlaesst_schule_allein
     delete schueler.hat_sonderpaedagogische_kraft
+    delete schueler.ernaehrung
     return schueler
 }
 
@@ -28,7 +30,7 @@ export class SchuelerStore {
         const conn = this.connection;
 
         let [rows] = await conn.execute<RowDataPacket[]>(`
-            SELECT id, vorname, nachname, hat_sonderpaedagogische_kraft, verlaesst_schule_allein FROM schueler
+            SELECT id, vorname, nachname, hat_sonderpaedagogische_kraft, verlaesst_schule_allein, ernaehrung FROM schueler
         `);
 
         if (!Array.isArray(rows) || rows.length === 0) {
@@ -75,9 +77,6 @@ export class SchuelerStore {
                 })
             }
         }
-
-
-
         return rows.map(row => handleSchuelerRow(row));
     }
 
@@ -136,8 +135,8 @@ export class SchuelerStore {
             await conn.beginTransaction();
 
             const [result] = await conn.execute<ResultSetHeader>(`
-                INSERT INTO schueler (vorname, nachname, familiensprache, geburtsdatum, strasse, hausnummer, ort, hat_sonderpaedagogische_kraft, verlaesst_schule_allein, postleitzahl, kommentar)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO schueler (vorname, nachname, familiensprache, geburtsdatum, strasse, hausnummer, ort, hat_sonderpaedagogische_kraft, verlaesst_schule_allein, postleitzahl, kommentar, ernaehrung)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `, [
                 schueler.vorname,
                 schueler.nachname,
@@ -149,7 +148,8 @@ export class SchuelerStore {
                 schueler.hatSonderpaedagogischeKraft,
                 schueler.verlaesstSchuleAllein,
                 schueler.postleitzahl === '' ? null : Number(schueler.postleitzahl),
-                schueler.kommentar
+                schueler.kommentar,
+                schueler.ernährung
             ]);
 
             const id = result.insertId;
@@ -213,7 +213,7 @@ export class SchuelerStore {
 
             await conn.execute(
                 `UPDATE schueler 
-                SET vorname = ?, nachname = ?, familiensprache = ?, geburtsdatum = ?, strasse = ?, hausnummer = ?, ort = ?, hat_sonderpaedagogische_kraft = ?, verlaesst_schule_allein = ?, postleitzahl = ?, kommentar = ?
+                SET vorname = ?, nachname = ?, familiensprache = ?, geburtsdatum = ?, strasse = ?, hausnummer = ?, ort = ?, hat_sonderpaedagogische_kraft = ?, verlaesst_schule_allein = ?, postleitzahl = ?, kommentar = ?, ernaehrung = ?
                 WHERE id = ?`,
                 [
                     schueler.vorname,
@@ -227,6 +227,7 @@ export class SchuelerStore {
                     schueler.verlaesstSchuleAllein,
                     schueler.postleitzahl === '' ? null : Number(schueler.postleitzahl),
                     schueler.kommentar,
+                    schueler.ernährung,
                     schueler.id
                 ]
             );

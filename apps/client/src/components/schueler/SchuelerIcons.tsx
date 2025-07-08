@@ -1,4 +1,4 @@
-import type { SchuelerSimple } from "@thesis/schueler";
+import { Ernährung, type SchuelerSimple } from "@thesis/schueler";
 import { Tooltip } from "../Tooltip";
 
 export function SchuelerIcons ({ schueler }: { schueler: SchuelerSimple}) {
@@ -23,10 +23,21 @@ export function SchuelerIcons ({ schueler }: { schueler: SchuelerSimple}) {
                 </Tooltip>
             </p>
         }
-        <p>{schueler.hatSonderpaedagogischeKraft == true ? <Tooltip content="Der Schüler hat eine Integrationskraft">
-                🧑‍🧒
-            </Tooltip> : null}
-        </p>
+        {schueler.hatSonderpaedagogischeKraft == true ? <Tooltip content="Der Schüler hat eine Integrationskraft">
+            🧑‍🧒
+        </Tooltip> : null}
+
+        {
+            schueler.ernährung === Ernährung.VEGAN && <Tooltip content="Der Schüler ernährt sich vegan">
+                🥛
+            </Tooltip>
+        }
+        {
+            schueler.ernährung === Ernährung.VEGETARISCH && <Tooltip content="Der Schüler ernährt sich vegetarisch">
+                🥩
+            </Tooltip>
+        }
+        
     </div>
 
 }

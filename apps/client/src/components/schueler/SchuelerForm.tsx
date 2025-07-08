@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Input } from "../Input";
 import { ButtonLight } from "../ButtonLight";
 import { AbholberechtigtePersonen } from "./AbholberechtigtePersonen";
-import type { Schueler } from "@thesis/schueler";
+import { Ernährung, type Schueler } from "@thesis/schueler";
 import { MultiInput } from "../shared/MultiInput";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
 
 interface SchuelerEditFormProps {
@@ -32,6 +33,7 @@ export function SchuelerEditForm({ onAbort, onSubmit, submitButtonText, submitBu
     const [postleitzahl, setPostleitzahl] = useState(initialSchueler?.postleitzahl ?? '');
     const [allergienUndUnvertraeglichkeiten, setAllergienUndUnvertraeglichkeiten] = useState<string[]>(initialSchueler?.allergienUndUnvertraeglichkeiten ?? []);
     const [abholberechtigtePersonen, setAbholberechtigtePersonen] = useState<any[]>(initialSchueler?.abholberechtigtePersonen ?? []);    
+    const [ernährung, setErnährung] = useState(initialSchueler?.ernährung ?? Ernährung.NORMAL);
 
     async function handleSubmit() {
 
@@ -49,7 +51,8 @@ export function SchuelerEditForm({ onAbort, onSubmit, submitButtonText, submitBu
             abholberechtigtePersonen, 
             medikamente, 
             allergienUndUnvertraeglichkeiten,
-            kommentar
+            kommentar,
+            ernährung
         }
 
         onSubmit(schueler)
@@ -104,6 +107,32 @@ export function SchuelerEditForm({ onAbort, onSubmit, submitButtonText, submitBu
         <div className="flex gap-2 items-center py-2">
             <label>Integrationskraft?</label>
             <Input type="checkbox" checked={hatSonderpaedagogischeKraft} onChange={() => setHatSonderpaedagogischeKraft(prev => !prev)}/>
+        </div>
+
+        <div className="flex gap-2 items-center py-2">
+            <label>Ernährung</label>
+            <Select 
+                value={`${ernährung}`}
+                onValueChange={async (val) => {
+                    const status = parseInt(val) as Ernährung
+                    setErnährung(status)
+                }}
+            >
+                <SelectTrigger className="xl:w-[200px] w-min">
+                    <SelectValue placeholder="Keine Rolle"/>
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value={`${Ernährung.NORMAL}`}>
+                        normal
+                    </SelectItem> 
+                    <SelectItem value={`${Ernährung.VEGETARISCH}`}>
+                        vegetarisch
+                    </SelectItem> 
+                    <SelectItem value={`${Ernährung.VEGAN}`}>
+                        vegan
+                    </SelectItem> 
+                </SelectContent>
+            </Select>    
         </div>
 
         <MultiInput values={medikamente} setValues={setMedikamente} label="Medikamente"/>

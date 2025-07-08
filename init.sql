@@ -52,7 +52,8 @@ CREATE TABLE schueler (
     ort VARCHAR(255),
     hat_sonderpaedagogische_kraft VARCHAR(255),
     verlaesst_schule_allein VARCHAR(255),
-    kommentar VARCHAR(280)
+    kommentar VARCHAR(280),
+    ernaehrung TINYINT(1)
 );
 
 CREATE TABLE schueler_abholberechtigte_personen (

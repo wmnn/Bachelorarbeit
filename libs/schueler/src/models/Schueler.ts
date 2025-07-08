@@ -8,6 +8,7 @@ export interface SchuelerSimple {
     hatSonderpaedagogischeKraft?: boolean,
     verlaesstSchuleAllein?: boolean,
     derzeitigeKlasse?: string,
+    ernährung: Ernährung,
     medikamente?: string[],
 }
 export type Schueler = {
@@ -24,5 +25,12 @@ export type Schueler = {
     hatSonderpaedagogischeKraft: boolean,
     verlaesstSchuleAllein: boolean,
     allergienUndUnvertraeglichkeiten: string[],
-    kommentar?: string
+    kommentar?: string,
+    ernährung?: Ernährung
 } & SchuelerSimple
+
+export enum Ernährung {
+    NORMAL,
+    VEGETARISCH,
+    VEGAN
+}
