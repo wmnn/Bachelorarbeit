@@ -71,6 +71,37 @@ export const DiagnostikListItem = ({ diagnostik, isShared = false }: DiagnostikL
     const klassen = klassenQuery.data
     const klasse = klassen.find(item => item.id == diagnostik.klasseId)
 
+    const Content = <><div className="flex flex-col gap-2">
+      <div className="flex justify-between items-center">
+        <label className="text-gray-600 font-medium min-w-[120px]">Name:</label>
+        <p className="font-semibold text-gray-800 text-right flex-grow">{diagnostik.name}</p>
+      </div>
+      <div className="flex justify-between items-center">
+        <label className="text-gray-600 font-medium min-w-[120px]">Klasse:</label>
+        <p className="text-gray-700 text-right flex-grow">{klasse !== undefined && getTitle(klasse)}</p>
+      </div>
+      
+    </div>
+
+    <div className="flex flex-col gap-2">
+        <div className="flex justify-between items-center">
+        <label className="text-gray-600 font-medium min-w-[120px]">Erstellt am:</label>
+        <p className="text-gray-700 text-right flex-grow">
+          {diagnostik.erstellungsDatum &&
+            new Date(diagnostik.erstellungsDatum).toLocaleDateString('de')}
+        </p>
+      </div>
+      <div className="flex justify-between items-center">
+        <label className="text-gray-600 font-medium min-w-[120px]">Aktualisiert am:</label>
+        <p className="text-gray-700 text-right flex-grow">
+          {diagnostik.aktualisiertAm &&
+            new Date(diagnostik.aktualisiertAm).toLocaleDateString('de')}
+        </p>
+      </div>
+      
+
+    </div></>
+
     return <li className="relative rounded-lg border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
   {isLoading && <LoadingSpinner isLoading={isLoading} />}
 
@@ -106,44 +137,19 @@ export const DiagnostikListItem = ({ diagnostik, isShared = false }: DiagnostikL
     <ErrorDialog message={responseMessage} closeDialog={() => setResponseMsg('')} />
   )}
     
-    <Link className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8"
+  {
+    diagnostik.speicherTyp === DiagnostikTyp.VORLAGE ? <div>
+      {Content}
+    </div> : <Link className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8"
         to="/diagnostikverfahren/$diagnostikId"
         params={{
             diagnostikId: `${diagnostik.id}`
         }}
     >
-  
-    <div className="flex flex-col gap-2">
-      <div className="flex justify-between items-center">
-        <label className="text-gray-600 font-medium min-w-[120px]">Name:</label>
-        <p className="font-semibold text-gray-800 text-right flex-grow">{diagnostik.name}</p>
-      </div>
-      <div className="flex justify-between items-center">
-        <label className="text-gray-600 font-medium min-w-[120px]">Klasse:</label>
-        <p className="text-gray-700 text-right flex-grow">{klasse !== undefined && getTitle(klasse)}</p>
-      </div>
-      
-    </div>
-
-    <div className="flex flex-col gap-2">
-        <div className="flex justify-between items-center">
-        <label className="text-gray-600 font-medium min-w-[120px]">Erstellt am:</label>
-        <p className="text-gray-700 text-right flex-grow">
-          {diagnostik.erstellungsDatum &&
-            new Date(diagnostik.erstellungsDatum).toLocaleDateString('de')}
-        </p>
-      </div>
-      <div className="flex justify-between items-center">
-        <label className="text-gray-600 font-medium min-w-[120px]">Aktualisiert am:</label>
-        <p className="text-gray-700 text-right flex-grow">
-          {diagnostik.aktualisiertAm &&
-            new Date(diagnostik.aktualisiertAm).toLocaleDateString('de')}
-        </p>
-      </div>
-      
-
-    </div>
-  </Link>
+      {Content}
+    </Link>
+  }
+    
 
   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-6 pt-4 border-t border-gray-200">
     <div className="flex gap-3 items-center flex-wrap">
