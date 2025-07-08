@@ -129,3 +129,21 @@ export const rolleMiddleware = async (
     req.permissions = permission;
     next();
 };
+export const removeSessionsWithRole = async (rollenbezeichnung: string) => {
+    const sessions = await getAuthStore().getSessions()
+    let success = true
+    for (const session of sessions) {
+
+        const user = session.user
+        if (!user) {
+            continue;
+        }
+        
+        if (typeof user.rolle == 'string' && user.rolle === rollenbezeichnung) {
+            success = success && await getAuthStore().removeSession(session.sessionId)
+            
+        } else if (typeof user?.rolle == 'object' && user.rolle.rolle == rollenbezeichnung) {
+            success = success && await getAuthStore().removeSession(session.sessionId)
+        }
+    }
+}

@@ -379,16 +379,18 @@ export class AuthStore {
 
         return rows.map((row: any) => {
             let user = undefined;
-            try {
-                user = JSON.parse(row.session_data);
-            } catch (_) { }
+            const parsedData = JSON.parse(row.session_data)
+            user = parsedData.user
 
-            return {
+            const sessionData = {
                 sessionId: row.session_id,
                 user: user,
                 createdAt: row.created_at,
-                expiresAt: row.expires_at
+                expiresAt: row.expires_at,
+                is2FaVerified: parsedData.is2FaVerified
             } as SessionData;
+
+            return sessionData
         });
     }
 

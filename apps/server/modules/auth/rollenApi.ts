@@ -10,7 +10,7 @@ import {
 import { Berechtigung } from '@thesis/rollen';
 import { getAuthStore } from '../../singleton';
 import { getNoPermissionResponse, getNoSessionResponse } from './permissionsUtil';
-import { countUsersWithRole } from './util';
+import { countUsersWithRole, removeSessionsWithRole } from './util';
 
 let router = express.Router();
 
@@ -75,17 +75,9 @@ router.patch('/', async (req: Request<{}, {}, UpdateRoleRequestBody>, res): Prom
     } 
 
     const dbMessage = await getAuthStore().updateRole(rollenbezeichnung, updated);
-    const sessions = await getAuthStore().getSessions()
-    let success = true
-    for (const session of sessions) {
-        if (typeof session.user?.rolle == 'string' && session.user.rolle === rollenbezeichnung) {
-            success = success && await getAuthStore().removeSession(session.sessionId)
-        } else if (typeof session.user?.rolle == 'object' && session.user.rolle.rolle == rollenbezeichnung) {
-            success = success && await getAuthStore().removeSession(session.sessionId)
-        }
-    }
+    await removeSessionsWithRole(rollenbezeichnung)
     res.status(200).json({
-        success: success,
+        success: true,
         message: dbMessage.message
     });
 });
