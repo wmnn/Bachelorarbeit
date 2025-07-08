@@ -9,8 +9,8 @@ import {
 } from '@thesis/auth';
 import { Berechtigung } from '@thesis/rollen';
 import { getAuthStore } from '../../singleton';
-import { getErrorResponse, getInternalErrorResponse, getNoPermissionResponse, getNoSessionResponse } from './permissionsUtil';
-import { countUsersWithPermission, countUsersWithRole } from './util';
+import { getNoPermissionResponse, getNoSessionResponse } from './permissionsUtil';
+import { countUsersWithRole } from './util';
 
 let router = express.Router();
 

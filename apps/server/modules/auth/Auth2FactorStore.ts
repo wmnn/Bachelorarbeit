@@ -1,5 +1,5 @@
 import { Pool, ResultSetHeader, RowDataPacket } from "mysql2/promise"
-import { STANDARD_FEHLER } from "../shared/models";
+import { DatabaseMessage, STANDARD_FEHLER } from "../shared/models";
 
 export class Auth2FactorStore {
 
@@ -49,10 +49,7 @@ export class Auth2FactorStore {
         }
     }
 
-    async setTmpSecret(userId: number, tmpSecret: string): Promise<{
-        success: boolean,
-        message: string
-    }> {
+    async setTmpSecret(userId: number, tmpSecret: string): Promise<DatabaseMessage> {
         if (!this.connection) {
             return STANDARD_FEHLER;
         }

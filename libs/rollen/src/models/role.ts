@@ -15,10 +15,6 @@ export enum Berechtigung {
     AnwesenheitsstatusRead,
     DiagnostikverfahrenRead,
     DiagnostikverfahrenDelete,
-    // VorlageRead,
-    // VorlageCreate,
-    // VorlageUpdate,
-    // VorlageDelete,
     RollenVerwalten,
     NachrichtenvorlagenVerwalten,
     NachrichtenDelete,
@@ -41,10 +37,6 @@ export const BERECHTIGUNGEN_LABELS: Record<Berechtigung, string>= {
     [Berechtigung.AnwesenheitsstatusRead]: "Anwesenheitsstatus einsehen",
     [Berechtigung.DiagnostikverfahrenRead]: "Diagnostikverfahren Zugriff",
     [Berechtigung.DiagnostikverfahrenDelete]: "Diagnostikverfahren löschen",
-    // [Berechtigung.VorlageRead]: "Vorlagen einsehen",
-    // [Berechtigung.VorlageCreate]: "Vorlagen erstellen",
-    // [Berechtigung.VorlageUpdate]: "Vorlagen bearbeiten",
-    // [Berechtigung.VorlageDelete]: "Vorlagen löschen",
     [Berechtigung.RollenVerwalten]: "Rollen verwalten",
     [Berechtigung.NachrichtenvorlagenVerwalten]: "Nachrichtenvorlagen verwalten",
     [Berechtigung.NachrichtenDelete]: "Nachrichten löschen",
@@ -74,10 +66,6 @@ export const BERECHTIGUNGEN_VALUES: Record<Berechtigung, Array<any>>= {
     [Berechtigung.AnwesenheitsstatusRead]: [true, false],
     [Berechtigung.DiagnostikverfahrenRead]: ["alle", "eigene", "keine"],
     [Berechtigung.DiagnostikverfahrenDelete]: [true, false],
-    // [Berechtigung.VorlageRead]: [true, false],
-    // [Berechtigung.VorlageCreate]: ["alle", "eigene", "keine"],
-    // [Berechtigung.VorlageUpdate]: ["alle", "eigene", "keine"],
-    // [Berechtigung.VorlageDelete]: ["alle", "eigene", "keine"],
     [Berechtigung.RollenVerwalten]: [true, false],
     [Berechtigung.NachrichtenvorlagenVerwalten]: [true, false],
     [Berechtigung.NachrichtenDelete]: ["alle", "eigene"],
@@ -101,10 +89,6 @@ export type Berechtigungen = {
     [Berechtigung.AnwesenheitsstatusRead]: true | false;
     [Berechtigung.DiagnostikverfahrenRead]: "alle" | "eigene" | "keine";
     [Berechtigung.DiagnostikverfahrenDelete]: true | false;
-    // [Berechtigung.VorlageRead]: true | false,
-    // [Berechtigung.VorlageCreate]: "alle" | "eigene" | "keine";
-    // [Berechtigung.VorlageUpdate]: "alle" | "eigene" | "keine";
-    // [Berechtigung.VorlageDelete]: "alle" | "eigene" | "keine";
     [Berechtigung.RollenVerwalten]: true | false;
     [Berechtigung.NachrichtenvorlagenVerwalten]: true | false;
     [Berechtigung.NachrichtenDelete]: "alle" | "eigene";
