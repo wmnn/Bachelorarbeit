@@ -23,5 +23,6 @@ export type Schueler = {
     klasse?: string, // im aktuellen Schulhalbjahr
     hatSonderpaedagogischeKraft: boolean,
     verlaesstSchuleAllein: boolean,
-    allergienUndUnvertraeglichkeiten: string[]
+    allergienUndUnvertraeglichkeiten: string[],
+    kommentar?: string
 } & SchuelerSimple

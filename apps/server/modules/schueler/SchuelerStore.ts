@@ -136,8 +136,8 @@ export class SchuelerStore {
             await conn.beginTransaction();
 
             const [result] = await conn.execute<ResultSetHeader>(`
-                INSERT INTO schueler (vorname, nachname, familiensprache, geburtsdatum, strasse, hausnummer, ort, hat_sonderpaedagogische_kraft, verlaesst_schule_allein, postleitzahl)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO schueler (vorname, nachname, familiensprache, geburtsdatum, strasse, hausnummer, ort, hat_sonderpaedagogische_kraft, verlaesst_schule_allein, postleitzahl, kommentar)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `, [
                 schueler.vorname,
                 schueler.nachname,
@@ -148,7 +148,8 @@ export class SchuelerStore {
                 schueler.ort,
                 schueler.hatSonderpaedagogischeKraft,
                 schueler.verlaesstSchuleAllein,
-                schueler.postleitzahl === '' ? null : Number(schueler.postleitzahl)
+                schueler.postleitzahl === '' ? null : Number(schueler.postleitzahl),
+                schueler.kommentar
             ]);
 
             const id = result.insertId;
@@ -212,7 +213,7 @@ export class SchuelerStore {
 
             await conn.execute(
                 `UPDATE schueler 
-                SET vorname = ?, nachname = ?, familiensprache = ?, geburtsdatum = ?, strasse = ?, hausnummer = ?, ort = ?, hat_sonderpaedagogische_kraft = ?, verlaesst_schule_allein = ?, postleitzahl = ? 
+                SET vorname = ?, nachname = ?, familiensprache = ?, geburtsdatum = ?, strasse = ?, hausnummer = ?, ort = ?, hat_sonderpaedagogische_kraft = ?, verlaesst_schule_allein = ?, postleitzahl = ?, kommentar = ?
                 WHERE id = ?`,
                 [
                     schueler.vorname,
@@ -225,6 +226,7 @@ export class SchuelerStore {
                     schueler.hatSonderpaedagogischeKraft,
                     schueler.verlaesstSchuleAllein,
                     schueler.postleitzahl === '' ? null : Number(schueler.postleitzahl),
+                    schueler.kommentar,
                     schueler.id
                 ]
             );

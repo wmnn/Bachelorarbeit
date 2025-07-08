@@ -21,12 +21,14 @@ router.put('/:schuelerId', async (req: Request<{ schuelerId: string }, {}, EditS
     const { schuelerId } = req.params
     schueler.id = parseInt(schuelerId);
     const msg  = await getSchuelerStore().editSchueler(schueler)
+    console.log(msg)
     res.status(msg.success ? 200 : 400).json(msg);
 });
 
 router.get('/:schuelerId', async (req, res) => {
     const { schuelerId } = req.params
     const msg = await getSchuelerStore().getSchuelerComplete(parseInt(schuelerId))
+    console.log(msg)
     res.status(200).json(msg);
 });
 

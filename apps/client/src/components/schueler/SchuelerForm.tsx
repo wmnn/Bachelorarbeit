@@ -20,6 +20,7 @@ export function SchuelerEditForm({ onAbort, onSubmit, submitButtonText, submitBu
 
     const [vorname, setVorname] = useState(initialSchueler?.vorname ?? '');
     const [nachname, setNachname] = useState(initialSchueler?.nachname ?? '');
+    const [kommentar, setKommentar] = useState(initialSchueler?.kommentar ?? '');
     const [medikamente, setMedikamente] = useState<string[]>(initialSchueler?.medikamente ?? []);
     const [ort, setOrt] = useState(initialSchueler?.ort ?? '');
     const [geburtsdatum, setGeburtsdatum] = useState(new Date().toISOString().split('T')[0]);
@@ -47,7 +48,8 @@ export function SchuelerEditForm({ onAbort, onSubmit, submitButtonText, submitBu
             verlaesstSchuleAllein,
             abholberechtigtePersonen, 
             medikamente, 
-            allergienUndUnvertraeglichkeiten
+            allergienUndUnvertraeglichkeiten,
+            kommentar
         }
 
         onSubmit(schueler)
@@ -56,6 +58,9 @@ export function SchuelerEditForm({ onAbort, onSubmit, submitButtonText, submitBu
     return <div className="flex flex-col justify-between">
         { title && <h1>{title}</h1>}
     
+        <label>Kommentare</label>
+        <textarea className="border-[1px] border-gray-300 min-h-[160px] p-2" value={kommentar} onChange={(e) => setKommentar(e.target.value)}/>
+
         <label>Vorname</label>
         <Input value={vorname} onChange={(e) => setVorname(e.target.value)}/>
         <label>Nachname</label>
