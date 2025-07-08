@@ -30,11 +30,16 @@ export const SchuelerList = (props: SchuelerListProps ) => {
 
     const [schueler, setSchueler] = useState(props.schueler)
     const [selectedSortItem, setSelectedSortItem] = useState(SortOption.ABSTEIGEND);
-    // Wenn ein Wert in filteredShown wahr ist, dann wird er angezeigt, sonst versteckt.
-    const [filteredShown, setFilteredShown] = useState<Record<number, boolean>>(props.schueler.reduce((prev, current) => {
-      prev[current.id ?? -1] = true
-      return prev;
-    }, {} as Record<number, boolean>));
+
+    const klassen = Array.from(
+      new Set(
+        props.schueler
+          .map(s => s.derzeitigeKlasse)
+          .filter((k): k is string => typeof k === "string")
+      )
+    )
+    const [shownClasses, setShownClasses] = useState<string[]>(klassen)
+
 
     useEffect(() => {
       setSchueler(props.schueler)
@@ -87,12 +92,47 @@ export const SchuelerList = (props: SchuelerListProps ) => {
       <Input placeholder="Suche" onChange={({ target }) => search(target.value)} className="max-h-[36px]"></Input>
       <SortSelect selectedSortItem={selectedSortItem} handleSortChange={handleSortChange} />
 
+
       <DropdownMenu>
+        <DropdownMenuTrigger className="border-[1px] px-2 rounded-lg py-[6px] hover:bg-gray-200">
+          Filtern
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          {klassen.map(klasse => {
+
+            const isActive = shownClasses.includes(klasse)
+
+            return (
+              <DropdownMenuItem
+                key={klasse}
+                className="cursor-pointer"
+                onClick={() => {
+                  const isShown = !isActive
+                  let newShownClasses = [] as string[]
+                  if (isShown) {
+                    newShownClasses = [...shownClasses, klasse]
+                  } else {
+                    newShownClasses = shownClasses.filter(o => o !== klasse)
+                  }
+                  
+                  const filteredSchueler = props.schueler.filter(schueler => newShownClasses.includes(schueler.derzeitigeKlasse ?? ''))
+                  setShownClasses(newShownClasses)
+                  setSchueler(sort(selectedSortItem, filteredSchueler))
+                }}
+              >
+                <input type="checkbox" className="mr-2" checked={isActive} readOnly />
+                Klasse {klasse}
+              </DropdownMenuItem>
+            )
+          })}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      {/* <DropdownMenu>
         <DropdownMenuTrigger className="border-[1px] px-2 rounded-lg py-[6px] hover:bg-gray-200">Filtern</DropdownMenuTrigger>
         <DropdownMenuContent>
           { props.schueler.map(schueler => {
             return <DropdownMenuItem key={schueler.id} className="cursor-pointer" onClick={() => {
-
               let newValue = !filteredShown[schueler.id ?? -1]     
               setFilteredShown(prev => ({
                 ...prev,
@@ -110,7 +150,7 @@ export const SchuelerList = (props: SchuelerListProps ) => {
             </DropdownMenuItem>
           }) }
         </DropdownMenuContent>
-      </DropdownMenu>
+      </DropdownMenu> */}
     </div>
 
     const header = <>
