@@ -108,7 +108,9 @@ export const editGanztagsangebot = async (ganztagsangebot: Ganztagsangebot, schu
 }
 
 export interface DeleteGanztagsangebotRequestBody {
-   ganztagsangebotId: number
+   ganztagsangebotId: number,
+   schuljahr: Schuljahr,
+    halbjahr: Halbjahr
 }
 
 export interface DeleteGanztagsangebotResponseBody {
@@ -116,13 +118,15 @@ export interface DeleteGanztagsangebotResponseBody {
     message: string;
 }
 
-export const deleteGanztagsangebot = async (ganztagsangebotId: number) => {
+export const deleteGanztagsangebot = async (ganztagsangebotId: number, schuljahr: Schuljahr, halbjahr: Halbjahr) => {
 
     try {
         const res = await fetch(GANZTAGSANGEBOT_ENDPOINT, {
             method: 'DELETE',
             body: JSON.stringify({
-                ganztagsangebotId
+                ganztagsangebotId,
+                schuljahr,
+                halbjahr
             } as DeleteGanztagsangebotRequestBody),
             headers: {
                 'content-type': 'application/json'

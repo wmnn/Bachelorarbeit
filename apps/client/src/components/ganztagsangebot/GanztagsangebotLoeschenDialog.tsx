@@ -2,26 +2,27 @@ import { useQueryClient } from "@tanstack/react-query";
 import { RiskyActionDialog } from "../dialog/RiskyActionDialog";
 import { GANZTAGSANGEBOT_QUERY_KEY } from "@/reactQueryKeys";
 import { deleteGanztagsangebot } from "@thesis/schule";
-import { useRouter } from "@tanstack/react-router";
+import { useSchuljahrStore } from "../schuljahr/SchuljahrStore";
 
 interface GanztagsangebotLoeschenDialogProps {
-    id: number,
     closeDialog: () => void;
     setDeleteMsg?: (val: string) => void,
     setIsLoading?: (val: boolean) => void,
-    onSubmit?: () => void
+    onSubmit?: () => void,
+    ganztagsangebotId: number
 }
 
-export function GanztagsangebotLoeschenDialog({ id, closeDialog, setDeleteMsg, setIsLoading, onSubmit }: GanztagsangebotLoeschenDialogProps) {
+export function GanztagsangebotLoeschenDialog({ ganztagsangebotId, closeDialog, setDeleteMsg, setIsLoading, onSubmit }: GanztagsangebotLoeschenDialogProps) {
 
     const queryClient = useQueryClient()
-    const router = useRouter()
+    const schuljahr = useSchuljahrStore(store => store.ausgewaeltesSchuljahr)
+    const halbjahr = useSchuljahrStore(store => store.ausgewaeltesHalbjahr)
 
     async function handleDelete() {
         if (setIsLoading) {
             setIsLoading(true);
         }
-        const res = await deleteGanztagsangebot(id);
+        const res = await deleteGanztagsangebot(ganztagsangebotId, schuljahr, halbjahr);
         queryClient.invalidateQueries({ queryKey: [GANZTAGSANGEBOT_QUERY_KEY] })
         if (setDeleteMsg) {
             setDeleteMsg(res.message)
@@ -30,7 +31,6 @@ export function GanztagsangebotLoeschenDialog({ id, closeDialog, setDeleteMsg, s
             setIsLoading(false);
         }
         closeDialog()
-        router.history.back()
     }
 
     return <RiskyActionDialog 

@@ -2,10 +2,11 @@ import { useState } from "react";
 import { DeleteIcon } from "../icons/DeleteIcon";
 import { type Ganztagsangebot } from "@thesis/schule";
 import { Link } from "@tanstack/react-router";
+import { GanztagsangebotLoeschenDialog } from "./GanztagsangebotLoeschenDialog";
 
 export function GanztagsangebotListItem({ ganztagsangebot }: { ganztagsangebot: Ganztagsangebot }) {
 
-    const [_, setIsDeleteDialogShown] = useState(false)
+    const [isDeleteDialogShown, setIsDeleteDialogShown] = useState(false)
 
     // function formatLehrer(klassenlehrer: User[] | undefined) {
     //     if (!klassenlehrer) {
@@ -18,9 +19,9 @@ export function GanztagsangebotListItem({ ganztagsangebot }: { ganztagsangebot: 
 
     return <li className='py-2 px-8 flex justify-between w-[100%] gap-8'>
 
-        {/* {
-            isDeleteDialogShown && <KlasseLoeschenDialog klasseId={klasse.id} closeDialog={() => setIsDeleteDialogShown(false)}/>
-        } */}
+        {
+            isDeleteDialogShown && <GanztagsangebotLoeschenDialog ganztagsangebotId={ganztagsangebot.id ?? -1} closeDialog={() => setIsDeleteDialogShown(false)}/>
+        }
         <Link className="flex gap-2 w-full"
             to="/ganztagsangebote/$ganztagsangebotId"
             params={{
