@@ -102,7 +102,7 @@ export function SchuelerEditForm({ onAbort, onSubmit, submitButtonText, submitBu
         </div>
 
         <div className="flex gap-2 items-center py-2">
-            <label>Sonderpädagogische Kraft?</label>
+            <label>Integrationskraft?</label>
             <Input type="checkbox" checked={hatSonderpaedagogischeKraft} onChange={() => setHatSonderpaedagogischeKraft(prev => !prev)}/>
         </div>
 

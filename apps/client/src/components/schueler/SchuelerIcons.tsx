@@ -23,7 +23,7 @@ export function SchuelerIcons ({ schueler }: { schueler: SchuelerSimple}) {
                 </Tooltip>
             </p>
         }
-        <p>{schueler.hatSonderpaedagogischeKraft == true ? <Tooltip content="Der Schüler hat eine sonderpädagogische Hilfskraft">
+        <p>{schueler.hatSonderpaedagogischeKraft == true ? <Tooltip content="Der Schüler hat eine Integrationskraft">
                 🧑‍🧒
             </Tooltip> : null}
         </p>
