@@ -86,7 +86,7 @@ export function KlasseErstellenDialogKlasse({ klasse, setKlasse }: {
     return <>
         <div className="flex gap-2">
             <div className="flex flex-col">
-                <label>Klassenstufe</label>
+                <label>Klasse</label>
                 <Input value={klasse.klassenstufe ?? ''} onChange={(e) => setKlassenStufe(e.target.value)}/>
             </div>
             <div className="flex flex-col">
