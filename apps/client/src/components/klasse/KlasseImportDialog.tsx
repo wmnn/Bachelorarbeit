@@ -94,7 +94,7 @@ export function KlasseImportDialog(props: KlasseErstellenDialogProps) {
     }, [importKlassen, schuljahr, halbjahr, setResponseMessage, closeDialog]);
 
 
-    if (isPending || !schuljahr || !halbjahr || importKlassen.length === 0) {
+    if (isPending || !schuljahr || !halbjahr) {
         return <DialogWithButtons
             submitButtonText="Importieren"
             onSubmit={() => {}}

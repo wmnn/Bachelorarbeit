@@ -50,7 +50,7 @@ export const AppLayout = () => {
             <nav className="flex flex-col gap-4">
                 <SchwartesBrettButton setIsNavShown={setIsNavShown} />
                 {
-                    userHasPermission(user, Berechtigung.KlasseRead, "alle") && 
+                    (userHasPermission(user, Berechtigung.KlasseRead, "alle") || userHasPermission(user, Berechtigung.KlasseRead, "eigene")) && 
                     <LayoutButton onClick={() => setIsNavShown(false)}>
                         <Link className="w-[100%] text-left" to="/klassen">Klassen</Link>
                     </LayoutButton>

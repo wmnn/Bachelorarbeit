@@ -4,11 +4,12 @@ import { DeleteSchuelerResponseBody } from '@thesis/schueler';
 import { getKlassenStore } from '../../singleton';
 import { getNoPermissionResponse, getNoSessionResponse } from '../auth/permissionsUtil';
 import { Berechtigung } from '@thesis/rollen';
+import { canUserAccessClass, canUserDeleteClass, canUserEditClass } from '../auth/permissionsKlassenUtil';
 
 let router = express.Router();
 
 router.get('/', async (req, res) => {
-    const { schuljahr, halbjahr } = req.query;
+    const { schuljahr, halbjahr } = req.query
     if (typeof schuljahr !== 'string' || typeof halbjahr !== 'string') {
         res.status(400).json({ 
             success: false,
@@ -16,22 +17,46 @@ router.get('/', async (req, res) => {
         });
         return;
     }
-    const klassen = await getKlassenStore().getClasses(schuljahr as Schuljahr, halbjahr as Halbjahr)
+    let klassen = await getKlassenStore().getClasses(schuljahr as Schuljahr, halbjahr as Halbjahr)
+    const accessChecks = await Promise.all(
+        klassen.map(async (klasse) => {
+            const { success } = await canUserAccessClass(
+                klasse.id,
+                req,
+                schuljahr as Schuljahr,
+                halbjahr as Halbjahr,
+                klasse
+            );
+            return success ? klasse : null;
+        })
+    );
+
+    klassen = accessChecks.filter((k): k is typeof klassen[number] => k !== null);
+
     res.status(200).json(klassen);
 });
 
-router.get('/:klassenId', async (req, res) => {
+router.get('/:klassenId', async (req, res): Promise<any> => {
     const { klassenId } = req.params
     const { schuljahr, halbjahr } = req.query;
+    const { success: hasPermission} = await canUserAccessClass(parseInt(klassenId), req, schuljahr as Schuljahr, halbjahr as Halbjahr)
+    if (!hasPermission) {
+        return getNoPermissionResponse(res)
+    }
     const klasse = await getKlassenStore().getClass(schuljahr as Schuljahr, halbjahr as Halbjahr, parseInt(klassenId))
     res.status(klasse ? 200 : 500).json(klasse);
 });
 
-router.put('/:klassenId', async (req, res) => {
+router.put('/:klassenId', async (req, res): Promise<any> => {
 
     const { klassenId } = req.params
     const { schuljahr, halbjahr } = req.query;
     const { versionen, klassenlehrer } = req.body
+
+    const { success: hasPermission} = await canUserEditClass(parseInt(klassenId), req, schuljahr as Schuljahr, halbjahr as Halbjahr)
+    if (!hasPermission) {
+        return getNoPermissionResponse(res)
+    }
 
     const msg = await getKlassenStore().editClass(parseInt(klassenId), versionen, klassenlehrer, schuljahr as Schuljahr, halbjahr as Halbjahr)
     res.status(200).json(msg);
@@ -52,8 +77,12 @@ router.post('/', async (req: Request<{}, {}, CreateClassRequestBody>, res: Respo
     res.status(msg.success ? 200 : 400).json(msg);
 });
 
-router.post('/import', async (req: Request<{}, {}, ImportKlasse[]>, res: Response<CreateClassResponseBody>) => {
+router.post('/import', async (req: Request<{}, {}, ImportKlasse[]>, res: Response<CreateClassResponseBody>): Promise<any> => {
     
+    if (req.permissions?.[Berechtigung.KlasseRead] !== 'alle') {
+        return getNoPermissionResponse(res)
+    }
+
     const BAD_REQUEST_RESPONSE = {
         success: false,
         message: 'Ein Fehler ist aufgetreten.'
@@ -207,8 +236,14 @@ router.post('/import', async (req: Request<{}, {}, ImportKlasse[]>, res: Respons
     })
 });
 
-router.delete('/', async (req: Request<{}, {}, DeleteKlasseRequestBody>, res: Response<DeleteKlasseResponseBody>) => {
+router.delete('/', async (req: Request<{}, {}, DeleteKlasseRequestBody>, res: Response<DeleteKlasseResponseBody>): Promise<any> => {    
     const { klassenId, schuljahr, halbjahr } = req.body
+
+    const { success: hasPermission} = await canUserDeleteClass(klassenId, req, schuljahr as Schuljahr, halbjahr as Halbjahr)
+    if (!hasPermission) {
+        return getNoPermissionResponse(res)
+    }
+
     const msg = await getKlassenStore().deleteClass(klassenId, schuljahr, halbjahr)
     res.status(200).json(msg as DeleteSchuelerResponseBody);
 });
