@@ -86,6 +86,9 @@ export const Filter = ({ initialData, data, setData, diagnostik}: {
 
                     <hr className="my-4"/>
 
+                    <DropdownMenuItem className="cursor-pointer" onClick={() => setShownSchueler([])}>
+                        Alle abwählen
+                    </DropdownMenuItem>
                     {
                         initialData?.map(schuelerRow => {
                             const schuelerData = schueler.find(item => item.id == schuelerRow.schuelerId)
