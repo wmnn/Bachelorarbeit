@@ -53,7 +53,7 @@ export const NachrichtenListItem = ({ nachricht, showId }: { nachricht: Nachrich
             isDeleteDialogShown && <NachrichtLoeschenDialog typ={nachricht.typ} nachrichtId={nachricht.nachrichtId} id={nachricht.id} closeDialog={() => setIsDeleteDialogShown(false)} />
         }
         {
-            isEditDialogShown && <NachrichtBearbeitenDialog nachricht={nachricht} closeDialog={() => setIsEditDialogShown(false)} />
+            isEditDialogShown && <NachrichtBearbeitenDialog nachricht={nachricht} closeDialog={() => setIsEditDialogShown(false)} title="Nachricht bearbeiten"/>
         }
         <div className="flex flex-col w-full gap-4">
             <div className="flex flex-col w-full">

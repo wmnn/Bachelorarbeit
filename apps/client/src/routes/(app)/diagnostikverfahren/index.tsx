@@ -9,7 +9,7 @@ export const Route = createFileRoute('/(app)/diagnostikverfahren/')({
 function RouteComponent() {
   return <div className='w-full'>
     <DiagnostikenNav />
-    <div className='w-full px-8 mb-8'>
+    <div className='w-full p-2 xl:p-8'>
       <DiagnostikList />
     </div>
   </div>

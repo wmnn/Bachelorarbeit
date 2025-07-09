@@ -29,7 +29,7 @@ function RouteComponent() {
 
   setRollen((_) => data.rollen)
   
-  return <div className='min-h-full py-8 px-8 w-full'>
+  return <div className='min-h-full p-2 xl:p-8 w-full'>
     <h1>Rollenmanagement</h1>
     <RollenListe/>
     <UserTable users={data.users} />

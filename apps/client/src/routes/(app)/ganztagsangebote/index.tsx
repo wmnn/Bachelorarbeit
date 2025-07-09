@@ -40,7 +40,7 @@ function RouteComponent() {
     return <p>...Loading</p>
   }
 
-  const header = <div className='flex justify-between'>
+  const header = <div className='flex flex-col md:flex-row justify-between mb-8 md:mb-0'>
     <h1>
       Ganztagsangebote
     </h1>
@@ -59,7 +59,7 @@ function RouteComponent() {
       setIsCreateDialogShown={userHasPermission(user, Berechtigung.GanztagsangebotCreate, true) ? setIsCreateDialogShown : undefined} 
       createButonLabel='Ganztagsangebot erstellen'
       header={header}
-      className='p-8'
+      className='p-2 xl:p-8'
     >
       {
         ganztagsangebote.map((item) => {

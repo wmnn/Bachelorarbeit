@@ -72,7 +72,7 @@ function RouteComponent() {
       setIsCreateDialogShown={userHasPermission(user, Berechtigung.KlasseCreate, true) ? setIsCreateDialogShown : undefined} 
       createButonLabel='Klasse erstellen'
       header={header}
-      className='p-8'
+      className='p-2 xl:p-8 mb-8'
     >
       {
         klassen.map((item: Klasse) => {

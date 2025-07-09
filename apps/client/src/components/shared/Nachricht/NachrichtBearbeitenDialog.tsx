@@ -6,10 +6,11 @@ import { NACHRICHTEN_QUERY_KEY } from "@/reactQueryKeys"
 
 interface NachrichtErstellenDialogProps {
   closeDialog: () => void,
-  nachricht: Nachricht
+  nachricht: Nachricht,
+  title?: string
 }
 
-export function NachrichtBearbeitenDialog({ closeDialog, nachricht }: NachrichtErstellenDialogProps) {
+export function NachrichtBearbeitenDialog({ closeDialog, nachricht, title = 'Nachricht erstellen' }: NachrichtErstellenDialogProps) {
 
     const queryClient = useQueryClient()
 
@@ -24,7 +25,7 @@ export function NachrichtBearbeitenDialog({ closeDialog, nachricht }: NachrichtE
     const initial = nachricht.versionen[0]?.inhalt ?? ''
 
     return <Dialog className="overflow-auto! p-8">
-        <h2>Nachricht erstellen</h2>
+        <h2>{title}</h2>
         <NachrichtForm 
             onSubmit={handleSubmit} 
             onAbort={closeDialog} 

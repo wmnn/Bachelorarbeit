@@ -82,7 +82,7 @@ function RouteComponent() {
     return <p>Loading...</p>
   } 
 
-  return <div className='p-8 w-full'>
+  return <div className='p-2 xl:p-8 w-full'>
       <GanztagsangebotForm 
         onSubmit={() => onSubmit()} 
         onAbort={() => router.history.back()} 

@@ -20,9 +20,8 @@ function RouteComponent() {
 
   return <SchuelerList 
     schueler={schueler} 
-    className='p-8' 
+    className='p-2 xl:p-8 mb-8' 
     typ={AnwesenheitTyp.UNTERRICHT}
     leftHeader={<h1>Schüler</h1>}
-  
   />
 }
