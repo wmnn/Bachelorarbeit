@@ -69,7 +69,7 @@ function RouteComponent() {
 
         {
             isDeleteDialogShown && <GanztagsangebotLoeschenDialog 
-              id={ganztagsangebot?.id ?? -1} 
+              ganztagsangebotId={ganztagsangebot?.id ?? -1} 
               closeDialog={() => setIsDeleteDialogShown(false)}
             />
         }

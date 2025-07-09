@@ -21,6 +21,7 @@ import { Berechtigung, Berechtigungen, ROLLE_ENDPOINT } from '@thesis/rollen';
 import { rolleMiddleware } from './modules/auth/util';
 import fileUpload from 'express-fileupload';
 import { getAuthStore } from './singleton';
+import { loggingMiddleware } from './modules/logging/logging';
 
 declare global {
     namespace Express {
@@ -81,6 +82,7 @@ app.use(express.json());
 app.use(fileUpload());
 app.use(authMiddleware as any)
 app.use(rolleMiddleware as any)
+app.use(loggingMiddleware as any)
 app.use(AUTH_API_ENDPOINT, authRouter);
 app.use(SCHUELER_ENDPOINT, schuelerRouter);
 app.use(KLASSEN_ENDPOINT, klassenRouter);
