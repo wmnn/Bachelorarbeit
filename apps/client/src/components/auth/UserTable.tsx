@@ -35,7 +35,7 @@ export function UserTable({ users: initialUsers }: UserTableProps) {
     
 
     
-    <Table className="mt-[20px]">
+    <Table className="mt-[20px] mb-8">
         <TableHeader>
           <TableRow className='flex justify-between pt-2'>
               <TableHead className={`basis-0 grow w-[${COLUMN_WIDTH}] xl:w-[20%]`}>Vorname</TableHead>

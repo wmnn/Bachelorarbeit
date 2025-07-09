@@ -51,7 +51,7 @@ export const DiagnostikNav = ({ diagnostikId }: { diagnostikId: string }) => {
       />
     }
     
-    <div className='flex justify-between px-8 pt-8'>
+    <div className='flex flex-col md:flex-row mb-8 md:mb-0 justify-between px-8 pt-8'>
       <div className='flex gap-2 items-center'>
         <Link to="/diagnostikverfahren">
           <MoveLeft />

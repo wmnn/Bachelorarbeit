@@ -88,7 +88,7 @@ export function DiagnostikAddTestDialog({ closeDialog, klasseId, diagnostikId, e
         closeDialog()
     }
 
-    return <DialogWithButtons className="overflow-auto! p-8" 
+    return <DialogWithButtons className="overflow-auto!" 
         closeDialog={closeDialog} 
         onSubmit={handleSubmit} 
         submitButtonText="Ergebnisse hinzufügen"

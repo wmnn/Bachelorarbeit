@@ -32,6 +32,8 @@ function RouteComponent() {
   return <div className='min-h-full p-2 xl:p-8 w-full'>
     <h1>Rollenmanagement</h1>
     <RollenListe/>
-    <UserTable users={data.users} />
+    <div className='overflow-x-scroll'>
+      <UserTable users={data.users} />
+    </div>
   </div>
 }
