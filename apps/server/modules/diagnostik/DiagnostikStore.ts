@@ -233,10 +233,10 @@ export class DiagnostikStore {
         `, [diagnostikId]);
 
         return rows.map(row => {
-            const obereGrenze = row.obereGrenze
+            const num = parseFloat(row.obereGrenze);
             return {
                 hexFarbe: row.hexFarbe,
-                obereGrenze: Number(parseFloat(obereGrenze)).toFixed(2) ?? undefined
+                obereGrenze: isNaN(num) ? undefined : num.toFixed(2)
             }
         });
     }
