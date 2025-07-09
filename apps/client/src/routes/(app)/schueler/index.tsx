@@ -13,7 +13,6 @@ function RouteComponent() {
 
   const schueler = useSchuelerStore(store => store.schueler)
   const schuelerQuery = useAllSchueler()
-  console.log(schueler)
 
   if (schuelerQuery.isPending) {
     return <p>Loading ...</p>
