@@ -1,7 +1,7 @@
 import { handleRedirection, SCHUELER_ENDPOINT } from "@thesis/config";
 import type { Schueler } from '../models'
 
-export const getSchueler = async () => {
+export const getSchueler = async (redirect: boolean = true) => {
     try {
         const res = await fetch(SCHUELER_ENDPOINT, {
             method: 'GET',
@@ -9,11 +9,10 @@ export const getSchueler = async () => {
                 'content-type': 'application/json'
             },
         })
-        console.log(res)
 
         const data = await res.json();
                 
-        if (res.status === 403) {
+        if (res.status === 403 && redirect) {
             handleRedirection(data.redirect)
         }
     

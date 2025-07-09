@@ -34,7 +34,7 @@ function RouteComponent() {
 const Table = ({ data }: { data: Row[]}) => {
 
   const schueler = useSchuelerStore(store => store.schueler)
-  useAllSchueler()
+  useAllSchueler(false)
   const header = ['', ...getDates(data)]
 
   const rows = data.reduce((prev, acc) => {

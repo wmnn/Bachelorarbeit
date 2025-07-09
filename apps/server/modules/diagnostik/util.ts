@@ -2,6 +2,7 @@ import { DiagnostikTyp, Sichtbarkeit } from "@thesis/diagnostik";
 import { getDiagnostikStore } from "../../singleton";
 import { Request } from "express";
 import { Berechtigung, BerechtigungWert } from "@thesis/rollen";
+import { LoginRedirectAction } from "@thesis/auth";
 
 
 export function getDiagnostikTyp (val?: string) {
@@ -30,7 +31,8 @@ export const getDiagnostiken = async (req: Request, typ: DiagnostikTyp) => {
         return {
             success: false,
             status: 403,
-            data: []
+            data: [],
+            redirect: LoginRedirectAction.REDIRECT_TO_LOGIN
         } 
     }
 

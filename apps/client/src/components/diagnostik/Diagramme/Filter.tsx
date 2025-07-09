@@ -15,7 +15,7 @@ export const Filter = ({ initialData, data, setData, diagnostik}: {
     diagnostik: Diagnostik
 }) => {
     
-    useAllSchueler()
+    useAllSchueler(false)
     const schueler = useSchuelerStore(store => store.schueler)
     const [isAuswertungsgruppeDialogShown, setIsAuswertungsgruppeDialogShown] = useState(false)
     const [shownSchueler, setShownSchueler] = useState<number[]>(initialData.map(row => row.schuelerId))

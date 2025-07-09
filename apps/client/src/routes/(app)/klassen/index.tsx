@@ -32,7 +32,7 @@ function RouteComponent() {
 
   const { isPending: isPending2, data: schueler } = useQuery<SchuelerSimple[]>({
     queryKey: [SCHUELER_QUERY_KEY],
-    queryFn: getSchueler,
+    queryFn: () => getSchueler(),
   })
 
   const klassenQuery = useKlassen()

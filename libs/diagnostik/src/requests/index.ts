@@ -173,7 +173,7 @@ export const getDiagnostiken = async (speicherTyp: DiagnostikTyp) => {
             handleRedirection(data.redirect)
         }
     
-        return data as GetDiagnostikenResponseBody
+        return data.data as GetDiagnostikenResponseBody
         
     } catch (e) {
         return []

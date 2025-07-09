@@ -19,10 +19,10 @@ const SUCCESSFULL_VALIDATION_RES =  {
 
 router.get('/', async (
     req: Request<{}, {}, {}, { typ?: string }>,
-    res: Response<GetDiagnostikenResponseBody>
+    res: Response<any>
 ): Promise<any> => {
-    const { status, success, data } = await getDiagnostiken(req, getDiagnostikTyp(req.query.typ))
-    return res.status(status).json(data);
+    const data = await getDiagnostiken(req, getDiagnostikTyp(req.query.typ))
+    return res.status(data.status).json(data);
 });
 
 

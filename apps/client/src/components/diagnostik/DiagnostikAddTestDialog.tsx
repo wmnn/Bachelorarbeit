@@ -19,7 +19,7 @@ interface DiagnostikAddTestDialogProps {
 export function DiagnostikAddTestDialog({ closeDialog, klasseId, diagnostikId, erhebungszeitraum }: DiagnostikAddTestDialogProps) {
 
     const klasseQuery = useKlasse(klasseId)
-    useAllSchueler()
+    useAllSchueler(false)
     const schueler = useSchuelerStore(store => store.schueler)
     const [ergebnisse, setErgebnisse] = useState<Ergebnis[]>([])
     const [datum, setDatum] = useState<any>(erhebungszeitraum === Erhebungszeitraum.TAG ? new Date().toISOString().split('T')[0] : getCurrentISOWeek())

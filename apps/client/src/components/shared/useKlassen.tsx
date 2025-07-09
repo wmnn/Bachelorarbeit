@@ -3,7 +3,7 @@ import { useSchuljahrStore } from '../schuljahr/SchuljahrStore';
 import { KLASSEN_QUERY_KEY } from '@/reactQueryKeys';
 import { getKlassen, type Halbjahr, type Schuljahr } from '@thesis/schule';
 
-export const useKlassen = () => {
+export const useKlassen = (redirect: boolean = true) => {
 
     const schuljahr = useSchuljahrStore(state => state.ausgewaeltesSchuljahr)
     const halbjahr = useSchuljahrStore(state => state.ausgewaeltesHalbjahr)
@@ -12,7 +12,7 @@ export const useKlassen = () => {
         queryKey: [KLASSEN_QUERY_KEY, schuljahr, halbjahr],
         queryFn: ({ queryKey }) => {
             const [_key, schuljahr, halbjahr] = queryKey;
-            return getKlassen((schuljahr as Schuljahr), (halbjahr as Halbjahr));
+            return getKlassen((schuljahr as Schuljahr), (halbjahr as Halbjahr), redirect);
         },
         initialData: [],
     });

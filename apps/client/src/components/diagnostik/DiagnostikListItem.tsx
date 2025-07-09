@@ -34,7 +34,7 @@ export const DiagnostikListItem = ({ diagnostik, isShared = false }: DiagnostikL
     const queryClient = useQueryClient()
     const { user } = use(userContext)
 
-    const klassenQuery = useKlassen()
+    const klassenQuery = useKlassen(false)
     const isVorlage = diagnostik.speicherTyp == DiagnostikTyp.VORLAGE
 
     const query = useAllUsers();
