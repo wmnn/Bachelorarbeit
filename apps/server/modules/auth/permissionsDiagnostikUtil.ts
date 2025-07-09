@@ -52,15 +52,20 @@ export async function canUserDeleteDiagnostik(diagnostikId: string, req: Request
         }
     }
 
-
-    if (!isDiagnostikCreatedByUser && !isAdmin) { 
+    if (diagnostik?.speicherTyp == DiagnostikTyp.VORLAGE && !isAdmin) {
         return {
             success: false
         }
     }
 
+    if (isDiagnostikCreatedByUser || isAdmin) { 
+        return {
+            success: true
+        }
+    }
+
     return {
-        success: true
+        success: false
     }
 }
 
