@@ -35,8 +35,8 @@ export const KuchenDiagramm = ({ data: initialData, diagnostik }: { data: Row[],
                 type: 'pie',
                 data: {
                     labels: [
-                        `Mindeststandard erreicht ${(mindeststandardErreicht / (mindeststandardErreicht + mindeststandardNichtErreicht)).toFixed(2)}%`,
-                        `Mindeststandard nicht erreicht ${(mindeststandardNichtErreicht / (mindeststandardErreicht + mindeststandardNichtErreicht)).toFixed(2)}%`,
+                        `Mindeststandard erreicht ${(mindeststandardErreicht * 100 / (mindeststandardErreicht + mindeststandardNichtErreicht)).toFixed(2)}%`,
+                        `Mindeststandard nicht erreicht ${(mindeststandardNichtErreicht * 100 / (mindeststandardErreicht + mindeststandardNichtErreicht)).toFixed(2)}%`,
                     ],
                     datasets: [{
                         label: `Anzahl`,
