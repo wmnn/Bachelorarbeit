@@ -12,7 +12,7 @@ export function GeprüftCheckbox ({ schuelerId, typ }: { schuelerId: number, typ
 
     const queryClient = useQueryClient()
 
-    const { invalidate } = useAnwesenheiten(schuelerId, typ)
+    const { invalidate } = useAnwesenheiten(schuelerId, typ, false)
 
     if (!schueler) return <p>Fehler</p>
 

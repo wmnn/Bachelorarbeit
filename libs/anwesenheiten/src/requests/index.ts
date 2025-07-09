@@ -10,7 +10,8 @@ export interface AnwesenheitResponseData {
 export const getAnwesenheiten = async (
     schuelerId: number,
     schuljahr: Schuljahr,
-    typ: AnwesenheitTyp
+    typ: AnwesenheitTyp,
+    redirect: boolean = true
 ) => {
     try {
         const res = await fetch(ANWESENHEITEN_ENDPOINT  + `/${schuelerId}?schuljahr=${schuljahr}&typ=${typ}`, {
@@ -22,7 +23,7 @@ export const getAnwesenheiten = async (
 
         const data = await res.json();
         
-        if (res.status === 403) {
+        if (res.status === 403 && redirect) {
             handleRedirection(data.redirect)
         }
     

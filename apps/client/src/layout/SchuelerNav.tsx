@@ -4,16 +4,20 @@ import { MoveLeft } from "lucide-react";
 import { SchuelerIcons } from "@/components/schueler/SchuelerIcons";
 import { DeleteIcon } from "@/components/icons/DeleteIcon";
 import { SchuelerLoeschenDialog } from "@/components/schueler/SchuelerLoeschenDialog";
-import { useState } from "react";
+import { use, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { SCHUELER_QUERY_KEY } from "@/reactQueryKeys";
 import { getSchuelerComplete } from "@thesis/schueler";
+import { userHasPermission } from "@/components/auth/userHasPermission";
+import { Berechtigung } from "@thesis/rollen";
+import { userContext } from "@/context/UserContext";
 
 export const SchuelerNav = ({ schuelerId }: { schuelerId: string }) => {
   const { location } = useRouterState();
   const router = useRouter()
   const [isDeleteDialogShown, setIsDeleteDialogShown] = useState(false)
   const pathname = location.pathname;
+  const { user } = use(userContext)
 
   const base = `/schueler/${schuelerId}`;
 
@@ -66,21 +70,34 @@ export const SchuelerNav = ({ schuelerId }: { schuelerId: string }) => {
           <ListItem isActive={pathname === base}>Stammdaten</ListItem>
         </Link>
 
-        <Link to="/schueler/$schuelerId/historie" params={{ schuelerId }}>
-          <ListItem isActive={pathname === `${base}/historie`}>Historie</ListItem>
-        </Link>
+        {
+                (
+                  userHasPermission(user, Berechtigung.DiagnostikverfahrenRead, "alle" ) || 
+                  userHasPermission(user, Berechtigung.DiagnostikverfahrenRead, "eigene" )
+                ) && <> <Link to="/schueler/$schuelerId/historie" params={{ schuelerId }}>
+                  <ListItem isActive={pathname === `${base}/historie`}>Historie</ListItem>
+                </Link>
 
-        <Link to="/schueler/$schuelerId/monitoring" params={{ schuelerId }}>
-          <ListItem isActive={pathname === `${base}/monitoring`}>Monitoring</ListItem>
-        </Link>
+                <Link to="/schueler/$schuelerId/monitoring" params={{ schuelerId }}>
+                  <ListItem isActive={pathname === `${base}/monitoring`}>Monitoring</ListItem>
+                </Link>
+                </>
 
-        <Link to="/schueler/$schuelerId/brett" params={{ schuelerId }}>
-          <ListItem isActive={pathname === `${base}/brett`}>Schwarzes Brett</ListItem>
-        </Link>
+        }
 
-        <Link to="/schueler/$schuelerId/anwesenheiten" params={{ schuelerId }}>
-          <ListItem isActive={pathname === `${base}/anwesenheiten`}>Anwesenheiten</ListItem>
-        </Link>
+        {
+                userHasPermission(user, Berechtigung.NachrichtenRead, true ) && <Link to="/schueler/$schuelerId/brett" params={{ schuelerId }}>
+                <ListItem isActive={pathname === `${base}/brett`}>Schwarzes Brett</ListItem>
+              </Link>
+        }
+
+        {
+                userHasPermission(user, Berechtigung.AnwesenheitsstatusRead, true ) && <Link to="/schueler/$schuelerId/anwesenheiten" params={{ schuelerId }}>
+                <ListItem isActive={pathname === `${base}/anwesenheiten`}>Anwesenheiten</ListItem>
+              </Link>
+
+        }
+        
       </ul>
       <hr className="h-[1px] border-gray-800" />
     </nav>

@@ -16,6 +16,13 @@ export function getDiagnostikTyp (val?: string) {
     return speicherTyp
 }
 
+/**
+ * Der Nutzer erhält die Diagnostiken, auf die er Zugreifen kann. Vorlagen und geteilte Diagnostiken werden
+ * berücksichtigt.
+ * @param req 
+ * @param typ 
+ * @returns 
+ */
 export const getDiagnostiken = async (req: Request, typ: DiagnostikTyp) => {
 
     const userId = req.userId
@@ -37,6 +44,7 @@ export const getDiagnostiken = async (req: Request, typ: DiagnostikTyp) => {
         }
     }
     
+    // Der Nutzer erhält nur die Diagnostiken, die mit ihm geteilt wurden.
     if (typ === DiagnostikTyp.GETEILT) {
         let query = await getDiagnostikStore().getDiagnostiken(DiagnostikTyp.LAUFENDES_VERFAHREN);
         if (!query.success || query.data == null) {

@@ -2,7 +2,7 @@ import { handleRedirection, KLASSEN_ENDPOINT } from '@thesis/config'
 import type { Halbjahr, Klasse, KlassenVersion, Schuljahr } from '../models';
 import type { User } from '@thesis/auth'
 
-export const getKlasse = async (schuljahr: Schuljahr, halbjahr: Halbjahr, klassenId: number) => {
+export const getKlasse = async (schuljahr: Schuljahr, halbjahr: Halbjahr, klassenId: number, redirect: boolean = true) => {
     try {
         const res = await fetch(KLASSEN_ENDPOINT + `/${klassenId}?schuljahr=${schuljahr}&halbjahr=${halbjahr}`, {
             method: 'GET',
@@ -13,7 +13,7 @@ export const getKlasse = async (schuljahr: Schuljahr, halbjahr: Halbjahr, klasse
 
         const data = await res.json();
                 
-        if (res.status === 403) {
+        if (res.status === 403 && redirect) {
             handleRedirection(data.redirect)
         }
     
@@ -25,7 +25,7 @@ export const getKlasse = async (schuljahr: Schuljahr, halbjahr: Halbjahr, klasse
 }
 
 
-export const getKlassen = async (schuljahr: Schuljahr, halbjahr: Halbjahr) => {
+export const getKlassen = async (schuljahr: Schuljahr, halbjahr: Halbjahr, redirect: boolean = true) => {
     try {
         const res = await fetch(KLASSEN_ENDPOINT + `?schuljahr=${schuljahr}&halbjahr=${halbjahr}`, {
             method: 'GET',
@@ -35,7 +35,7 @@ export const getKlassen = async (schuljahr: Schuljahr, halbjahr: Halbjahr) => {
         })
         const data = await res.json();
         
-        if (res.status === 403) {
+        if (res.status === 403 && redirect) {
             handleRedirection(data.redirect)
         }
     

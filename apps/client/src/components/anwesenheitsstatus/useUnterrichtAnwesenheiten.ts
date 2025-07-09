@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { AnwesenheitTyp, getAnwesenheiten } from "@thesis/anwesenheiten";
 import { getSchuljahr, type Schuljahr } from "@thesis/schule";
 
-export const useAnwesenheiten = (schuelerId: number, typ: AnwesenheitTyp) => {
+export const useAnwesenheiten = (schuelerId: number, typ: AnwesenheitTyp, redirect: boolean = true) => {
 
     const queryClient = useQueryClient()
     const queryKey = [ANWESENHEITEN_QUERY_KEY, schuelerId, getSchuljahr(new Date()), typ]
@@ -12,7 +12,7 @@ export const useAnwesenheiten = (schuelerId: number, typ: AnwesenheitTyp) => {
         queryKey,
         queryFn: ({ queryKey }) => {
         const [_key, schuelerId, schuljahr, typ] = queryKey as [string, string, Schuljahr, AnwesenheitTyp];
-            return getAnwesenheiten(parseInt(schuelerId), schuljahr as Schuljahr, typ);
+            return getAnwesenheiten(parseInt(schuelerId), schuljahr as Schuljahr, typ, redirect);
         },
         initialData: undefined,
         staleTime: 0

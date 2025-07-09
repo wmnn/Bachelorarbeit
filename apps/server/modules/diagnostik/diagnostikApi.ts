@@ -22,18 +22,7 @@ router.get('/', async (
     res: Response<GetDiagnostikenResponseBody>
 ): Promise<any> => {
     const { status, success, data } = await getDiagnostiken(req, getDiagnostikTyp(req.query.typ))
-    const results = await Promise.all(
-        data.map(diagnostik =>
-        canUserAccessDiagnostik(`${diagnostik.id ?? -1}`, req, diagnostik)
-        )
-    );
-
-    const filtered = results
-        .filter(r => r.success)
-        .map(r => r.diagnostik!)
-        .filter(Boolean);
-
-    return res.status(status).json(filtered);
+    return res.status(status).json(data);
 });
 
 

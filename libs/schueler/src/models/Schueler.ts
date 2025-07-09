@@ -8,6 +8,8 @@ export interface SchuelerSimple {
     hatSonderpaedagogischeKraft?: boolean,
     verlaesstSchuleAllein?: boolean,
     derzeitigeKlasse?: string,
+    heutigerSchultagAnwesenheitsstatus?: Anwesenheiten,
+    heutigerGanztagAnwesenheitsstatus?: Anwesenheiten,
     ernährung: Ernährung,
     medikamente?: string[],
 }
@@ -19,8 +21,6 @@ export type Schueler = {
     abholberechtigtePersonen: AbholberechtigtePerson[],
     familiensprache: string,
     geburtsdatum: string,
-    heutigerSchultagAnwesenheitsstatus?: Anwesenheiten,
-    heutigerGanztagAnwesenheitsstatus?: Anwesenheiten,
     klasse?: string, // im aktuellen Schulhalbjahr
     hatSonderpaedagogischeKraft: boolean,
     verlaesstSchuleAllein: boolean,

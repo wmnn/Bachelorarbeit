@@ -29,8 +29,19 @@ router.get('/', async (req, res): Promise<any> => {
         return getNoPermissionResponse(res)
     }
 
-    const msg = await getSchuelerStore().getSchueler()
-    res.status(200).json(msg);
+    let schueler = await getSchuelerStore().getSchueler()
+
+    if (!req.permissions?.[Berechtigung.AnwesenheitsstatusRead]) {
+        schueler = schueler.map(s => {
+            let tmp = {
+                ...s
+            }
+            delete tmp.heutigerGanztagAnwesenheitsstatus
+            delete tmp.heutigerSchultagAnwesenheitsstatus
+            return tmp
+        })
+    }
+    res.status(200).json(schueler);
 });
 
 router.put('/:schuelerId', async (req: Request<{ schuelerId: string }, {}, EditSchuelerRequestBody>, res): Promise<any> => {
@@ -61,7 +72,7 @@ router.get('/:schuelerId', async (req, res): Promise<any> => {
 
     const { schuelerId } = req.params
     const msg = await getSchuelerStore().getSchuelerComplete(parseInt(schuelerId))
-    console.log(msg)
+    // console.log(msg)
     res.status(200).json(msg);
 });
 

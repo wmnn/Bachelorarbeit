@@ -37,7 +37,7 @@ export const BERECHTIGUNGEN_LABELS: Record<Berechtigung, string>= {
     [Berechtigung.SchuelerDelete]: "Schüler löschen",
     [Berechtigung.AnwesenheitsstatusUpdate]: "Anwesenheitsstatus setzen",
     [Berechtigung.AnwesenheitsstatusRead]: "Anwesenheitsstatus einsehen",
-    [Berechtigung.DiagnostikverfahrenRead]: "Diagnostikverfahren Zugriff",
+    [Berechtigung.DiagnostikverfahrenRead]: "Diagnostikverfahren Zugriff (Vorbedingung: Schüler einsehen)",
     [Berechtigung.DiagnostikverfahrenDelete]: "Diagnostikverfahren löschen",
     [Berechtigung.RollenVerwalten]: "Rollen verwalten",
     [Berechtigung.NachrichtenvorlagenVerwalten]: "Nachrichtenvorlagen verwalten",

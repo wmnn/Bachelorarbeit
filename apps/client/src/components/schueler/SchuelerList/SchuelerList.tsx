@@ -2,7 +2,7 @@ import { List } from "@/components/List"
 import { SchuelerErstellenDialog } from "../SchuelerErstellenDialog"
 import { SchuelerListItem } from "./SchuelerListItem"
 import { AnwesenheitTyp } from "@thesis/anwesenheiten"
-import { useEffect, useState, type ReactNode } from "react"
+import { use, useEffect, useState, type ReactNode } from "react"
 import type { Schueler } from "@thesis/schueler"
 import { SchuelerListHeader } from "./SchuelerListHeader"
 import { Input } from "@/components/Input"
@@ -10,6 +10,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import Button from "@/components/Button"
 import { GeprüftDialog } from "@/components/anwesenheitsstatus/GeprüftDialog"
 import { SortOption, SortSelect } from "@/components/shared/SortSelect"
+import { userHasPermission } from "@/components/auth/userHasPermission"
+import { userContext } from "@/context/UserContext"
+import { Berechtigung } from "@thesis/rollen"
 
 interface SchuelerListProps {
     schueler: Schueler[],
@@ -39,7 +42,7 @@ export const SchuelerList = (props: SchuelerListProps ) => {
       )
     )
     const [shownClasses, setShownClasses] = useState<string[]>(klassen)
-
+    const { user } = use(userContext)
 
     useEffect(() => {
       setSchueler(props.schueler)
@@ -74,11 +77,14 @@ export const SchuelerList = (props: SchuelerListProps ) => {
     };
 
     const rightHeader = <div className="flex flex-col md:flex-row gap-2 items-center">
-      <div>
-        <Button className="border-[1px] max-h-[36px] flex justify-center items-center px-2 py-4 rounded-lg hover:bg-gray-200" onClick={() => setIsGeprüftDialogShown(true)}>
-          <p>Alle auf geprüft setzen</p>
-        </Button>
-      </div>
+      {
+        userHasPermission(user, Berechtigung.AnwesenheitsstatusRead, true ) && <div>
+          <Button className="border-[1px] max-h-[36px] flex justify-center items-center px-2 py-4 rounded-lg hover:bg-gray-200" onClick={() => setIsGeprüftDialogShown(true)}>
+            <p>Alle auf geprüft setzen</p>
+          </Button>
+        </div>
+      }
+      
 
       {
         isGeprüftDialogShown && <GeprüftDialog 

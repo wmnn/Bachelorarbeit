@@ -59,6 +59,7 @@ router.get('/:schuelerId', async (req: Request<any, {}, UpdateStatusReqBody>, re
     const { schuljahr, typ } = req.query
 
     const msg = await getAnwesenheitenStore().getAnwesenheiten(parseInt(schuelerId), schuljahr as Schuljahr, parseInt(typ as string) as AnwesenheitTyp)
+    console.log(msg)
     res.status(200).json(msg);
 });
 

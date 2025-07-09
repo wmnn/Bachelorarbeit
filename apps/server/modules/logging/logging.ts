@@ -6,6 +6,7 @@ export const loggingMiddleware = async (
     res: Response,
     next: NextFunction
 ) => {
+    return next()
     if (!req.originalUrl.startsWith('/api')) {
         return next();
     }
