@@ -1,3 +1,4 @@
+import { LOGIN_ENDPOINT, REGISTER_ENDPOINT } from "@thesis/config";
 import { NextFunction, Request } from "express";
 
 export const loggingMiddleware = async (
@@ -10,6 +11,11 @@ export const loggingMiddleware = async (
     }
     if (req.method === 'OPTIONS') {
         console.log(`[Preflight] ${req.method} ${req.originalUrl}`);
+        return next();
+    }
+
+    // Don't log passwords
+    if (req.originalUrl.endsWith(LOGIN_ENDPOINT) || req.originalUrl.endsWith(REGISTER_ENDPOINT) || req.originalUrl.endsWith('password')) {
         return next();
     }
 
