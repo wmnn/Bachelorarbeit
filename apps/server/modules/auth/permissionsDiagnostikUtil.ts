@@ -95,11 +95,14 @@ export async function canEditDiagnostik(diagnostikId: string, req: Request): Pro
     return canUserAccessDiagnostik(diagnostikId, req)
 }
 
-export async function canUserAccessDiagnostik(diagnostikId: string, req: Request): Promise<{
+export async function canUserAccessDiagnostik(diagnostikId: string, req: Request, diagnostik?: Diagnostik): Promise<{
     success: boolean,
     diagnostik?: Diagnostik
 }> {
-    const diagnostik = await getDiagnostikStore().getDiagnostik(parseInt(diagnostikId))
+
+    if (!diagnostik) {
+        diagnostik = await getDiagnostikStore().getDiagnostik(parseInt(diagnostikId))
+    }
     
     if (diagnostik?.speicherTyp == DiagnostikTyp.VORLAGE) {
         const permission = req.permissions?.[Berechtigung.DiagnostikverfahrenRead]

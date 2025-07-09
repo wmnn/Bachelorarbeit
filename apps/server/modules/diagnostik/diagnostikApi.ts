@@ -6,7 +6,7 @@ import { deleteNotIncludedFiles, getDiagnostikFiles, saveDiagnostikFiles } from 
 import fileUpload from 'express-fileupload';
 import { Berechtigung, BerechtigungWert } from '@thesis/rollen';
 import { canEditDiagnostik, canUserAccessDiagnostik, canUserCreateDiagnostik, canUserDeleteDiagnostik, canUserUpdateSichtbarkeit } from '../auth/permissionsDiagnostikUtil';
-import { getNoSessionResponse } from '../auth/permissionsUtil';
+import { getNoPermissionResponse, getNoSessionResponse } from '../auth/permissionsUtil';
 import { getKlassenIdsVonSchueler } from '../klassen/util';
 import { DiagnostikStore } from './DiagnostikStore';
 import { getDiagnostiken, getDiagnostikTyp } from './util';
@@ -21,10 +21,19 @@ router.get('/', async (
     req: Request<{}, {}, {}, { typ?: string }>,
     res: Response<GetDiagnostikenResponseBody>
 ): Promise<any> => {
-   
     const { status, success, data } = await getDiagnostiken(req, getDiagnostikTyp(req.query.typ))
-    return res.status(status).json(data);
+    const results = await Promise.all(
+        data.map(diagnostik =>
+        canUserAccessDiagnostik(`${diagnostik.id ?? -1}`, req, diagnostik)
+        )
+    );
 
+    const filtered = results
+        .filter(r => r.success)
+        .map(r => r.diagnostik!)
+        .filter(Boolean);
+
+    return res.status(status).json(filtered);
 });
 
 
@@ -35,6 +44,11 @@ router.get('/schueler', async (req, res: Response<GetSchuelerDataResponseBody>):
     const schuelerId = parseInt(schuelerIdString)
     if (!req.userId) {
         return getNoSessionResponse(res)
+    }
+
+    // Prüfen, ob die Person auf Schüler zugreifen kann
+    if (!req.permissions?.[Berechtigung.SchuelerRead]) {
+        return getNoPermissionResponse(res)
     }
 
     // Alle klassenIds von den Klassenversionen anfragen, bei denen der Schüler ein Teil von ist
