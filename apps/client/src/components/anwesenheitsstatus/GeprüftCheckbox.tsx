@@ -33,10 +33,14 @@ export function GeprüftCheckbox ({ schuelerId, typ }: { schuelerId: number, typ
             invalidate()
             queryClient.invalidateQueries({ queryKey: [SCHUELER_QUERY_KEY]})
         }
-    }
-    
+    }    
     return <Tooltip content={getChecked() ? 'Bei einem Klick wird der heutige Anwesenheitsstatus gelöscht.' : 'Bei einem Klick wird der heutige Anwesenheitsstatus auf anwesend gesetzt.'}>
-        <input type='checkbox' className="w-[25px] h-full" checked={getChecked()} onChange={() => handleChange()} />
+        <input
+            type="checkbox"
+            className="w-[25px] h-[25px] bg-white border border-gray-400 rounded-sm"
+            checked={getChecked()}
+            onChange={handleChange}
+        />
     </Tooltip>
     
 }
