@@ -29,13 +29,13 @@ export const NachrichtenListItem = ({ nachricht, showId }: { nachricht: Nachrich
 
     function getLabel() {
         if (nachricht.typ === NachrichtenTyp.SCHÜLER) {
-            const s = schueler.find(o => o.id == nachricht.id)
+            const s = (schueler ?? []).find(o => o.id == nachricht.id)
             if (!s) {
                 return 'ERROR'
             }
             return `${s.vorname} ${s.nachname}`
         } else {
-            const klasse = klassenQuery.data.find(o => o.id == nachricht.id)
+            const klasse = (klassenQuery.data ?? []).find(o => o.id == nachricht.id)
             if (!klasse) {
                 return 'ERROR'
             }

@@ -21,7 +21,7 @@ export const createRole = async (rolle: Rolle) => {
 
         const data = await res.json();
                 
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -58,7 +58,7 @@ export const deleteRole = async (rolle: string) => {
 
         const data = await res.json();
         
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -101,7 +101,7 @@ export const updateRole = async (rollenbezeichnung: string, updated: Rolle) => {
 
         const data = await res.json();
         
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     

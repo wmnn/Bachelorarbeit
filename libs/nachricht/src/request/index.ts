@@ -11,7 +11,7 @@ export const getAllNachrichten = async (typ: NachrichtenTyp): Promise<Nachricht[
 
         const data = await res.json();
                 
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -31,7 +31,7 @@ export const getNachrichten = async (id: number, typ: NachrichtenTyp): Promise<N
 
         const data = await res.json();
                 
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -70,7 +70,7 @@ export const nachrichtErstellen = async (inhalt: string, id: number, typ: Nachri
 
         const data = await res.json();
                 
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -100,7 +100,7 @@ export const nachrichtBearbeiten = async (inhalt: string, nachrichtId: number) =
 
         const data = await res.json();
                 
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -124,7 +124,7 @@ export const nachrichtLoeschen = async (nachrichtId: number): Promise<NachrichtE
 
         const data = await res.json();
                 
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -147,7 +147,7 @@ export const getNachrichtenVorlagen = async (typ: NachrichtenTyp) => {
 
         const data = await res.json();
                 
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -175,7 +175,7 @@ export const nachrichtenVorlagenSpeichern = async (klassenVorlagen: string[], sc
 
         const data = await res.json();
                 
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -204,7 +204,7 @@ export const updateLesestatus = async (nachrichtenversionIds: number[]) => {
 
         const data = await res.json();
                 
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     

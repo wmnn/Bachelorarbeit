@@ -108,7 +108,7 @@ export const authMiddleware = async (
 
     if (!valid) {
         res.clearCookie(SESSION_COOKIE_NAME, { path: '/' });
-        return res.status(401).json({
+        return res.status(403).json({
             success: false,
             message: 'Die Sitzung ist abgelaufen.',
             redirect: LoginRedirectAction.REDIRECT_TO_LOGIN
@@ -119,7 +119,7 @@ export const authMiddleware = async (
     const sessionData = await getAuthStore().getSession(sessionId);
     if (!sessionData) {
         res.clearCookie(SESSION_COOKIE_NAME, { path: '/' });
-        return res.status(401).json({
+        return res.status(403).json({
             success: false,
             message: 'Es wurde keine Sitzung gefunden.',
             redirect: LoginRedirectAction.REDIRECT_TO_LOGIN

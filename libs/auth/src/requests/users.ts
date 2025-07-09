@@ -20,7 +20,7 @@ export const getUsers = async () => {
 
         const data = await res.json();
         
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -54,7 +54,7 @@ export const deleteUser = async (userId: number) => {
 
         const data = await res.json();
         
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -91,7 +91,7 @@ export const updateUser = async (user: User) => {
 
         const data = await res.json();
         
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -133,7 +133,7 @@ export const updatePassword = async (userId: number, password: string, newPasswo
 
         const data = await res.json();
         
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     

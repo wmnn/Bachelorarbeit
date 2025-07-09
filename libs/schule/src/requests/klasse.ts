@@ -13,7 +13,7 @@ export const getKlasse = async (schuljahr: Schuljahr, halbjahr: Halbjahr, klasse
 
         const data = await res.json();
                 
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -33,10 +33,9 @@ export const getKlassen = async (schuljahr: Schuljahr, halbjahr: Halbjahr) => {
                 'content-type': 'application/json'
             },
         })
-
         const data = await res.json();
         
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -72,7 +71,7 @@ export const createKlasse = async (klassen: KlassenVersion[], klassenlehrer: Use
 
         const data = await res.json();
         
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -101,7 +100,7 @@ export const editKlasse = async (klassen: KlassenVersion[], klassenlehrer: User[
 
         const data = await res.json();
         
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -143,7 +142,7 @@ export const deleteKlasse = async (klassenId: number, schuljahr: Schuljahr, halb
 
         const data = await res.json();
         
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -186,7 +185,7 @@ export const importKlassen = async (klassen: ImportKlasse[], schuljahr: Schuljah
 
         const data = await res.json();
         
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     

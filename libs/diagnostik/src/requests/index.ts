@@ -26,7 +26,7 @@ export const createDiagnostik = async (diagnostik: Diagnostik, files: File[]) =>
 
         const data = await res.json();
 
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -54,7 +54,7 @@ export const copyDiagnostik = async (diagnostikId: string) => {
     
         const data = await res.json();
 
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -81,7 +81,7 @@ export const updateAuswertungsgrupen = async (diagnostikId: string, auswertungsg
 
         const data = await res.json();
 
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -108,7 +108,7 @@ export const updateSichtbarkeit = async (diagnostikId: string, sichtbarkeit: Sic
 
         const data = await res.json();
 
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -139,7 +139,7 @@ export const editDiagnostik = async (diagnostik: Diagnostik, files: File[]) => {
 
         const data = await res.json();
 
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -169,7 +169,7 @@ export const getDiagnostiken = async (speicherTyp: DiagnostikTyp) => {
 
         const data = await res.json();
 
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -194,7 +194,7 @@ export const getDiagnostik = async (diagnostikId: number) => {
 
         const data = await res.json();
 
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -224,7 +224,7 @@ export const addErgebnisse = async (ergebnisse: Ergebnis[], diagnostikId: string
 
         const data = await res.json();
 
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -251,7 +251,7 @@ export const getErgebnisse = async (diagnostikId: string) => {
 
         const data = await res.json();
 
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -279,7 +279,7 @@ export const getDiagnostikSchuelerData = async (schuelerId: string) => {
 
         const data = await res.json();
 
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -308,7 +308,7 @@ export const deleteDiagnostik = async (diagnostikId: string) => {
 
         const data = await res.json();
 
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     

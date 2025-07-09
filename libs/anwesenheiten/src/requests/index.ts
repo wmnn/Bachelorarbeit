@@ -22,7 +22,7 @@ export const getAnwesenheiten = async (
 
         const data = await res.json();
         
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -71,7 +71,7 @@ export const updateStatus = async (
 
         const data = await res.json();
         
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -106,7 +106,7 @@ export const updateStatusBatch = async (
 
         const data = await res.json();
         
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -143,7 +143,7 @@ export const deleteStatus = async (
 
         const data = await res.json();
         
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     

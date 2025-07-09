@@ -34,7 +34,7 @@ export const searchUser = async <T extends Berechtigung>(
 
         const data = await res.json();
         
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     

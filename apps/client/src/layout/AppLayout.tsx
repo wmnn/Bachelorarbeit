@@ -49,7 +49,10 @@ export const AppLayout = () => {
         <header className={`${isNavShown ? 'block' : 'hidden xl:flex'} xl:w-[20%] bg-abcd shadow-2xl flex flex-col justify-between xl:pb-12 pt-24 xl:pt-16 pb-16 px-8 md:px-24 xl:px-8 bg-main xl:fixed top-0 left-0 h-[100vh] transition-all`}>
             <nav className="flex flex-col gap-4">
                 {
-                    user?.rolle?.berechtigungen[Berechtigung.NachrichtenRead] === true && <SchwartesBrettButton setIsNavShown={setIsNavShown} />
+                    user?.rolle?.berechtigungen[Berechtigung.NachrichtenRead] === true && 
+                    user?.rolle?.berechtigungen[Berechtigung.SchuelerRead] === true && 
+                    user?.rolle?.berechtigungen[Berechtigung.KlasseRead] != 'keine' &&
+                    <SchwartesBrettButton setIsNavShown={setIsNavShown} />
                 }
                 {
                     (userHasPermission(user, Berechtigung.KlasseRead, "alle") || userHasPermission(user, Berechtigung.KlasseRead, "eigene")) && 
@@ -126,7 +129,7 @@ export const AppLayout = () => {
         
         <div className=""/>
 
-        <div className={`${isNavShown ? 'hidden xl:flex' : 'flex'} justify-center flex-col items-center w-full xl:ml-[20%] pt-[80px] md:pt-0 max-w-full overflow-hidden`}>
+        <div className={`${isNavShown ? 'hidden xl:flex' : 'flex'} justify-center flex-col items-center w-full xl:ml-[20%] pt-[80px] xl:pt-0 max-w-full overflow-hidden`}>
             <Outlet />
         </div>
     </div>

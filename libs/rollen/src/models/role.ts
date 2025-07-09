@@ -32,7 +32,7 @@ export const BERECHTIGUNGEN_LABELS: Record<Berechtigung, string>= {
     [Berechtigung.GanztagsangebotUpdate]: "Ganztagsangebot verändern",
     [Berechtigung.GanztagsangebotDelete]: "Ganztagsangebot löschen",
     [Berechtigung.SchuelerCreate]: "Schüler erstellen",
-    [Berechtigung.SchuelerRead]: "Schüler einsehen",
+    [Berechtigung.SchuelerRead]: "Schüler einsehen (alle)",
     [Berechtigung.SchuelerUpdate]: "Schüler verändern",
     [Berechtigung.SchuelerDelete]: "Schüler löschen",
     [Berechtigung.AnwesenheitsstatusUpdate]: "Anwesenheitsstatus setzen",
@@ -41,9 +41,9 @@ export const BERECHTIGUNGEN_LABELS: Record<Berechtigung, string>= {
     [Berechtigung.DiagnostikverfahrenDelete]: "Diagnostikverfahren löschen",
     [Berechtigung.RollenVerwalten]: "Rollen verwalten",
     [Berechtigung.NachrichtenvorlagenVerwalten]: "Nachrichtenvorlagen verwalten",
-    [Berechtigung.NachrichtenRead]: "Nachrichten Zugriff",
-    [Berechtigung.NachrichtenUpdate]: "Nachrichten bearbeiten",
-    [Berechtigung.NachrichtenDelete]: "Nachrichten löschen",
+    [Berechtigung.NachrichtenRead]: "Nachrichten Zugriff (Vorbedingungen: Klasse Zugriff, Schüler einsehen)",
+    [Berechtigung.NachrichtenUpdate]: "Nachrichten bearbeiten (von allen Nutzern)",
+    [Berechtigung.NachrichtenDelete]: "Nachrichten löschen (von allen Nutzern)",
 }
 
 export type Rolle = {

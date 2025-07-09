@@ -20,7 +20,7 @@ export const setup2FactorAuthentication = async (): Promise<Setup2FactorAuthenti
 
         const data = await res.json();
         
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -54,7 +54,7 @@ export const verify2FactorAuthentication = async (token: string): Promise<Verify
 
         const data = await res.json();
         
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     

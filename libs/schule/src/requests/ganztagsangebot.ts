@@ -14,7 +14,7 @@ export const getGanztagsangebot = async (schuljahr: Schuljahr, halbjahr: Halbjah
 
         const data = await res.json();
                 
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -36,7 +36,7 @@ export const getGanztagsangebote = async (schuljahr: Schuljahr, halbjahr: Halbja
 
         const data = await res.json();
         
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -67,7 +67,7 @@ export const createGanztagsangebot = async (ganztagsangebot: Ganztagsangebot) =>
 
         const data = await res.json();
         
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -93,7 +93,7 @@ export const editGanztagsangebot = async (ganztagsangebot: Ganztagsangebot, schu
 
         const data = await res.json();
         
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -135,7 +135,7 @@ export const deleteGanztagsangebot = async (ganztagsangebotId: number, schuljahr
 
         const data = await res.json();
         
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     

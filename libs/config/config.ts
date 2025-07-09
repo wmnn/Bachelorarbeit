@@ -20,6 +20,7 @@ export const NACHRICHTEN_ENDPOINT = '/api/nachrichten'
 
 export const handleRedirection = (redirect: undefined | LoginRedirectAction) => {
     if (redirect == undefined) {
+        window.location.href = '/settings'
         return;
     }
     if (redirect == LoginRedirectAction.LOGIN_SUCCESS) {

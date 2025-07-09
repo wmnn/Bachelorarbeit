@@ -9,10 +9,11 @@ export const getSchueler = async () => {
                 'content-type': 'application/json'
             },
         })
+        console.log(res)
 
         const data = await res.json();
                 
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
@@ -34,7 +35,7 @@ export const getSchuelerComplete = async (schuelerId: number) => {
 
         const data = await res.json();
         
-        if (res.status === 401) {
+        if (res.status === 403) {
             handleRedirection(data.redirect)
         }
     
