@@ -1,4 +1,4 @@
-import { Anwesenheiten, updateStatusBatch, AnwesenheitTyp } from "@thesis/anwesenheiten"
+import { Anwesenheitsstatus, updateStatusBatch, Anwesenheitstyp } from "@thesis/anwesenheiten"
 import { RiskyActionDialog } from "../dialog/RiskyActionDialog"
 import { useQueryClient } from "@tanstack/react-query"
 import { SCHUELER_QUERY_KEY } from "@/reactQueryKeys"
@@ -8,7 +8,7 @@ import { useSchuelerStore } from "../schueler/SchuelerStore"
 interface GeprüftDialogProps {
     closeDialog: () => void,
     schuelerIds: number[],
-    typ: AnwesenheitTyp
+    typ: Anwesenheitstyp
 }
 export const GeprüftDialog = (props: GeprüftDialogProps) => {
 
@@ -23,13 +23,13 @@ export const GeprüftDialog = (props: GeprüftDialogProps) => {
         let schuelerWithoutAnwesenheit = schuelerIds.filter(id => {
             const found = schueler.find(o => o.id == id)
             if (!found) return false;
-            if (typ === AnwesenheitTyp.GANZTAG) {
+            if (typ === Anwesenheitstyp.GANZTAG) {
                 return found.heutigerGanztagAnwesenheitsstatus === undefined
             } 
             return found.heutigerSchultagAnwesenheitsstatus === undefined
         })
 
-        const res = await updateStatusBatch(schuelerWithoutAnwesenheit, Anwesenheiten.ANWESEND, typ, heute, heute)
+        const res = await updateStatusBatch(schuelerWithoutAnwesenheit, Anwesenheitsstatus.ANWESEND, typ, heute, heute)
         if (res?.success) {
             queryClient.invalidateQueries({ queryKey: [SCHUELER_QUERY_KEY]}) // TODO
         }

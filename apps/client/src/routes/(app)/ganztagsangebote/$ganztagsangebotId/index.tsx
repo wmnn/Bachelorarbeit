@@ -9,7 +9,7 @@ import { useSchuljahrStore } from '@/components/schuljahr/SchuljahrStore'
 import { GANZTAGSANGEBOT_QUERY_KEY } from '@/reactQueryKeys'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
-import { AnwesenheitTyp } from '@thesis/anwesenheiten'
+import { Anwesenheitstyp } from '@thesis/anwesenheiten'
 import { getUsers, getUsersQueryKey, type UsersResponseBody } from '@thesis/auth'
 import { getGanztagsangebot, type Halbjahr, type Schuljahr } from '@thesis/schule'
 import { Edit, MoveLeft } from 'lucide-react'
@@ -114,7 +114,7 @@ function RouteComponent() {
           <div className='flex flex-col gap-8'>
            
             <SchuelerList 
-              typ={AnwesenheitTyp.GANZTAG}
+              typ={Anwesenheitstyp.GANZTAG}
               schueler={schueler.filter((item) => ganztagsangebot?.schueler?.includes(item.id ?? -1))}
             />
           </div>

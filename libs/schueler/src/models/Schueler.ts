@@ -1,5 +1,5 @@
 import type { AbholberechtigtePerson } from "./AbholberechtigtePerson";
-import { type Anwesenheiten } from "@thesis/anwesenheiten"
+import { type Anwesenheitsstatus } from "@thesis/anwesenheiten"
 
 export interface SchuelerSimple {
     id?: number,
@@ -8,8 +8,8 @@ export interface SchuelerSimple {
     hatSonderpaedagogischeKraft?: boolean,
     verlaesstSchuleAllein?: boolean,
     derzeitigeKlasse?: string,
-    heutigerSchultagAnwesenheitsstatus?: Anwesenheiten,
-    heutigerGanztagAnwesenheitsstatus?: Anwesenheiten,
+    heutigerSchultagAnwesenheitsstatus?: Anwesenheitsstatus,
+    heutigerGanztagAnwesenheitsstatus?: Anwesenheitsstatus,
     ernährung: Ernährung,
     medikamente?: string[],
 }

@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { SchuelerIcons } from "../SchuelerIcons";
-import { AnwesenheitTyp } from "@thesis/anwesenheiten";
+import { Anwesenheitstyp } from "@thesis/anwesenheiten";
 import { GeprüftCheckbox } from "../../anwesenheitsstatus/GeprüftCheckbox";
 import type { Schueler } from "@thesis/schueler";
 import { AnwesenheitsstatusSchuelerListSelect } from "@/components/anwesenheitsstatus/AnwesenheitsstatusSchuelerListSelect";
@@ -12,7 +12,7 @@ import { Berechtigung } from "@thesis/rollen";
 import { use } from "react";
 import { userContext } from "@/context/UserContext";
 
-export function SchuelerListItem({ schueler, typ, showDerzeitigeKlasse = false }: { schueler: Schueler, typ: AnwesenheitTyp, showDerzeitigeKlasse?: boolean }) {
+export function SchuelerListItem({ schueler, typ, showDerzeitigeKlasse = false }: { schueler: Schueler, typ: Anwesenheitstyp, showDerzeitigeKlasse?: boolean }) {
    
     const nachrichtenQuery = useNachrichten(NachrichtenTyp.SCHÜLER, schueler.id ?? -1)
     const isUnreadMessage = countUnreadMessages([...nachrichtenQuery.query.data]) > 0

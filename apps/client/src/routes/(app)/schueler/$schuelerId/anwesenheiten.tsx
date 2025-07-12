@@ -6,7 +6,7 @@ import { Tooltip } from '@/components/Tooltip';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { SchuelerNav } from '@/layout/SchuelerNav';
 import { createFileRoute } from '@tanstack/react-router'
-import { ANWESENHEITEN, Anwesenheiten, AnwesenheitenLabels, AnwesenheitTyp, AnwesenheitTypLabel, type AnwesenheitResponseData } from '@thesis/anwesenheiten';
+import { ANWESENHEITEN, Anwesenheitsstatus, AnwesenheitenLabels, Anwesenheitstyp, AnwesenheitTypLabel, type GetAnwesenheitenResponseData } from '@thesis/anwesenheiten';
 import { getSchuljahr, type Schuljahr } from '@thesis/schule';
 import { useEffect, useState } from 'react';
 
@@ -22,8 +22,8 @@ function RouteComponent() {
   return <div className='w-full'>
     <SchuelerNav schuelerId={schuelerId} />
     <div className='flex flex-col px-8 w-full'>
-      <AnwesenheitenDisplay typ={AnwesenheitTyp.UNTERRICHT} schuelerId={schuelerId} />
-      <AnwesenheitenDisplay typ={AnwesenheitTyp.GANZTAG} schuelerId={schuelerId} />
+      <AnwesenheitenDisplay typ={Anwesenheitstyp.UNTERRICHT} schuelerId={schuelerId} />
+      <AnwesenheitenDisplay typ={Anwesenheitstyp.GANZTAG} schuelerId={schuelerId} />
     </div>
   </div>
 }
@@ -41,7 +41,7 @@ const AnwesenheitenFilter = ({
   setSelectedFilter
 }: { 
     setFilteredAnwesenheiten: any, 
-    anwesenheiten: AnwesenheitResponseData[],
+    anwesenheiten: GetAnwesenheitenResponseData[],
     selectedFilter: any,
     setSelectedFilter: any
 }) => {
@@ -95,7 +95,7 @@ const AnwesenheitenFilter = ({
 
 }
 
-const AnwesenheitenDisplay = ({ typ, schuelerId }: { typ: AnwesenheitTyp, schuelerId: string }) => {
+const AnwesenheitenDisplay = ({ typ, schuelerId }: { typ: Anwesenheitstyp, schuelerId: string }) => {
 
   const [isDialogShown, setIsDialogShown] = useState(false)
   const [schuljahr, _] = useState<Schuljahr>(getSchuljahr(new Date()));
@@ -103,7 +103,7 @@ const AnwesenheitenDisplay = ({ typ, schuelerId }: { typ: AnwesenheitTyp, schuel
   const [selectedFilter, setSelectedFilter] = useState(FilterOption.SCHULJAHR)
 
   let anwesenheiten = query.data;
-  const [filteredAnwesenheiten, setFilteredAnwesenheiten] = useState<undefined | AnwesenheitResponseData[]>(anwesenheiten)
+  const [filteredAnwesenheiten, setFilteredAnwesenheiten] = useState<undefined | GetAnwesenheitenResponseData[]>(anwesenheiten)
 
   useEffect(() => {
     anwesenheiten = query.data
@@ -145,7 +145,7 @@ const AnwesenheitenDisplay = ({ typ, schuelerId }: { typ: AnwesenheitTyp, schuel
         typ={typ}
       />
     }
-    <h2>{typ == AnwesenheitTyp.UNTERRICHT ? 'Unterricht' : 'Ganztag'}</h2>
+    <h2>{typ == Anwesenheitstyp.UNTERRICHT ? 'Unterricht' : 'Ganztag'}</h2>
     <div className='flex gap-2 justify-between w-full'>
       <ButtonLight 
       className='max-w-[360px]'
@@ -183,26 +183,26 @@ const AnwesenheitenDisplay = ({ typ, schuelerId }: { typ: AnwesenheitTyp, schuel
 
 const DataDisplay = ({ data }: { data: any }) => {
 
-  function count(data: any, status: Anwesenheiten) {
+  function count(data: any, status: Anwesenheitsstatus) {
     return data.filter((item: any) => item.status === status).length
   }
 
   return <div className='flex flex-col my-2'>
     <div className='flex gap-2'>
       <p>Anwesend:</p>
-      <p>{count(data, Anwesenheiten.ANWESEND)}</p>
+      <p>{count(data, Anwesenheitsstatus.ANWESEND)}</p>
     </div>
     <div className='flex gap-2'>
       <p>Verspätet:</p>
-      <p>{count(data, Anwesenheiten.VERSPAETET)}</p>
+      <p>{count(data, Anwesenheitsstatus.VERSPAETET)}</p>
     </div>
     <div className='flex gap-2'>
       <p>Fehlt unentschuldigt:</p>
-      <p>{count(data, Anwesenheiten.FEHLT_UNENTSCHULDIGT)}</p>
+      <p>{count(data, Anwesenheitsstatus.FEHLT_UNENTSCHULDIGT)}</p>
     </div>
     <div className='flex gap-2'>
       <p>Fehlt entschuldigt:</p>
-      <p>{count(data, Anwesenheiten.FEHLT_ENTSCHULDIGT)}</p>
+      <p>{count(data, Anwesenheitsstatus.FEHLT_ENTSCHULDIGT)}</p>
     </div>
   </div>
 }
@@ -280,11 +280,11 @@ const AnwesenheitenGrid = ({
         <div key={wi} className="flex flex-col gap-1">
           {week.map((day, di) => {
             const status = day ? dateMap.get(day) : undefined;
-            const bgColor = day ? (getColor(status as Anwesenheiten) ?? 'bg-gray-300') : 'bg-transparent';
+            const bgColor = day ? (getColor(status as Anwesenheitsstatus) ?? 'bg-gray-300') : 'bg-transparent';
             const tooltipContent = day ? (
                 <div>
                     {day}{`, `}
-                    {status !== undefined ? AnwesenheitenLabels[status as Anwesenheiten] : 'Keine Daten'}
+                    {status !== undefined ? AnwesenheitenLabels[status as Anwesenheitsstatus] : 'Keine Daten'}
                 </div>
             ) : null;
 

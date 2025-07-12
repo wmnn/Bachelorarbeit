@@ -1,4 +1,4 @@
-import { AnwesenheitTyp } from '@thesis/anwesenheiten';
+import { Anwesenheitstyp } from '@thesis/anwesenheiten';
 import { Schueler, SchuelerSimple } from '@thesis/schueler';
 import { Pool, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 import { DatabaseMessage, STANDARD_FEHLER } from '../shared/models';
@@ -49,7 +49,7 @@ export class SchuelerStore {
                     if (row.id !== anwesenheit.schueler_id) {
                         return row;
                     }
-                    if (anwesenheit.typ === AnwesenheitTyp.GANZTAG) {
+                    if (anwesenheit.typ === Anwesenheitstyp.GANZTAG) {
                         row.heutigerGanztagAnwesenheitsstatus = anwesenheit.status
                     } else {
                         row.heutigerSchultagAnwesenheitsstatus = anwesenheit.status

@@ -1,11 +1,11 @@
-import { ANWESENHEITEN, AnwesenheitTyp, deleteStatus, updateStatus } from "@thesis/anwesenheiten";
+import { ANWESENHEITEN, Anwesenheitstyp, deleteStatus, updateStatus } from "@thesis/anwesenheiten";
 import { useSchuelerStore } from "../schueler/SchuelerStore";
 import { Tooltip } from "../Tooltip";
 import { useQueryClient } from "@tanstack/react-query";
 import { SCHUELER_QUERY_KEY } from "@/reactQueryKeys";
 import { useAnwesenheiten } from "./useUnterrichtAnwesenheiten";
 
-export function GeprüftCheckbox ({ schuelerId, typ }: { schuelerId: number, typ: AnwesenheitTyp }) {
+export function GeprüftCheckbox ({ schuelerId, typ }: { schuelerId: number, typ: Anwesenheitstyp }) {
 
     const getSchueler = useSchuelerStore(store => store.getSchueler)
     const schueler = getSchueler(schuelerId)
@@ -17,7 +17,7 @@ export function GeprüftCheckbox ({ schuelerId, typ }: { schuelerId: number, typ
     if (!schueler) return <p>Fehler</p>
 
     function getChecked() {
-        if (typ === AnwesenheitTyp.GANZTAG) {
+        if (typ === Anwesenheitstyp.GANZTAG) {
             return schueler?.heutigerGanztagAnwesenheitsstatus === undefined ? false : true
         }
         return schueler?.heutigerSchultagAnwesenheitsstatus === undefined ? false : true

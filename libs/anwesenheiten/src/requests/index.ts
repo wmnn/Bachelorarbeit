@@ -1,16 +1,16 @@
 import { ANWESENHEITEN_ENDPOINT, handleRedirection } from "../../../config/config";
-import type { Anwesenheiten, AnwesenheitTyp } from "../models";
+import type { Anwesenheitsstatus, Anwesenheitstyp } from "../models";
 import type { Schuljahr } from "@thesis/schule";
 
-export interface AnwesenheitResponseData {
+export interface GetAnwesenheitenResponseData {
     datum: string,
-    typ: AnwesenheitTyp,
-    status: Anwesenheiten
+    typ: Anwesenheitstyp,
+    status: Anwesenheitsstatus
 }
 export const getAnwesenheiten = async (
     schuelerId: number,
     schuljahr: Schuljahr,
-    typ: AnwesenheitTyp,
+    typ: Anwesenheitstyp,
     redirect: boolean = true
 ) => {
     try {
@@ -27,7 +27,7 @@ export const getAnwesenheiten = async (
             handleRedirection(data.redirect)
         }
     
-        return data as AnwesenheitResponseData[];
+        return data as GetAnwesenheitenResponseData[];
     } catch (e) {
         return undefined;
     }
@@ -35,8 +35,8 @@ export const getAnwesenheiten = async (
 }
 
 export interface UpdateStatusReqBody {
-    status: Anwesenheiten,
-    typ: AnwesenheitTyp, // Ganztag oder Unterricht
+    status: Anwesenheitsstatus,
+    typ: Anwesenheitstyp, // Ganztag oder Unterricht
     startDatum: string,
     endDatum: string,
 }
@@ -51,8 +51,8 @@ export interface UpdateStatusResBody {
 
 export const updateStatus = async (
     schuelerId: number,
-    status: Anwesenheiten,
-    typ: AnwesenheitTyp,
+    status: Anwesenheitsstatus,
+    typ: Anwesenheitstyp,
     startDatum: string,
     endDatum: string,
 ) => {
@@ -85,8 +85,8 @@ export const updateStatus = async (
 
 export const updateStatusBatch = async (
     schuelerIds: number[],
-    status: Anwesenheiten,
-    typ: AnwesenheitTyp,
+    status: Anwesenheitsstatus,
+    typ: Anwesenheitstyp,
     startDatum: string,
     endDatum: string,
 ) => {
@@ -120,13 +120,13 @@ export const updateStatusBatch = async (
 
 export interface DeleteStatusReqBody {
     schuelerId: number,
-    typ: AnwesenheitTyp,
+    typ: Anwesenheitstyp,
     datum: string
 }
 
 export const deleteStatus = async (
     schuelerId: number,
-    typ: AnwesenheitTyp,
+    typ: Anwesenheitstyp,
     datum: string,
 ) => {
     try {

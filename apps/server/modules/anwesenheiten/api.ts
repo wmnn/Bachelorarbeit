@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { AnwesenheitTyp, DeleteStatusReqBody, UpdateStatusBatchReqBody, type UpdateStatusReqBody } from '@thesis/anwesenheiten'
+import { Anwesenheitstyp, DeleteStatusReqBody, UpdateStatusBatchReqBody, type UpdateStatusReqBody } from '@thesis/anwesenheiten'
 import { Schuljahr } from '@thesis/schule';
 import { getAnwesenheitenStore } from '../../singleton';
 import { getNoPermissionResponse, getNoSessionResponse } from '../auth/permissionsUtil';
@@ -58,7 +58,7 @@ router.get('/:schuelerId', async (req: Request<any, {}, UpdateStatusReqBody>, re
     const { schuelerId } = req.params
     const { schuljahr, typ } = req.query
 
-    const msg = await getAnwesenheitenStore().getAnwesenheiten(parseInt(schuelerId), schuljahr as Schuljahr, parseInt(typ as string) as AnwesenheitTyp)
+    const msg = await getAnwesenheitenStore().getAnwesenheiten(parseInt(schuelerId), schuljahr as Schuljahr, parseInt(typ as string) as Anwesenheitstyp)
     console.log(msg)
     res.status(200).json(msg);
 });

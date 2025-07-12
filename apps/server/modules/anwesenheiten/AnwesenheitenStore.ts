@@ -1,4 +1,4 @@
-import { Anwesenheiten, AnwesenheitTyp } from "@thesis/anwesenheiten";
+import { Anwesenheitsstatus, Anwesenheitstyp } from "@thesis/anwesenheiten";
 import { Schuljahr } from "@thesis/schule";
 import { Pool, ResultSetHeader } from "mysql2/promise"
 import { DatabaseMessage, STANDARD_FEHLER } from "../shared/models";
@@ -14,7 +14,7 @@ export class AnwesenheitenStore {
     async getAnwesenheiten(
         schuelerId: number,
         schuljahr: Schuljahr,
-        typ: AnwesenheitTyp
+        typ: Anwesenheitstyp
     ) {
         if (!this.connection) {
             return [];
@@ -37,8 +37,8 @@ export class AnwesenheitenStore {
     }
     async updateAnwesenheitsstatus(
         schuelerId: number,
-        typ: AnwesenheitTyp,
-        status: Anwesenheiten,
+        typ: Anwesenheitstyp,
+        status: Anwesenheitsstatus,
         startDatum: string,
         endDatum: string
     ): Promise<DatabaseMessage> {
@@ -87,7 +87,7 @@ export class AnwesenheitenStore {
 
     async deleteAnwesenheitsstatus(
         schuelerId: number,
-        typ: AnwesenheitTyp,
+        typ: Anwesenheitstyp,
         datum: string
     ): Promise<DatabaseMessage> {
         if (!this.connection) {

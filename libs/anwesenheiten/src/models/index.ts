@@ -1,4 +1,4 @@
-export enum Anwesenheiten {
+export enum Anwesenheitsstatus {
     ANWESEND,
     VERSPAETET,
     FEHLT_ENTSCHULDIGT,
@@ -6,23 +6,23 @@ export enum Anwesenheiten {
 }
 
 export const ANWESENHEITEN = [
-    Anwesenheiten.ANWESEND,
-    Anwesenheiten.FEHLT_ENTSCHULDIGT,
-    Anwesenheiten.VERSPAETET,
-    Anwesenheiten.FEHLT_UNENTSCHULDIGT
+    Anwesenheitsstatus.ANWESEND,
+    Anwesenheitsstatus.FEHLT_ENTSCHULDIGT,
+    Anwesenheitsstatus.VERSPAETET,
+    Anwesenheitsstatus.FEHLT_UNENTSCHULDIGT
 ]
 
 export const AnwesenheitenLabels = {
-    [Anwesenheiten.ANWESEND] : 'anwesend',
-    [Anwesenheiten.VERSPAETET] : 'verspätet',
-    [Anwesenheiten.FEHLT_ENTSCHULDIGT] : 'fehlt entschuldigt',
-    [Anwesenheiten.FEHLT_UNENTSCHULDIGT] : 'fehlt unentschuldigt'
+    [Anwesenheitsstatus.ANWESEND] : 'anwesend',
+    [Anwesenheitsstatus.VERSPAETET] : 'verspätet',
+    [Anwesenheitsstatus.FEHLT_ENTSCHULDIGT] : 'fehlt entschuldigt',
+    [Anwesenheitsstatus.FEHLT_UNENTSCHULDIGT] : 'fehlt unentschuldigt'
 }
-export enum AnwesenheitTyp {
+export enum Anwesenheitstyp {
     UNTERRICHT,
     GANZTAG
 }
 export const AnwesenheitTypLabel = {
-    [AnwesenheitTyp.GANZTAG]: 'Ganztag',
-    [AnwesenheitTyp.UNTERRICHT]: 'Unterricht',
+    [Anwesenheitstyp.GANZTAG]: 'Ganztag',
+    [Anwesenheitstyp.UNTERRICHT]: 'Unterricht',
 }

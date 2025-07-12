@@ -1,4 +1,4 @@
-import { Anwesenheiten, ANWESENHEITEN, AnwesenheitTyp, updateStatus } from '@thesis/anwesenheiten'
+import { Anwesenheitsstatus, ANWESENHEITEN, Anwesenheitstyp, updateStatus } from '@thesis/anwesenheiten'
 import { useEffect, useState } from "react";
 import { useSchuelerStore } from "../schueler/SchuelerStore";
 import { AnwesenheitsstatusSelect } from "./AnwesenheitsstatusSelect";
@@ -8,7 +8,7 @@ import { SCHUELER_QUERY_KEY } from '@/reactQueryKeys';
 
 interface AnwesenheitsstatusSchuelerListSelectProps { 
     schuelerId: number, 
-    typ: AnwesenheitTyp 
+    typ: Anwesenheitstyp 
 }
 export function AnwesenheitsstatusSchuelerListSelect ({ schuelerId, typ }: AnwesenheitsstatusSchuelerListSelectProps) {
 
@@ -22,16 +22,16 @@ export function AnwesenheitsstatusSchuelerListSelect ({ schuelerId, typ }: Anwes
     const [isFehltEntschuldigtDialogShown, setIsFehltEntschuldigtDialogShown] = useState(false);
 
     function getInitialAnwesenheit() {
-        if (typ === AnwesenheitTyp.GANZTAG) {
+        if (typ === Anwesenheitstyp.GANZTAG) {
             return schueler?.heutigerGanztagAnwesenheitsstatus ?? ANWESENHEITEN[0]
         } else {
             return schueler?.heutigerSchultagAnwesenheitsstatus ?? ANWESENHEITEN[0]
         }   
     }
 
-    async function onValueChange(status: Anwesenheiten) {
+    async function onValueChange(status: Anwesenheitsstatus) {
         setIsLoading(true)
-        if (status == Anwesenheiten.FEHLT_ENTSCHULDIGT) {
+        if (status == Anwesenheitsstatus.FEHLT_ENTSCHULDIGT) {
             setIsFehltEntschuldigtDialogShown(true);
             return;
         }
@@ -56,7 +56,7 @@ export function AnwesenheitsstatusSchuelerListSelect ({ schuelerId, typ }: Anwes
         {
             isFehltEntschuldigtDialogShown && <AnwesenheitsstatusDialog 
                 closeDialog={() => setIsFehltEntschuldigtDialogShown(false)}
-                initial={Anwesenheiten.FEHLT_ENTSCHULDIGT}
+                initial={Anwesenheitsstatus.FEHLT_ENTSCHULDIGT}
                 typ={typ}
                 schuelerId={schuelerId}
             />

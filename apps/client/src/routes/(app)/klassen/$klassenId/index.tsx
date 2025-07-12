@@ -5,7 +5,7 @@ import { MoveLeft } from 'lucide-react';
 import { KlasseNav } from '@/layout/KlasseNav';
 import { SchuelerList } from '@/components/schueler/SchuelerList/SchuelerList';
 import { useSchuelerStore } from '@/components/schueler/SchuelerStore';
-import { AnwesenheitTyp } from '@thesis/anwesenheiten';
+import { Anwesenheitstyp } from '@thesis/anwesenheiten';
 import { useKlasse } from '@/components/shared/useKlasse';
 import { useAllSchueler } from '@/components/schueler/useSchueler';
 import { useMemo } from 'react';
@@ -54,7 +54,7 @@ function RouteComponent() {
         { (klasse as Klasse).versionen?.map(version => {
           return <SchuelerList 
             key={version.klassenstufe}
-            typ={AnwesenheitTyp.UNTERRICHT}
+            typ={Anwesenheitstyp.UNTERRICHT}
             leftHeader={<h2>{version.klassenstufe}{version.zusatz}</h2>}
             schueler={schueler.filter((item) => version.schueler?.includes(item.id ?? -1))}
             showDerzeitigeKlasse={false}

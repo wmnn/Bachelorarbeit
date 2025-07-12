@@ -1,4 +1,4 @@
-import { ANWESENHEITEN, type Anwesenheiten, AnwesenheitTyp, updateStatus } from "@thesis/anwesenheiten"
+import { ANWESENHEITEN, type Anwesenheitsstatus, Anwesenheitstyp, updateStatus } from "@thesis/anwesenheiten"
 import { DialogWithButtons } from "../dialog/DialogWithButtons"
 import { Input } from "../Input"
 import { AnwesenheitsstatusSelect } from "./AnwesenheitsstatusSelect"
@@ -15,8 +15,8 @@ export const AnwesenheitsstatusDialog = ({
     schuelerId
 }: { 
     closeDialog: () => void 
-    initial: Anwesenheiten
-    typ: AnwesenheitTyp
+    initial: Anwesenheitsstatus
+    typ: Anwesenheitstyp
     schuelerId: number
 }) => {
 
@@ -40,7 +40,7 @@ export const AnwesenheitsstatusDialog = ({
         if (initial) {
             return initial
         }
-        if (typ === AnwesenheitTyp.GANZTAG) {
+        if (typ === Anwesenheitstyp.GANZTAG) {
             return schueler?.heutigerGanztagAnwesenheitsstatus ?? ANWESENHEITEN[0]
         } else {
             return schueler?.heutigerSchultagAnwesenheitsstatus ?? ANWESENHEITEN[0]

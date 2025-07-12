@@ -1,7 +1,7 @@
 import { List } from "@/components/List"
 import { SchuelerErstellenDialog } from "../SchuelerErstellenDialog"
 import { SchuelerListItem } from "./SchuelerListItem"
-import { AnwesenheitTyp } from "@thesis/anwesenheiten"
+import { Anwesenheitstyp } from "@thesis/anwesenheiten"
 import { use, useEffect, useState, type ReactNode } from "react"
 import type { Schueler } from "@thesis/schueler"
 import { SchuelerListHeader } from "./SchuelerListHeader"
@@ -22,7 +22,7 @@ interface SchuelerListProps {
     rightHeader?: ReactNode,
     className?: string,
     showDerzeitigeKlasse?: boolean,
-    typ: AnwesenheitTyp
+    typ: Anwesenheitstyp
 }
 
 export const SchuelerList = (props: SchuelerListProps ) => {

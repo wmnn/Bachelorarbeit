@@ -1,10 +1,10 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { Anwesenheiten, ANWESENHEITEN } from '@thesis/anwesenheiten'
+import { Anwesenheitsstatus, ANWESENHEITEN } from '@thesis/anwesenheiten'
 import { styleAnwesenheit } from "./util";
 
 interface AnwesenheitsstatusSelectProps { 
-    selected: Anwesenheiten,
-    onValueChange: (val: Anwesenheiten) => void,
+    selected: Anwesenheitsstatus,
+    onValueChange: (val: Anwesenheitsstatus) => void,
 }
 export function AnwesenheitsstatusSelect (props: AnwesenheitsstatusSelectProps) {
 
@@ -13,7 +13,7 @@ export function AnwesenheitsstatusSelect (props: AnwesenheitsstatusSelectProps) 
     return <Select 
         value={`${selected}`}
         onValueChange={async (val) => {
-            const status = parseInt(val) as Anwesenheiten
+            const status = parseInt(val) as Anwesenheitsstatus
             onValueChange(status)
         }}
     >
