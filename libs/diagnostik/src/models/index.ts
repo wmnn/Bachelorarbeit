@@ -1,7 +1,11 @@
-export enum DiagnostikTyp {
+export enum DiagnostikAnfrageTyp {
     VORLAGE,
     LAUFENDES_VERFAHREN,
     GETEILT
+}
+export enum DiagnostikTyp {
+    VORLAGE,
+    LAUFENDES_VERFAHREN
 }
 export enum Sichtbarkeit {
     PRIVAT,

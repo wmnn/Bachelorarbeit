@@ -17,7 +17,7 @@ function RouteComponent() {
   return <div className='w-full flex flex-col'>
     <SchuelerNav schuelerId={schuelerId} />
 
-    <div className='p-2 xl:p-8'>
+    <div className='p-2 xl:p-8 mb-8'>
       <NachrichtenList nachrichten={query.data} typ={NachrichtenTyp.SCHÜLER} id={parseInt(schuelerId)} />
     </div>
   </div>

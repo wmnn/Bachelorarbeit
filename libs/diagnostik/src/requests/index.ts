@@ -1,5 +1,5 @@
 import { DIAGNOSTIK_ENDPOINT, handleRedirection } from "../../../config/config";
-import { Sichtbarkeit, type Auswertungsgruppe, type Diagnostik, type DiagnostikenSchuelerData, type DiagnostikTyp, type Ergebnis, type Row, type UploadedFile } from "../models";
+import { Sichtbarkeit, type Auswertungsgruppe, type Diagnostik, type DiagnostikenSchuelerData, type DiagnostikAnfrageTyp, type Ergebnis, type Row, type UploadedFile } from "../models";
 
 export type CreateDiagnostikRequestBody = {
     diagnostik: string,
@@ -157,7 +157,7 @@ export const editDiagnostik = async (diagnostik: Diagnostik, files: File[]) => {
 
 export type GetDiagnostikenResponseBody = Diagnostik[]
 
-export const getDiagnostiken = async (speicherTyp: DiagnostikTyp) => {
+export const getDiagnostiken = async (speicherTyp: DiagnostikAnfrageTyp) => {
     
     try {
         const res = await fetch(DIAGNOSTIK_ENDPOINT + `?typ=${speicherTyp}`, {

@@ -8,7 +8,8 @@ type AutocompleteProps<T> = {
     getLabel: (val: any) => string,
     selected: T,
     setSelected: any,
-    queryResults: T[]
+    queryResults: T[],
+    className?: string,
 }
 
 export function Autocomplete<T>(props: AutocompleteProps<T>) {
@@ -25,7 +26,7 @@ export function Autocomplete<T>(props: AutocompleteProps<T>) {
     }, [isInputShown]);
 
 
-    return <div className="flex flex-col max-w-[360px] w-full relative">
+    return <div className={`flex flex-col max-w-[360px] w-full relative ${props.className}`}>
         { 
             isInputShown ? 
                 <Input 

@@ -30,7 +30,7 @@ export class NachrichtenStore {
             FROM nachrichten n
             JOIN nachrichtenversionen v ON n.nachricht_id = v.nachricht_id
             WHERE n.typ = ? AND v.zeitstempel >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
-            ORDER BY v.zeitstempel DESC
+            ORDER BY v.nachrichtenversion_id DESC
         `, [userId, typ]);
 
         if (!Array.isArray(rows)) {
@@ -80,7 +80,7 @@ export class NachrichtenStore {
             FROM nachrichten n
             JOIN nachrichtenversionen v ON n.nachricht_id = v.nachricht_id
             WHERE n.id = ? AND n.typ = ? AND v.zeitstempel >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
-            ORDER BY v.zeitstempel DESC
+            ORDER BY v.nachrichtenversion_id DESC
         `, [userId, id, typ]);
 
         if (!Array.isArray(rows)) {

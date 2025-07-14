@@ -1,11 +1,11 @@
 import { DiagnostikListItem } from "./DiagnostikListItem"
 import { useDiagnostiken } from "../shared/useDiagnostiken"
-import { DiagnostikTyp } from "@thesis/diagnostik"
+import { DiagnostikAnfrageTyp } from "@thesis/diagnostik"
 import { DiagnostikList2 } from "./DiagnostikList2"
 
 export function DiagnostikGeteiltList() {
 
-    const query = useDiagnostiken(DiagnostikTyp.GETEILT)
+    const query = useDiagnostiken(DiagnostikAnfrageTyp.GETEILT)
 
     if (query.isPending) {
         return <p>...Loading</p>

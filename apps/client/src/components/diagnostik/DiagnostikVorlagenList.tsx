@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react"
 import { DiagnostikListItem } from "./DiagnostikListItem"
 import { useDiagnostiken } from "../shared/useDiagnostiken"
-import { type Diagnostik, DiagnostikTyp } from "@thesis/diagnostik"
+import { type Diagnostik, DiagnostikAnfrageTyp } from "@thesis/diagnostik"
 import { DiagnostikList2 } from "./DiagnostikList2"
 
 export function DiagnostikVorlagenList() {
 
-    const query = useDiagnostiken(DiagnostikTyp.VORLAGE)
+    const query = useDiagnostiken(DiagnostikAnfrageTyp.VORLAGE)
     const [diagnostiken, setDiagnostiken] = useState<Diagnostik[]>([]);
 
     useEffect(() => {

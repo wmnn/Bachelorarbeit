@@ -11,6 +11,9 @@ import { getSchuelerComplete } from "@thesis/schueler";
 import { userHasPermission } from "@/components/auth/userHasPermission";
 import { Berechtigung } from "@thesis/rollen";
 import { userContext } from "@/context/UserContext";
+import { NachrichtNotification } from "@/components/shared/Nachricht/NachrichtNotification";
+import { useNachrichten } from "@/components/shared/Nachricht/useNachrichten";
+import { countUnreadMessages, NachrichtenTyp } from "@thesis/nachricht";
 
 export const SchuelerNav = ({ schuelerId }: { schuelerId: string }) => {
   const { location } = useRouterState();
@@ -20,7 +23,9 @@ export const SchuelerNav = ({ schuelerId }: { schuelerId: string }) => {
   const { user } = use(userContext)
 
   const base = `/schueler/${schuelerId}`;
-
+  const nachrichtenQuery = useNachrichten(NachrichtenTyp.SCHÜLER, parseInt(schuelerId))
+  const isUnreadMessage = countUnreadMessages([...nachrichtenQuery.query.data]) > 0
+  
   const { isPending, data: schueler } = useQuery({
         queryKey: [SCHUELER_QUERY_KEY, schuelerId],
         queryFn: ({ queryKey }) => {
@@ -87,7 +92,15 @@ export const SchuelerNav = ({ schuelerId }: { schuelerId: string }) => {
 
         {
                 userHasPermission(user, Berechtigung.NachrichtenRead, true ) && <Link to="/schueler/$schuelerId/brett" params={{ schuelerId }}>
-                <ListItem isActive={pathname === `${base}/brett`}>Schwarzes Brett</ListItem>
+                <ListItem isActive={pathname === `${base}/brett`}>
+                <div className="flex gap-2 items-center">
+                  <p>Schwarzes Brett</p>
+                  { 
+                      isUnreadMessage && <NachrichtNotification />
+                  }
+                </div>
+                  
+                </ListItem>
               </Link>
         }
 

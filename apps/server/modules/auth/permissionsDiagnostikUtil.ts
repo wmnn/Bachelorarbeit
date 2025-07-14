@@ -1,4 +1,4 @@
-import { Diagnostik, DiagnostikTyp, Sichtbarkeit } from "@thesis/diagnostik";
+import { Diagnostik, DiagnostikAnfrageTyp, DiagnostikTyp, Sichtbarkeit } from "@thesis/diagnostik";
 import { getDiagnostikStore } from "../../singleton";
 import { Request } from "express";
 import { Berechtigung, BerechtigungWert } from "@thesis/rollen";
@@ -43,12 +43,6 @@ export async function canUserDeleteDiagnostik(diagnostikId: string, req: Request
     if (!permission || !allowed.includes(permission)) {
         return {
             success: false
-        }
-    }
-
-    if (diagnostik?.speicherTyp == DiagnostikTyp.GETEILT) {
-        return {
-                success: false
         }
     }
 

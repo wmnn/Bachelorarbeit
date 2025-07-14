@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ButtonLight } from "../ButtonLight"
 import { Input } from "../Input";
-import { DiagnostikNumberFormat, DiagnostikTyp, Erhebungszeitraum, Sichtbarkeit, sortFarbbereiche, type Diagnostik, type Farbbereich } from '@thesis/diagnostik'
+import { DiagnostikNumberFormat, DiagnostikAnfrageTyp, Erhebungszeitraum, Sichtbarkeit, sortFarbbereiche, type Diagnostik, type Farbbereich, DiagnostikTyp } from '@thesis/diagnostik'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { useKlassen } from "../shared/useKlassen";
 import { getTitle, type Klasse } from "@thesis/schule";
@@ -48,7 +48,7 @@ export const DiagnostikForm = (props: DiagnostikFormProps) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const klassenQuery = useKlassen()
-    const vorlagenQuery = useDiagnostiken(DiagnostikTyp.VORLAGE)
+    const vorlagenQuery = useDiagnostiken(DiagnostikAnfrageTyp.VORLAGE)
 
     if (klassenQuery.isPending || vorlagenQuery.isPending) {
         return <p>...Loading</p>

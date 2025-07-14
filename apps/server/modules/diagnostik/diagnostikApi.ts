@@ -1,6 +1,6 @@
 import express from 'express';
 import { Request, Response } from 'express';
-import { AddErgebnisseResponseBody, CreateDiagnostikRequestBody, CreateDiagnostikResponseBody, Diagnostik, DiagnostikenSchuelerData, DiagnostikTyp, Ergebnis, Farbbereich, getDiagnostik, GetDiagnostikenResponseBody, GetSchuelerDataResponseBody, Sichtbarkeit } from '@thesis/diagnostik';
+import { AddErgebnisseResponseBody, CreateDiagnostikRequestBody, CreateDiagnostikResponseBody, Diagnostik, DiagnostikenSchuelerData, DiagnostikAnfrageTyp, Ergebnis, Farbbereich, getDiagnostik, GetDiagnostikenResponseBody, GetSchuelerDataResponseBody, Sichtbarkeit, DiagnostikTyp } from '@thesis/diagnostik';
 import { getDiagnostikStore } from '../../singleton';
 import { deleteNotIncludedFiles, getDiagnostikFiles, saveDiagnostikFiles } from '../files/util';
 import fileUpload from 'express-fileupload';
@@ -9,7 +9,7 @@ import { canEditDiagnostik, canUserAccessDiagnostik, canUserCreateDiagnostik, ca
 import { getNoPermissionResponse, getNoSessionResponse } from '../auth/permissionsUtil';
 import { getKlassenIdsVonSchueler } from '../klassen/util';
 import { DiagnostikStore } from './DiagnostikStore';
-import { getDiagnostiken, getDiagnostikTyp } from './util';
+import { getDiagnostiken, getDiagnostikAnfrageTyp } from './util';
 
 let router = express.Router();
 const SUCCESSFULL_VALIDATION_RES =  {
@@ -21,7 +21,7 @@ router.get('/', async (
     req: Request<{}, {}, {}, { typ?: string }>,
     res: Response<any>
 ): Promise<any> => {
-    const data = await getDiagnostiken(req, getDiagnostikTyp(req.query.typ))
+    const data = await getDiagnostiken(req, getDiagnostikAnfrageTyp(req.query.typ))
     return res.status(data.status).json(data);
 });
 
@@ -43,7 +43,7 @@ router.get('/schueler', async (req, res: Response<GetSchuelerDataResponseBody>):
     // Alle klassenIds von den Klassenversionen anfragen, bei denen der Schüler ein Teil von ist
     const klassenIds = await getKlassenIdsVonSchueler(schuelerId)
     // Alle Diagnostiken die für die Klassen erstellt wurden anfragen
-    let { data: unfilteredDiagnostiken } = await getDiagnostiken(req, DiagnostikTyp.LAUFENDES_VERFAHREN)
+    let { data: unfilteredDiagnostiken } = await getDiagnostiken(req, DiagnostikAnfrageTyp.LAUFENDES_VERFAHREN)
     // unfilteredDiagnostiken = [...unfilteredDiagnostiken, await getDiagnostikStore().getDiagnostiken(DiagnostikTyp.)]
     let filteredDiagnostiken: DiagnostikenSchuelerData[] = (unfilteredDiagnostiken?.filter(diagnostik => klassenIds.includes(diagnostik.klasseId)) ?? []) 
 

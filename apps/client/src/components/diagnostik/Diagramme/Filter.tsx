@@ -57,6 +57,7 @@ export const Filter = ({ initialData, data, setData, diagnostik}: {
                 closeDialog={() => setIsAuswertungsgruppeDialogShown(false)}
                 schuelerIds={initialData.map(item => item.schuelerId)}
                 diagnostikId={`${diagnostik.id ?? -1}`}
+                auswertungsgruppen={diagnostik.auswertungsgruppen}
             />
         }
 

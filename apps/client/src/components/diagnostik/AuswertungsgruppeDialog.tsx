@@ -85,6 +85,7 @@ export const AuswertungsgruppeDialog = (props: AuswertungsgruppeDialogProps) => 
         const res = await updateAuswertungsgrupen(diagnostikId, auswertungsgruppen);
         alert(res.message)
         if (res.success) {
+            window.location.reload()
             closeDialog()
         }
     }
@@ -92,18 +93,19 @@ export const AuswertungsgruppeDialog = (props: AuswertungsgruppeDialogProps) => 
     return <DialogWithButtons closeDialog={closeDialog} onSubmit={handleSubmit} submitButtonText="Speichern">
 
         <h1>Auswertungsgruppen bearbeiten</h1>
-        <label className="">
-            Auswertungsgruppen
-        </label>
-        <div className="flex flex-col gap-8">
+    
+        <div className="flex flex-col w-full">
         {
             auswertungsgruppen.map((gruppe, idx) => {
-                return <div className="flex flex-col xl:flex-row justify-between">
-                    <div className="grow">
+                return <div className="flex flex-col justify-between w-full">
+                    <div className="grow flex items-center gap-4 w-full">
                         <label>
                             Name
                         </label>
-                        <Input value={gruppe.name} onChange={(e) => {
+                        <Input 
+                            value={gruppe.name} 
+                            className="grow"
+                            onChange={(e) => {
                             setAuswertungsgruppen(prev => prev.map((item, i) => {
                                 if (idx !== i) {
                                     return item;
@@ -113,13 +115,27 @@ export const AuswertungsgruppeDialog = (props: AuswertungsgruppeDialogProps) => 
                                     name: e.target.value
                                 }
                             }))
+                            
                         }}/>
+
+                        <button className="p-2" onClick={() => {
+                            const filtered = auswertungsgruppen.filter((_, i) => {
+                                return i !== idx
+                            })
+                            setAuswertungsgruppen(filtered)
+                        }}>
+                            <Trash2/>
+                        </button>
                     </div>
                     
-                    <div className="grow flex flex-col gap-2">
+                    <div className="grow flex flex-col gap-2 mt-2">
+                        <label>Schüler</label>
+                        
                         {
                             gruppe.schuelerIds.map((schuelerId, i) => {
-                                return <Autocomplete 
+                                return <div className="flex gap-2 items-center">
+
+                                <Autocomplete 
                                     key={i}
                                     query={query}
                                     setQuery={handleQueryChange}
@@ -127,8 +143,27 @@ export const AuswertungsgruppeDialog = (props: AuswertungsgruppeDialogProps) => 
                                     setSelected={(selected: any) => handleSchuelerSelection(idx, i, selected)}
                                     getLabel={getLabel}
                                     placeholder="Max Mustermann"
+                                    className="grow max-w-full"
                                     queryResults={queryResults as any}
                                 />
+
+                                <button className="p-2" onClick={() => {
+                                            setAuswertungsgruppen(prev => {
+                                        return prev.map((item, i) => {
+                                            if (i !== idx) {
+                                                return item;
+                                            }
+                                            return {
+                                                ...item,
+                                                schuelerIds: item.schuelerIds.filter((_, i) => i !== idx)
+                                            }
+                                        })
+                                    })
+                                }}>
+                                    <Trash2/>
+                                </button>
+
+                                </div>
                             })
                         }
                         <ButtonLight onClick={() => addSchueler(idx)}>
@@ -136,14 +171,10 @@ export const AuswertungsgruppeDialog = (props: AuswertungsgruppeDialogProps) => 
                         </ButtonLight>
                     </div>
 
-                    <button className="p-2" onClick={() => {
-                        const filtered = auswertungsgruppen.filter((_, i) => {
-                            return i !== idx
-                        })
-                        setAuswertungsgruppen(filtered)
-                    }}>
-                        <Trash2/>
-                    </button>
+                    {
+                        idx !== auswertungsgruppen.length - 1 && <hr className="h-[1px] bg-gray-300 my-8"/>
+                    }
+
                 </div>
             })
         }

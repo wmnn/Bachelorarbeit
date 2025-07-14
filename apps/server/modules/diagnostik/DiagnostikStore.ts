@@ -1,4 +1,4 @@
-import { Auswertungsgruppe, deleteDiagnostik, Diagnostik, DiagnostikTyp, Ergebnis, Erhebungszeitraum, Farbbereich, Row } from "@thesis/diagnostik";
+import { Auswertungsgruppe, deleteDiagnostik, Diagnostik, DiagnostikAnfrageTyp, Ergebnis, Erhebungszeitraum, Farbbereich, Row } from "@thesis/diagnostik";
 import { Pool, ResultSetHeader, RowDataPacket } from "mysql2/promise"
 import { DatabaseMessage, STANDARD_FEHLER } from "../shared/models";
 

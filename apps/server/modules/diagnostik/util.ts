@@ -1,17 +1,17 @@
-import { DiagnostikTyp, Sichtbarkeit } from "@thesis/diagnostik";
+import { DiagnostikAnfrageTyp, DiagnostikTyp, Sichtbarkeit } from "@thesis/diagnostik";
 import { getDiagnostikStore } from "../../singleton";
 import { Request } from "express";
 import { Berechtigung, BerechtigungWert } from "@thesis/rollen";
 import { LoginRedirectAction } from "@thesis/auth";
 
 
-export function getDiagnostikTyp (val?: string) {
-    let speicherTyp = DiagnostikTyp.LAUFENDES_VERFAHREN;
+export function getDiagnostikAnfrageTyp (val?: string) {
+    let speicherTyp = DiagnostikAnfrageTyp.LAUFENDES_VERFAHREN;
 
     if (val) {
         const typ = parseInt(val); 
         if (!isNaN(typ)) {
-            speicherTyp = typ as DiagnostikTyp;
+            speicherTyp = typ as DiagnostikAnfrageTyp;
         }
     }
     return speicherTyp
@@ -24,7 +24,7 @@ export function getDiagnostikTyp (val?: string) {
  * @param typ 
  * @returns 
  */
-export const getDiagnostiken = async (req: Request, typ: DiagnostikTyp) => {
+export const getDiagnostiken = async (req: Request, typ: DiagnostikAnfrageTyp) => {
 
     const userId = req.userId
     if (!userId) {
@@ -47,7 +47,7 @@ export const getDiagnostiken = async (req: Request, typ: DiagnostikTyp) => {
     }
     
     // Der Nutzer erhält nur die Diagnostiken, die mit ihm geteilt wurden.
-    if (typ === DiagnostikTyp.GETEILT) {
+    if (typ === DiagnostikAnfrageTyp.GETEILT) {
         let query = await getDiagnostikStore().getDiagnostiken(DiagnostikTyp.LAUFENDES_VERFAHREN);
         if (!query.success || query.data == null) {
             return {
@@ -72,11 +72,11 @@ export const getDiagnostiken = async (req: Request, typ: DiagnostikTyp) => {
         }
     }
 
-    let data = await getDiagnostikStore().getDiagnostiken(typ);
-    if (permission == 'eigene' && typ === DiagnostikTyp.LAUFENDES_VERFAHREN) {
+    let data = await getDiagnostikStore().getDiagnostiken(typ === DiagnostikAnfrageTyp.VORLAGE ? DiagnostikTyp.VORLAGE : DiagnostikTyp.LAUFENDES_VERFAHREN);
+    if (permission == 'eigene' && typ === DiagnostikAnfrageTyp.LAUFENDES_VERFAHREN) {
         data.data = data.data?.filter(o => o.userId == req.userId) ?? []
     }
-    if (permission == 'eigene' && typ === DiagnostikTyp.VORLAGE) {
+    if (permission == 'eigene' && typ === DiagnostikAnfrageTyp.VORLAGE) {
         data.data = data.data?.filter(o => o.sichtbarkeit == Sichtbarkeit.ÖFFENTLICH || o.userId == userId) ?? []
     }
     return {

@@ -17,7 +17,6 @@ Chart.register(BoxPlotController, BoxAndWiskers, ViolinController, Violin, Categ
 
 export const BoxPlot = ({ data: initialData, diagnostik }: { data: Row[], diagnostik: Diagnostik }) => {
 
-    console.log(initialData)
     const mindeststandard = getMindeststandard(diagnostik)
     const [data, setData] = useState(initialData)
     

@@ -1,44 +1,29 @@
-## 1. Download the Docker CLI
-```
-https://docs.docker.com/get-started/get-docker/
-```
+## 1. Generierung von Schlüssel
 
+Hinweis: openssl muss installiert sein. Es gibt diverse Anleitungen und unterschiedliche Möglichkeiten openssl zu installieren.
 
-## 2. Open a terminal in the root directory
-
-
-#### 2.1  Generating a HMAC key for signing cookies
+#### 1.1  Generierung eines HMAC Schlüssel, um Cookies zu signieren
 
 ```
 openssl rand -base64 32 > cookie_signing.key
 ```
-#### 2.2 Generating a HMAC key for registering
+#### 1.2 Generierung eines HMAC Schlüssel für die Registrierung
 ```
 openssl rand -base64 32 > register.key
 ```
 
-#### 2.3 Generating key pair and a self signed certificate for https
+#### 1.3 Generierung eines Schlüsselpaares und ein selbst signiertes Zertifikat für eine verschlüsselte HTTPS-Verbindung
 
 ```
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ./https.key -out https.crt
 ```
 
-## 3. Create a .env file inside the root directory and add config data based on .env.sample
+## 2. Erstelle eine .env-Datei im Hauptverzeichnis und füge Konfigurationsdaten entsprechend der Datei .env.sample hinzu.
 
-## 4. Execute the docker cli command
+
+
+## 3. Starten des Systems in Docker-Containern
+Die CLI kann hier heruntergelanden werden: `https://docs.docker.com/get-started/get-docker/`
 ```
 docker compose up -d
 ```
-
-<!-- 
-### ISC Lizenz
-
-npm i lucide-react
-
-### MIT Lizenz
-
-hero-icons -->
-
-<!-- ### Activate SMTP for gmail
-
-https://www.youtube.com/watch?v=ZfEK3WP73eY&ab_channel=GuideRealm -->
