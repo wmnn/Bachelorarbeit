@@ -26,7 +26,7 @@ CREATE TABLE diagnostikverfahren (
     typ VARCHAR(255),
     user_id VARCHAR(36),
     klassen_id VARCHAR(36),
-    erhebungszeitraum TINYINT(1),
+    erhebungszeitraum TINYINT(1)
 );
 
 CREATE TABLE ganztagsangebote (

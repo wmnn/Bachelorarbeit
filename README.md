@@ -3,8 +3,14 @@
 Hinweis: openssl muss installiert sein. Es gibt diverse Anleitungen und unterschiedliche Möglichkeiten openssl zu installieren. Unter Windows würde ich empfehlen ein Linux Subsystem zu verwenden (wsl).
 
 ### Installierung von Linux Subsystem - WSL unter Windows
-#### PowerShell Befehle
+#### Terminal Befehle
+Prüfen, ob WSL installiert ist: `wsl --version`
+
 Installieren: `wsl --install`
+
+Wsl im aktuellen Ordner öffnen: `wsl`
+
+Wsl in einem Ordner öffnen: `wsl --cd "<PFAD>"`
 
 Herunterfahren: `wsl --shutdown`
 
