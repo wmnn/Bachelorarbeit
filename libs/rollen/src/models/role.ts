@@ -41,7 +41,7 @@ export const BERECHTIGUNGEN_LABELS: Record<Berechtigung, string>= {
     [Berechtigung.DiagnostikverfahrenDelete]: "Diagnostikverfahren löschen",
     [Berechtigung.RollenVerwalten]: "Rollen verwalten",
     [Berechtigung.NachrichtenvorlagenVerwalten]: "Nachrichtenvorlagen verwalten",
-    [Berechtigung.NachrichtenRead]: "Nachrichten Zugriff (Vorbedingungen: Klasse Zugriff, Schüler einsehen)",
+    [Berechtigung.NachrichtenRead]: "Nachrichten Zugriff",
     [Berechtigung.NachrichtenUpdate]: "Nachrichten bearbeiten (von allen Nutzern)",
     [Berechtigung.NachrichtenDelete]: "Nachrichten löschen (von allen Nutzern)",
 }

@@ -1,6 +1,12 @@
-## 1. Generierung von Schlüssel
+## 1. Generierung von Schlüssel im Hauptverzeichnis
 
-Hinweis: openssl muss installiert sein. Es gibt diverse Anleitungen und unterschiedliche Möglichkeiten openssl zu installieren.
+Hinweis: openssl muss installiert sein. Es gibt diverse Anleitungen und unterschiedliche Möglichkeiten openssl zu installieren. Unter Windows würde ich empfehlen ein Linux Subsystem zu verwenden (wsl).
+
+### Installierung von Linux Subsystem - WSL unter Windows
+#### PowerShell Befehle
+Installieren: `wsl --install`
+
+Herunterfahren: `wsl --shutdown`
 
 #### 1.1  Generierung eines HMAC Schlüssel, um Cookies zu signieren
 

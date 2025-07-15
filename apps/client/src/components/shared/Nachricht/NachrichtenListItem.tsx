@@ -34,13 +34,13 @@ export const NachrichtenListItem = ({ nachricht, showId }: { nachricht: Nachrich
         if (nachricht.typ === NachrichtenTyp.SCHÜLER) {
             const s = (schueler ?? []).find(o => o.id == nachricht.id)
             if (!s) {
-                return 'ERROR'
+                return 'Ein Fehler ist aufgetreten.'
             }
             return `Schüler: ${s.vorname} ${s.nachname}`
         } else {
             const klasse = (klassenQuery.data ?? []).find(o => o.id == nachricht.id)
             if (!klasse) {
-                return 'ERROR'
+                return 'Du hast kein Recht diese Klasse zu sehen.'
             }
             return 'Klasse: ' + getTitle(klasse)
         }
