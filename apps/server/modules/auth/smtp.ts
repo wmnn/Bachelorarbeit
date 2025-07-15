@@ -23,14 +23,14 @@ const from = '<team@example.com>'
 
 export async function sendActivateAccountEmail(to: string, cbEndpoint: string) {
     try {
-        await getSmtpTransporter().sendMail({
+        /*await getSmtpTransporter().sendMail({
             from,
             to,
             subject: "Konto aktivieren",
             text: `Klick auf den Link um dein Account zu aktivieren: ${cbEndpoint}`,
             html: `<span>Klick auf den Link um dein Account zu aktivieren: ${cbEndpoint}</span>`,
-        });
-        // console.log(cbEndpoint)
+        });*/
+        console.log(cbEndpoint)
 
         return true;
     } catch (err) {
@@ -41,14 +41,14 @@ export async function sendActivateAccountEmail(to: string, cbEndpoint: string) {
 
 export async function sendResetPasswordEmail(to: string, link: string) {
     try {
-        await getSmtpTransporter().sendMail({
+        /*await getSmtpTransporter().sendMail({
             from,
             to,
             subject: "Passwort zurücksetzen",
             text: `Klick auf den Link um dein Passwort zurückzusetzen: ${link}`,
             html: `<span>Klick auf den Link um dein Passwort zurückzusetzen: ${link}</span>`,
-        });
-        // console.log(link)
+        });*/
+        console.log(link)
 
         return true;
     } catch (err) {
